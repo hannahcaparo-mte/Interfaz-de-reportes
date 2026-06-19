@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cobranza · CETLOG Intelligence Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cetlog_shared.css">
+<style>
+  .block-hero.bh-cobranza { background: linear-gradient(135deg, #0B6E50 0%, #0F8763 100%); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">CT</div>
+      <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <a class="nav-item" href="cetlog_home.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+        Inicio
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Bloques</div>
+      <a class="nav-item" href="cetlog_comercial.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
+        Comercial<span class="nav-badge">6</span>
+      </a>
+      <a class="nav-item active" href="cetlog_cobranza.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
+        Cobranza<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_academico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
+        Académico<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_estrategico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+        Estratégico<span class="nav-badge">6</span>
+      </a>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="avatar">GE</div>
+        <div class="user-info"><strong>Gerencia</strong><span>Administrador</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <div class="topbar-crumb">
+          <a href="cetlog_home.html">Inicio</a>
+          <span class="sep">/</span>
+          <span class="current">Cobranza</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="period-selector">
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1v1H1.5A.5.5 0 0 0 1 2.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5H9V1H8v1H4V1H3zm-1 4h8v5H2V5z"/></svg>
+          Seleccionar período
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 5l3 3 3-3"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Notificaciones"><div class="notif-dot"></div>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 0 0-5 5v3l-1.5 2.5h13L13 9V6a5 5 0 0 0-5-5zm0 14a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2z"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Configuración">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 1h3l.5 2a5 5 0 0 1 1.2.7l2-.5 1.5 2.6-1.5 1.4a5 5 0 0 1 0 1.6l1.5 1.4-1.5 2.6-2-.5A5 5 0 0 1 10 13l-.5 2h-3L6 13a5 5 0 0 1-1.2-.7l-2 .5L1.3 10.2l1.5-1.4a5 5 0 0 1 0-1.6L1.3 5.8 2.8 3.2l2 .5A5 5 0 0 1 6 3L6.5 1zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="block-hero bh-cobranza">
+        <div class="block-hero-eyebrow">Bloque 02 · Cobranza</div>
+        <h2>Pagos, deuda y retención financiera</h2>
+        <p>Desde la preinscripción hasta el cierre del programa. Fuentes: Q10 y registro interno de cobranza.</p>
+        <div class="block-hero-meta">
+          <div><span class="num">5</span><span class="lbl">Reportes</span></div>
+          <div><span class="num">2</span><span class="lbl">Fuentes de datos</span></div>
+          <div><span class="num">19</span><span class="lbl">Variables clave</span></div>
+        </div>
+      </div>
+
+      <div class="integration-banner">
+        <div class="icon">🔗</div>
+        <div>
+          <h5>Fuentes conectadas a este bloque</h5>
+          <p>Q10 (matrículas, cuotas, retiros) · Registro interno de cobranza (Apps Script)</p>
+        </div>
+      </div>
+
+      <div class="report-tabs">
+        <div class="report-tab active" onclick="showReport('preinscripcion')"><span class="tab-num">01</span> Embudo de matrícula</div>
+        <div class="report-tab" onclick="showReport('primeracuota')"><span class="tab-num">02</span> Primera cuota</div>
+        <div class="report-tab" onclick="showReport('deudores')"><span class="tab-num">03</span> Deudores</div>
+        <div class="report-tab" onclick="showReport('recuperacion')"><span class="tab-num">04</span> Recuperación</div>
+        <div class="report-tab" onclick="showReport('retirados')"><span class="tab-num">05</span> Retirados y pérdidas</div>
+      </div>
+
+      <!-- REPORT 1: EMBUDO DE MATRÍCULA -->
+      <div class="report-panel active" id="panel-preinscripcion">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Embudo de matrícula (preinscripción → matrícula)</h4><p class="question">¿Cuál es la tasa de conversión preinscripción → matrícula? ¿Cuánto demora un preinscrito en matricularse?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">% Conversión preinscrito → matrícula</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Días promedio de demora</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Perdido por no pagar matrícula</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mejor conversión</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--success);"></span>Embudo: Preinscritos → Matriculados, por programa</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">⏬</div><div class="label">Gráfico de embudo (funnel)</div><div class="sub">Preinscritos, descuento aplicado, matriculados, % conversión, perdidos por no pago</div></div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por programa</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa</th><th>Preinscritos</th><th>Matriculados</th><th>% Conversión</th><th>Descuento aplicado</th><th>Perdidos x no pago</th><th>Días demora pago</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Conversión por comercial</h4><p class="question">¿Qué comercial logra mayor velocidad y tasa de conversión a matrícula?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + Sistema interno</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--success);"></span>Ranking de comerciales por conversión</div>
+          <div class="chart-placeholder"><div class="icon">🏆</div><div class="label">Tabla-ranking</div><div class="sub">Comercial × preinscritos, matriculados, % conversión</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 2: PRIMERA CUOTA -->
+      <div class="report-panel" id="panel-primeracuota">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Cobranza de primera cuota</h4><p class="question">¿Cuántos matriculados pagaron la primera cuota? ¿Cuál es la tasa de cumplimiento?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">% Cumplimiento primera cuota</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Monto total pendiente</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Matriculados pendientes</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con más morosidad temprana</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-1-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--success);"></span>Pagaron vs. pendiente, por programa</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras apiladas</div><div class="sub">Matriculados × pagaron / pendiente</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--warning);"></span>Monto pendiente total</div>
+              <div class="chart-placeholder"><div class="icon">💰</div><div class="label">Gráfico de barras</div><div class="sub">Monto facturado vs. monto pendiente por programa</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Antigüedad de la deuda (primera cuota)</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa</th><th>Rango de días</th><th>Alumnos</th><th>Monto pendiente</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>0-7 días</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>8-15 días</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>16-30 días</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>+30 días</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT 3: DEUDORES -->
+      <div class="report-panel" id="panel-deudores">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Evolución de deudores</h4><p class="question">¿Cuántos alumnos deben, cuánto y cuál es su riesgo de retiro?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + Registro de cobranza</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Alumnos con deuda activa</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Monto total adeudado</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mayor mora</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Recuperación histórica</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Deudores por programa</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Programa × cantidad de deudores y monto adeudado</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--warning);"></span>Deuda por número de cuota</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">¿Dónde empieza la deuda? Cuota 1, 2, 3...</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle de deudores por programa</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa</th><th>Matriculados</th><th>Deudores</th><th>Monto adeudado</th><th>Contactados</th><th>Compromisos de pago</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Antigüedad de la deuda</h4><p class="question">¿Cuántos días en promedio se demoran en pagar los deudores?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Distribución de días de mora por rango</div>
+          <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Histograma</div><div class="sub">Rango de días × cantidad de alumnos y monto, por programa</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 4: RECUPERACIÓN -->
+      <div class="report-panel" id="panel-recuperacion">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Recuperación de cobranza</h4><p class="question">¿Cuál es la capacidad de recuperación de la deuda y a qué velocidad?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + Registro de cobranza</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">% Recuperado del periodo</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Velocidad de recuperación</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Deuda inicial del periodo</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Deudores contactados</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--success);"></span>Evolución de recuperación en el tiempo</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">📈</div><div class="label">Gráfico de líneas + barras combinado</div><div class="sub">Periodo × deuda inicial, recuperado y pendiente</div></div>
+          <div style="height:10px;"></div>
+          <p style="font-size:11px;color:var(--muted);font-style:italic;">⚠️ Nota pendiente de validar: revisar si la penalización por mora se aplica de forma consistente a todos los deudores.</p>
+        </div>
+      </div>
+
+      <!-- REPORT 5: RETIRADOS Y PÉRDIDAS -->
+      <div class="report-panel" id="panel-retirados">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Retirados por programa</h4><p class="question">¿Cuántos alumnos se retiran, de qué programas y cuánto ingreso representa la pérdida?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Total retirados</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Deserción</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Monto perdido total</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mayor deserción</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Retirados por programa</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Programa × matriculados, retirados, % deserción</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--warning);"></span>Motivos de retiro</div>
+              <div class="chart-placeholder"><div class="icon">🥧</div><div class="label">Gráfico circular</div><div class="sub">Motivo de retiro × cantidad, marcando si eran deudores</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Reportes de integración del bloque cobranza</h4><p class="question">¿Dónde se está perdiendo más dinero en todo el flujo financiero?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + META + Kommo</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Embudo financiero completo</div>
+          <div class="chart-placeholder" style="min-height:200px;"><div class="icon">⏬</div><div class="label">Gráfico de embudo financiero</div><div class="sub">Preinscritos → Matriculados → Pagaron 1era cuota → Entrenados → Certificados, con deudores y retirados marcados en cada etapa</div></div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Ingresos esperados vs. reales y pérdidas</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa</th><th>Ingreso esperado</th><th>Cobrado</th><th>Pendiente</th><th>Pérdida x matrícula</th><th>Pérdida x retiro</th><th>Pérdida x deuda</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-footer-nav">
+        <a class="footer-nav-link" href="cetlog_comercial.html">← Anterior: Comercial</a>
+        <a class="footer-nav-link" href="cetlog_academico.html">Siguiente: Académico →</a>
+      </div>
+
+      <div style="height:30px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showReport(id) {
+    document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+    const idx = ['preinscripcion','primeracuota','deudores','recuperacion','retirados'].indexOf(id);
+    document.querySelectorAll('.report-tab')[idx].classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

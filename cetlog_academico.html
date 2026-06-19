@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Bloque Académico </title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cetlog_shared.css">
+<style>
+  .block-hero.bh-academico { background: linear-gradient(135deg, #B45309 0%, #D97706 100%); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">CT</div>
+      <div class="logo-text"><strong>CETLOG</strong></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <a class="nav-item" href="cetlog_home.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+        Inicio
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Bloques</div>
+      <a class="nav-item" href="cetlog_comercial.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
+        Comercial<span class="nav-badge">6</span>
+      </a>
+      <a class="nav-item" href="cetlog_cobranza.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
+        Cobranza<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item active" href="cetlog_academico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
+        Académico<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_estrategico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+        Estratégico<span class="nav-badge">6</span>
+      </a>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="avatar">GE</div>
+        <div class="user-info"><strong>Gerencia</strong><span>Administrador</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <div class="topbar-crumb">
+          <a href="cetlog_home.html">Inicio</a>
+          <span class="sep">/</span>
+          <span class="current">Académico</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="period-selector">
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1v1H1.5A.5.5 0 0 0 1 2.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5H9V1H8v1H4V1H3zm-1 4h8v5H2V5z"/></svg>
+          Seleccionar período
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 5l3 3 3-3"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Notificaciones"><div class="notif-dot"></div>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 0 0-5 5v3l-1.5 2.5h13L13 9V6a5 5 0 0 0-5-5zm0 14a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2z"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Configuración">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 1h3l.5 2a5 5 0 0 1 1.2.7l2-.5 1.5 2.6-1.5 1.4a5 5 0 0 1 0 1.6l1.5 1.4-1.5 2.6-2-.5A5 5 0 0 1 10 13l-.5 2h-3L6 13a5 5 0 0 1-1.2-.7l-2 .5L1.3 10.2l1.5-1.4a5 5 0 0 1 0-1.6L1.3 5.8 2.8 3.2l2 .5A5 5 0 0 1 6 3L6.5 1zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="block-hero bh-academico">
+        <div class="block-hero-eyebrow">Bloque 03 · Bloque Académico</div>
+        <h2> ¿Qué ocurre dentro del laboratorio y cómo se relaciona con la retención y cobranza de los entrenados?</h2>
+        <p> Sistencia, participación y satisfacción en las sesiones. Calificaciones y certificaciones.</p>
+      </div>
+
+      <div class="integration-banner">
+        <div class="icon">🔗</div>
+        <div>
+          <h5>Fuentes conectadas</h5>
+          <p>Q10 (asistencia, notas, certificación) · Sistema interno (puntos de participación) · NPS (Encuestas de satisfacción)</p>
+        </div>
+      </div>
+
+      <div class="report-tabs">
+        <div class="report-tab active" onclick="showReport('asistencia')"><span class="tab-num">01</span> Asistencia y riesgo</div>
+        <div class="report-tab" onclick="showReport('participacion')"><span class="tab-num">02</span> Puntos de participación</div>
+        <div class="report-tab" onclick="showReport('satisfaccion')"><span class="tab-num">03</span> Satisfacción / NPS</div>
+        <div class="report-tab" onclick="showReport('notas')"><span class="tab-num">04</span> Notas de prueba</div>
+        <div class="report-tab" onclick="showReport('certificacion')"><span class="tab-num">05</span> Certificación y reingreso</div>
+      </div>
+
+      <!-- REPORT 1: ASISTENCIA Y RIESGO -->
+      <div class="report-panel active" id="panel-asistencia">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Asistencia por programa</h4><p class="question">¿Cuál es la asistencia general y por programa? ¿Cuántas faltas podrían llegar a predecir riesgo de retiro o de cobranza?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">% Asistencia promedio</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con menor asistencia</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Alumnos en zona de riesgo por faltas</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Faltas promedio antes de retiro</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--warning);"></span>Asistencia por programa</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Programa × % de asistencia promedio</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Asistencia vs. retiro/deuda</div>
+              <div class="chart-placeholder"><div class="icon">🔵</div><div class="label">Gráfico de dispersión (scatter)</div><div class="sub">% asistencia por alumno × estado (activo / retirado / con deuda)</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle de asistencia por programa</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa</th><th>Alumnos</th><th>% Asistencia</th><th>En riesgo (definir rango)</th><th>Retirados del periodo</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Umbral de faltas como señal de riesgo</h4><p class="question">¿A partir de cuántas faltas seguidas aumenta significativamente la probabilidad de retiro?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Distribución de faltas previas al retiro</div>
+          <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Histograma</div><div class="sub">Número de faltas consecutivas × cantidad de retirados, marcando el umbral de alerta</div></div>
+          <div style="height:10px;"></div>
+          <p style="font-size:11px;color:var(--muted);font-style:italic;">⚠️ Mi objetivo es que al final exista un relación modelable para poder alertar cuando un entrenado está en riesgo de retiro (falta tener en cuenta la cantidad de faltas que hace que se retire inmediatamente).</p>
+        </div>
+      </div>
+
+      <!-- REPORT 2: PUNTOS DE PARTICIPACIÓN -->
+      <div class="report-panel" id="panel-participacion">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Participación por programa y entrenador</h4><p class="question">¿Quién participa más, con qué calidad, y cómo varía por entrenador y programa?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Sistema interno</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Puntos promedio por alumno</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa más participativo</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Entrenador con mayor participación generada</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Alumnos sin participación registrada</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Participación por programa</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Programa × puntos promedio de participación</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Participación por entrenador</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras horizontales</div><div class="sub">Entrenador × puntos promedio generados en sus sesiones</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Participación vs. retiro y deuda</h4><p class="question">¿La calidad/cantidad de participación se relaciona con menor riesgo de retiro o de mora?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Sistema interno + Q10</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--success);"></span>Puntos de participación vs. estado del alumno</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">🔵</div><div class="label">Gráfico de dispersión (scatter)</div><div class="sub">Puntos de participación acumulados × estado (activo / retirado / con deuda / certificado)</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 3: SATISFACCIÓN / NPS -->
+      <div class="report-panel" id="panel-satisfaccion">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Satisfacción y NPS por programa y entrenador</h4><p class="question">¿Qué tan satisfechos están los alumnos? ¿Qué entrenadores y programas generan mejor experiencia?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Encuestas / NPS</span><span class="meta-tag freq">🔄 Por cohorte</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">NPS general</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa mejor calificado</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Entrenador mejor calificado</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Respuesta de encuestas</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--success);"></span>NPS por programa</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Programa × NPS y nota promedio de satisfacción</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Satisfacción por entrenador</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras horizontales</div><div class="sub">Entrenador × nota promedio en encuestas</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Top comentarios por categoría</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Categoría</th><th>Menciones</th><th>Sentimiento dominante</th><th>Programa relacionado</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Satisfacción vs. retiro y deuda</h4><p class="question">¿Los alumnos insatisfechos tienden más a retirarse o a acumular deuda?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Encuestas + Q10</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Nota de satisfacción vs. estado del alumno</div>
+          <div class="chart-placeholder"><div class="icon">🔵</div><div class="label">Gráfico de dispersión (scatter)</div><div class="sub">Nota de satisfacción × estado (activo / retirado / con deuda / certificado)</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 4: NOTAS DE PRUEBA -->
+      <div class="report-panel" id="panel-notas">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Rendimiento académico por programa</h4><p class="question">¿Cómo es el rendimiento en las pruebas y cómo varía por programa?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Por cohorte</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Nota promedio general</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mejor rendimiento</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Alumnos bajo nota mínima</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Mejora promedio prueba inicial → final</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Distribución de notas por programa</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">📊</div><div class="label">Boxplot / gráfico de cajas</div><div class="sub">Programa × distribución de notas de prueba (mínimo, promedio, máximo)</div></div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Notas vs. asistencia y participación</h4><p class="question">¿El rendimiento académico se explica por asistencia y/o participación?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + Sistema interno</span><span class="meta-tag freq">🔄 Por cohorte</span></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--warning);"></span>Nota vs. % asistencia</div>
+              <div class="chart-placeholder"><div class="icon">🔵</div><div class="label">Gráfico de dispersión</div><div class="sub">% asistencia × nota final, por alumno</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--success);"></span>Nota vs. puntos de participación</div>
+              <div class="chart-placeholder"><div class="icon">🔵</div><div class="label">Gráfico de dispersión</div><div class="sub">Puntos de participación × nota final, por alumno</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT 5: CERTIFICACIÓN Y REINGRESO -->
+      <div class="report-panel" id="panel-certificacion">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Certificación por programa</h4><p class="question">¿Qué porcentaje de alumnos certifica y cómo varía por programa y cohorte?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Por cohorte</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">% Certificación general</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mayor % certificación</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Certificados del periodo</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Certificados que reingresan</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--success);"></span>% Certificación por programa</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Programa × matriculados, entrenados y certificados</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--purple);"></span>Evolución de certificación por cohorte</div>
+              <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de líneas</div><div class="sub">Cohorte de ingreso × % certificación, en el tiempo</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Certificación vs. asistencia, participación y satisfacción</h4><p class="question">¿Qué tan bien predicen asistencia, participación y satisfacción la probabilidad de certificar?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + Sistema interno + Encuestas</span><span class="meta-tag freq">🔄 Por cohorte</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Comparativo de variables entre certificados y no certificados</div>
+          <div class="chart-placeholder" style="min-height:200px;"><div class="icon">📊</div><div class="label">Gráfico de barras agrupadas</div><div class="sub">% asistencia, puntos de participación y nota de satisfacción promedio: certificados vs. no certificados</div></div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Rutas académicas de reingreso</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa de origen</th><th>Certificados</th><th>Reingresan</th><th>Programa de reingreso más común</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-footer-nav">
+        <a class="footer-nav-link" href="cetlog_cobranza.html">← Anterior: Cobranza</a>
+        <a class="footer-nav-link" href="cetlog_estrategico.html">Siguiente: Estratégico →</a>
+      </div>
+
+      <div style="height:30px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showReport(id) {
+    document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+    const idx = ['asistencia','participacion','satisfaccion','notas','certificacion'].indexOf(id);
+    document.querySelectorAll('.report-tab')[idx].classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

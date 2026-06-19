@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estratégico · CETLOG Intelligence Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cetlog_shared.css">
+<style>
+  .block-hero.bh-estrategico { background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">CT</div>
+      <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <a class="nav-item" href="cetlog_home.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+        Inicio
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Bloques</div>
+      <a class="nav-item" href="cetlog_comercial.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
+        Comercial<span class="nav-badge">6</span>
+      </a>
+      <a class="nav-item" href="cetlog_cobranza.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
+        Cobranza<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_academico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
+        Académico<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item active" href="cetlog_estrategico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+        Estratégico<span class="nav-badge">6</span>
+      </a>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="avatar">GE</div>
+        <div class="user-info"><strong>Gerencia</strong><span>Administrador</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <div class="topbar-crumb">
+          <a href="cetlog_home.html">Inicio</a>
+          <span class="sep">/</span>
+          <span class="current">Estratégico</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="period-selector">
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1v1H1.5A.5.5 0 0 0 1 2.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5H9V1H8v1H4V1H3zm-1 4h8v5H2V5z"/></svg>
+          Seleccionar período
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 5l3 3 3-3"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Notificaciones"><div class="notif-dot"></div>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 0 0-5 5v3l-1.5 2.5h13L13 9V6a5 5 0 0 0-5-5zm0 14a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2z"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Configuración">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 1h3l.5 2a5 5 0 0 1 1.2.7l2-.5 1.5 2.6-1.5 1.4a5 5 0 0 1 0 1.6l1.5 1.4-1.5 2.6-2-.5A5 5 0 0 1 10 13l-.5 2h-3L6 13a5 5 0 0 1-1.2-.7l-2 .5L1.3 10.2l1.5-1.4a5 5 0 0 1 0-1.6L1.3 5.8 2.8 3.2l2 .5A5 5 0 0 1 6 3L6.5 1zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="block-hero bh-estrategico">
+        <div class="block-hero-eyebrow">Bloque 04 · Estratégico</div>
+        <h2>Visión cruzada, riesgo y proyecciones</h2>
+        <p>Cruce de todas las fuentes para anticipar comportamiento y rentabilidad. Fuentes: META, Kommo, Q10 y sistema interno, integrados.</p>
+        <div class="block-hero-meta">
+          <div><span class="num">6</span><span class="lbl">Reportes</span></div>
+          <div><span class="num">4</span><span class="lbl">Fuentes de datos</span></div>
+          <div><span class="num">24</span><span class="lbl">Variables clave</span></div>
+        </div>
+      </div>
+
+      <div class="integration-banner">
+        <div class="icon">🔗</div>
+        <div>
+          <h5>Fuentes conectadas a este bloque</h5>
+          <p>META Marketing API · Kommo CRM · Q10 · Sistema interno — vista integrada de todo el ciclo de vida</p>
+        </div>
+      </div>
+
+      <div class="report-tabs">
+        <div class="report-tab active" onclick="showReport('perfiles')"><span class="tab-num">01</span> Perfiles y proyecciones</div>
+        <div class="report-tab" onclick="showReport('roi')"><span class="tab-num">02</span> ROI por programa</div>
+        <div class="report-tab" onclick="showReport('cohortes')"><span class="tab-num">03</span> Cohortes de matrícula</div>
+        <div class="report-tab" onclick="showReport('riesgoretiro')"><span class="tab-num">04</span> Riesgo de retiro</div>
+        <div class="report-tab" onclick="showReport('riesgomora')"><span class="tab-num">05</span> Riesgo de mora</div>
+        <div class="report-tab" onclick="showReport('campanas')"><span class="tab-num">06</span> Evolución de campañas</div>
+      </div>
+
+      <!-- REPORT 1: PERFILES Y PROYECCIONES -->
+      <div class="report-panel active" id="panel-perfiles">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Perfil del lead a lo largo del ciclo de vida</h4><p class="question">¿Qué características de un lead (calidad, interés, demo) anticipan su comportamiento académico y financiero futuro?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Q10 + Sistema interno</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Perfil con mayor tasa de certificación</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Perfil con mayor tasa de reingreso</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Variable más predictiva de retiro</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Variable más predictiva de mora</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--purple);"></span>Ruta del lead: de la calidad inicial al resultado final</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">🔀</div><div class="label">Diagrama de flujo (sankey)</div><div class="sub">Calidad de lead → interés → demo → matrícula → resultado (certificado / retirado / con deuda / reingresante)</div></div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Proyección de prospección por perfil</h4><p class="question">¿Qué perfiles de lead conviene priorizar en campañas futuras según su probabilidad de éxito?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Q10 + Encuestas</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--success);"></span>Probabilidad de certificación por perfil</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Segmento de perfil × % estimado de certificación</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Tabla de perfiles prioritarios</div>
+              <div class="table-placeholder">
+                <table>
+                  <thead><tr><th>Perfil</th><th>Leads históricos</th><th>% Conversión</th><th>% Certificación</th></tr></thead>
+                  <tbody>
+                    <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT 2: ROI POR PROGRAMA -->
+      <div class="report-panel" id="panel-roi">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>ROI por programa</h4><p class="question">¿Qué programas son realmente rentables considerando publicidad, demos, entrenadores, plataformas y materiales?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META + Q10 + Sistema interno</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">ROI promedio general</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa más rentable</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa menos rentable</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Costo total estimado del periodo</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--purple);"></span>Costos reales/estimados vs. ingresos reales/estimados por programa</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">📊</div><div class="label">Gráfico de barras agrupadas</div><div class="sub">Programa × costo (publicidad, demo, entrenadores, plataformas, materiales) vs. ingreso cobrado</div></div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Desglose de costos por programa</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa</th><th>Publicidad</th><th>Demo</th><th>Entrenadores</th><th>Plataformas</th><th>Materiales</th><th>ROI</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="height:10px;"></div>
+          <p style="font-size:11px;color:var(--muted);font-style:italic;">⚠️ Reporte de fase 2: requiere consolidar costos estimados (entrenadores, plataformas, materiales) que hoy no están centralizados.</p>
+        </div>
+      </div>
+
+      <!-- REPORT 3: COHORTES DE MATRÍCULA -->
+      <div class="report-panel" id="panel-cohortes">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Evolución de cohortes de matrícula</h4><p class="question">¿Cómo evoluciona cada cohorte mensual de matriculados a lo largo de su ciclo de vida?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Cohorte con mejor retención</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Cohorte con mayor certificación</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Tamaño promedio de cohorte mensual</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Retención a 90 días</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--purple);"></span>Matriz de cohortes (retención en el tiempo)</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">🟦</div><div class="label">Heatmap de cohortes</div><div class="sub">Mes de matrícula × meses transcurridos, mostrando % de alumnos activos/certificados</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 4: RIESGO DE RETIRO -->
+      <div class="report-panel" id="panel-riesgoretiro">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Score de riesgo de retiro</h4><p class="question">¿Qué alumnos activos tienen mayor probabilidad de retirarse según su comportamiento actual?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + Sistema interno + Encuestas</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Alumnos en riesgo alto</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mayor riesgo promedio</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Precisión del score (histórico)</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Variable con mayor peso en el score</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Distribución de score de riesgo</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Histograma</div><div class="sub">Score de riesgo (bajo/medio/alto) × cantidad de alumnos activos</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Alumnos prioritarios para seguimiento</div>
+              <div class="table-placeholder">
+                <table>
+                  <thead><tr><th>Alumno</th><th>Programa</th><th>Score</th><th>Señal principal</th></tr></thead>
+                  <tbody>
+                    <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div style="height:10px;"></div>
+          <p style="font-size:11px;color:var(--muted);font-style:italic;">⚠️ Fase 1: reglas simples basadas en umbrales (asistencia, participación, satisfacción). Un modelo predictivo formal es un hito posterior.</p>
+        </div>
+      </div>
+
+      <!-- REPORT 5: RIESGO DE MORA -->
+      <div class="report-panel" id="panel-riesgomora">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Score de riesgo de mora</h4><p class="question">¿Qué alumnos matriculados tienen mayor probabilidad de caer en mora en las próximas cuotas?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Q10 + Registro de cobranza</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Alumnos en riesgo alto de mora</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mayor riesgo promedio</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Monto en riesgo proyectado</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Variable con mayor peso en el score</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--warning);"></span>Distribución de score de riesgo de mora</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">📊</div><div class="label">Histograma</div><div class="sub">Score de riesgo (bajo/medio/alto) × cantidad de alumnos y monto comprometido</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 6: EVOLUCIÓN DE CAMPAÑAS -->
+      <div class="report-panel" id="panel-campanas">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Evolución de campañas en el tiempo</h4><p class="question">¿Qué meses o semanas están más saturados de campañas? ¿Cómo se proyecta el calendario comercial?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META Marketing API + Kommo</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Mes más saturado de campañas</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Mes con mejor CPL histórico</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Campañas activas actualmente</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa con mayor estacionalidad</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--purple);"></span>Calendario de saturación de campañas</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">🟦</div><div class="label">Heatmap de calendario</div><div class="sub">Semana × mes, mostrando cantidad de campañas activas e intensidad de inversión</div></div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Proyección de prospección de programas</div>
+          <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de líneas con proyección</div><div class="sub">Programa × leads históricos y proyección de leads esperados en los próximos meses</div></div>
+        </div>
+      </div>
+
+      <div class="block-footer-nav">
+        <a class="footer-nav-link" href="cetlog_academico.html">← Anterior: Académico</a>
+        <a class="footer-nav-link" href="cetlog_home.html">Volver al inicio →</a>
+      </div>
+
+      <div style="height:30px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showReport(id) {
+    document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+    const idx = ['perfiles','roi','cohortes','riesgoretiro','riesgomora','campanas'].indexOf(id);
+    document.querySelectorAll('.report-tab')[idx].classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

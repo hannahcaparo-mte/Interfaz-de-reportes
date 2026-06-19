@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comercial · CETLOG Intelligence Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cetlog_shared.css">
+<style>
+  .block-hero.bh-comercial { background: linear-gradient(135deg, var(--navy) 0%, #2C3577 100%); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">CT</div>
+      <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <a class="nav-item" href="cetlog_home.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+        Inicio
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Bloques</div>
+      <a class="nav-item active" href="cetlog_comercial.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
+        Comercial<span class="nav-badge">6</span>
+      </a>
+      <a class="nav-item" href="cetlog_cobranza.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
+        Cobranza<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_academico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
+        Académico<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_estrategico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+        Estratégico<span class="nav-badge">6</span>
+      </a>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="avatar">GE</div>
+        <div class="user-info"><strong>Gerencia</strong><span>Administrador</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <div class="topbar-crumb">
+          <a href="cetlog_home.html">Inicio</a>
+          <span class="sep">/</span>
+          <span class="current">Comercial</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="period-selector">
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1v1H1.5A.5.5 0 0 0 1 2.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5H9V1H8v1H4V1H3zm-1 4h8v5H2V5z"/></svg>
+          Seleccionar período
+          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 5l3 3 3-3"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Notificaciones"><div class="notif-dot"></div>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 0 0-5 5v3l-1.5 2.5h13L13 9V6a5 5 0 0 0-5-5zm0 14a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2z"/></svg>
+        </div>
+        <div class="icon-btn" data-tip="Configuración">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 1h3l.5 2a5 5 0 0 1 1.2.7l2-.5 1.5 2.6-1.5 1.4a5 5 0 0 1 0 1.6l1.5 1.4-1.5 2.6-2-.5A5 5 0 0 1 10 13l-.5 2h-3L6 13a5 5 0 0 1-1.2-.7l-2 .5L1.3 10.2l1.5-1.4a5 5 0 0 1 0-1.6L1.3 5.8 2.8 3.2l2 .5A5 5 0 0 1 6 3L6.5 1zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="block-hero bh-comercial">
+        <div class="block-hero-eyebrow">Bloque 01 · Comercial</div>
+        <h2>Captación, seguimiento y conversión</h2>
+        <p>Desde el anuncio en META hasta la matrícula efectiva. Fuentes: META Ads, Kommo CRM y sistema interno de control comercial.</p>
+        <div class="block-hero-meta">
+          <div><span class="num">6</span><span class="lbl">Reportes</span></div>
+          <div><span class="num">3</span><span class="lbl">Fuentes de datos</span></div>
+          <div><span class="num">22</span><span class="lbl">Variables clave</span></div>
+        </div>
+      </div>
+
+      <div class="integration-banner">
+        <div class="icon">🔗</div>
+        <div>
+          <h5>Fuentes conectadas a este bloque</h5>
+          <p>META Marketing API · Kommo CRM API · Hoja de control comercial (Apps Script)</p>
+        </div>
+      </div>
+
+      <div class="report-tabs">
+        <div class="report-tab active" onclick="showReport('campanas')"><span class="tab-num">01</span> Campañas</div>
+        <div class="report-tab" onclick="showReport('contenido')"><span class="tab-num">02</span> Contenido</div>
+        <div class="report-tab" onclick="showReport('embudo')"><span class="tab-num">03</span> Embudo comercial</div>
+        <div class="report-tab" onclick="showReport('comerciales')"><span class="tab-num">04</span> Performance comercial</div>
+        <div class="report-tab" onclick="showReport('demos')"><span class="tab-num">05</span> Demos y activaciones</div>
+        <div class="report-tab" onclick="showReport('roas')"><span class="tab-num">06</span> ROAS y velocidad</div>
+      </div>
+
+      <!-- REPORT 1: CAMPAÑAS -->
+      <div class="report-panel active" id="panel-campanas">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Rendimiento de campañas</h4><p class="question">¿Qué campaña y qué programa generan más leads? ¿Cuál es el costo por lead?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Costo por lead (CPL)</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">CTR promedio</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Tasa Click → Lead</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Alcance por sol invertido</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-1-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Leads generados por campaña</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Campaña × Leads generados, ordenado de mayor a menor</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Leads por programa</div>
+              <div class="chart-placeholder"><div class="icon">🥧</div><div class="label">Gráfico circular</div><div class="sub">Distribución de leads por programa</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por campaña</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Campaña</th><th>Programa</th><th>Gasto</th><th>Alcance</th><th>Impresiones</th><th>Clicks</th><th>Leads</th><th>CPL</th><th>CPC</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Evolución temporal de campañas</h4><p class="question">¿Cómo evolucionan el gasto y los leads generados en el tiempo?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Tendencia: gasto y leads (agrupable por día / semana / mes)</div>
+          <div class="chart-placeholder" style="min-height:200px;"><div class="icon">📈</div><div class="label">Gráfico de líneas</div><div class="sub">Eje X: periodo (día/semana/mes) · Eje Y: gasto y leads generados (doble eje)</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 2: CONTENIDO -->
+      <div class="report-panel" id="panel-contenido">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Rendimiento de contenido</h4><p class="question">¿Qué tipo de contenido genera mejores resultados?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Tipo de contenido top</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Alcance promedio por pieza</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Tasa de reacción</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Leads por pieza de contenido</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Leads generados por tipo de contenido</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras horizontal</div><div class="sub">Video, imagen, carrusel, reel — comparación de leads</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Reacciones por contenido</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico apilado</div><div class="sub">Me gusta, comentarios, compartidos por pieza</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por contenido</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>ID Contenido</th><th>Tipo</th><th>Campaña</th><th>Programa</th><th>Alcance</th><th>Clicks</th><th>Leads</th><th>Reacciones</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Rendimiento por programa y aplicación</h4><p class="question">¿Qué programa rinde mejor según el tipo de aplicación de la campaña?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Programa × Aplicación, filtrable</div>
+          <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras agrupado + filtro</div><div class="sub">Comparación entre programas, filtrado por tipo de aplicación de campaña</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 3: EMBUDO COMERCIAL -->
+      <div class="report-panel" id="panel-embudo">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Embudo comercial</h4><p class="question">¿En qué etapa se pierden más los leads? ¿Cuáles son los cuellos de botella?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Sistema interno</span><span class="meta-tag freq">🔄 Diario</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">% Contactabilidad</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% De interés</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Descarte (lead closed)</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Leads pendientes en curso</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Embudo: Leads → Contactados → Interesados → Demo → Matriculados</div>
+          <div class="chart-placeholder" style="min-height:240px;"><div class="icon">⏬</div><div class="label">Gráfico de embudo (funnel)</div><div class="sub">Cada etapa muestra cantidad absoluta y % de conversión respecto a la etapa anterior, filtrable por programa</div></div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Embudo por programa</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Programa</th><th>Leads</th><th>Contactados</th><th>Interesados</th><th>No contestan</th><th>No interesados</th><th>% Contactab.</th><th>% Interés</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Motivos de no interés</h4><p class="question">¿Por qué se pierden las oportunidades comerciales?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo CRM</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Distribución de motivos</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Precio, horario, provincia, edad, carrera, no responde, trabajo</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Motivos por programa</div>
+              <div class="chart-placeholder"><div class="icon">🔲</div><div class="label">Mapa de calor (heatmap)</div><div class="sub">Cruce de programa × motivo de no interés</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Descuentos otorgados</h4><p class="question">¿Los descuentos definen la decisión de matrícula?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Sistema interno</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>% Descuento vs. tasa de conversión, por programa y comercial</div>
+          <div class="chart-placeholder"><div class="icon">⚬</div><div class="label">Gráfico de dispersión (scatter)</div><div class="sub">Eje X: % de descuento otorgado · Eje Y: tasa de conversión a matrícula</div></div>
+        </div>
+      </div>
+
+      <!-- REPORT 4: PERFORMANCE COMERCIAL -->
+      <div class="report-panel" id="panel-comerciales">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Rendimiento por comercial</h4><p class="question">¿Qué comercial tiene mayor productividad y mejor tasa de conversión?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Sistema interno</span><span class="meta-tag freq">🔄 Semanal</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Mejor tasa de contactabilidad</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Mejor tasa de conversión</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Tiempo promedio de llamada</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Comerciales que cumplen meta</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Ranking de comerciales</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">🏆</div><div class="label">Tabla-ranking con barras de progreso</div><div class="sub">Comercial ordenado por cumplimiento de meta diaria, con leads asignados / contactados / interesados</div></div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por comercial</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Comercial</th><th>Asignados</th><th>Contactados</th><th>Interesados</th><th>% Contactab.</th><th>% Interés</th><th>Tiempo prom. llamada</th><th>Descuentos otorgados</th><th>Meta</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Estado actual del pipeline</h4><p class="question">¿Cuántos leads hay en cada etapa del inventario comercial en este momento?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo CRM</span><span class="meta-tag freq">⚡ Tiempo real</span></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Distribución del pipeline</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras horizontal</div><div class="sub">Nuevo, contactado, pendiente, interesado, no interesado, sin respuesta</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Evolución comercial en el tiempo</div>
+              <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de líneas</div><div class="sub">Leads, contactados e interesados por semana/mes</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT 5: DEMOS Y ACTIVACIONES -->
+      <div class="report-panel" id="panel-demos">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Rendimiento de demos</h4><p class="question">¿Qué demos generan más interés, asistencia y matrículas?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Listas y registros</span><span class="meta-tag freq">📅 Por evento</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">Tasa de asistencia</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">% Matriculados post-demo</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Nota promedio de satisfacción</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Demo con mejor conversión</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="chart-grid-1-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Inscritos vs. asistentes vs. matriculados</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras agrupado</div><div class="sub">Por demo: inscritos, asistentes, matriculados</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Origen de inscritos</div>
+              <div class="chart-placeholder"><div class="icon">🥧</div><div class="label">Gráfico circular</div><div class="sub">Campaña independiente vs. seguimiento comercial</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por demo</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Demo</th><th>Programa</th><th>Fecha</th><th>Inscritos</th><th>Asistentes</th><th>% Asistencia</th><th>Matriculados</th><th>Ponente</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Activaciones</h4><p class="question">¿Qué activaciones generan más registros y conversión a matrícula?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Listas y registros</span><span class="meta-tag freq">📅 Por evento</span></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Registros por activación</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Activación × cantidad de registros generados</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Tiempo activación → matrícula</div>
+              <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de cajas (boxplot)</div><div class="sub">Distribución de días entre activación y matrícula</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Evaluación de ponentes</h4><p class="question">¿Qué expositores captan más interés comercial?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Encuestas + Sistema interno</span><span class="meta-tag freq">📅 Por demo</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Ranking de ponentes</div>
+          <div class="table-placeholder">
+            <table>
+              <thead><tr><th>Ponente</th><th>Demos realizadas</th><th>Asistentes totales</th><th>Nota promedio</th><th>Interesados</th><th>Matriculados</th></tr></thead>
+              <tbody>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT 6: ROAS Y VELOCIDAD -->
+      <div class="report-panel" id="panel-roas">
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>ROAS real por programa</h4><p class="question">¿Cuánto fue el retorno real considerando publicidad y demo?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META + Q10 + Sistema interno</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="kpi-row" style="margin-bottom:18px;">
+            <div class="kpi-mini"><div class="q">ROAS promedio</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Programa más rentable</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Gasto total (pub. + demo)</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Ingresos por matrícula</div><div class="placeholder-value"></div></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>ROAS por programa</div>
+          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">📊</div><div class="label">Gráfico de barras con línea de referencia</div><div class="sub">Programa × ROAS (Ingresos / Gasto), línea en ROAS = 1 como punto de equilibrio</div></div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Tiempo de conversión por fase</h4><p class="question">¿Qué programas necesitan más seguimiento? ¿Cuánto tarda cada etapa?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Q10</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Velocidad por etapa: Contacto → Interés → Decisión → Matrícula</div>
+          <div class="chart-placeholder" style="min-height:200px;"><div class="icon">⏱️</div><div class="label">Gráfico de barras apiladas horizontal (tipo Gantt)</div><div class="sub">Días promedio acumulados por programa, desglosado por fase del embudo</div></div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-card-header">
+            <div><h4>Cohortes y fuentes de matrícula</h4><p class="question">¿Qué fuente y campaña producen matriculados reales? ¿Cómo evoluciona cada cohorte?</p></div>
+            <div class="report-meta-tags"><span class="meta-tag source">META + Kommo + Q10</span><span class="meta-tag freq">🔄 Mensual</span></div>
+          </div>
+          <div class="chart-grid-2">
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Matriculados por fuente</div>
+              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Fuente del lead × matriculados reales</div></div>
+            </div>
+            <div>
+              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Cohortes mensuales</div>
+              <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de líneas múltiples</div><div class="sub">Mes de ingreso × leads, matriculados y ROAS</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-footer-nav">
+        <a class="footer-nav-link" href="cetlog_home.html">← Volver al inicio</a>
+        <a class="footer-nav-link" href="cetlog_cobranza.html">Siguiente: Cobranza →</a>
+      </div>
+
+      <div style="height:30px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showReport(id) {
+    document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+    const idx = ['campanas','contenido','embudo','comerciales','demos','roas'].indexOf(id);
+    document.querySelectorAll('.report-tab')[idx].classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
