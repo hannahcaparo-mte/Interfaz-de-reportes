@@ -290,23 +290,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
     <!-- HERO -->
     <div class="block-hero">
-    
-      <div class="bh-title">Bloque Comercial: Campañas y conversión a ventas</div>
+            <div class="bh-title">Bloque Comercial: Captación, seguimiento y conversión</div>
       
       <div class="bh-meta">
         
-              </div>
+      </div>
     </div>
 
     <!-- TABS -->
     <div class="report-tabs">
-      <div class="rtab active" onclick="showTab('campanas')"><span class="dot"></span><span class="tn">01</span> Campañas activas</div>
-      <div class="rtab" onclick="showTab('contenido')"><span class="dot"></span><span class="tn">02</span> Contenido</div>
-      <div class="rtab" onclick="showTab('embudo')"><span class="dot"></span><span class="tn">03</span> Embudo comercial</div>
-      <div class="rtab" onclick="showTab('performance')"><span class="dot"></span><span class="tn">04</span> Performance</div>
-      <div class="rtab" onclick="showTab('demos')"><span class="dot"></span><span class="tn">05</span> Demos</div>
-      <div class="rtab" onclick="showTab('roas')"><span class="dot"></span><span class="tn">06</span> ROAS y velocidad</div>
-      <div class="rtab" onclick="showTab('historico')"><span class="dot"></span><span class="tn">07</span> Histórico</div>
+      <div class="rtab active" onclick="showTab('Campanas Activas')"><span class="dot"></span><span class="tn">01</span> Campañas activas</div>
+      <div class="rtab" onclick="showTab('Contenido')"><span class="dot"></span><span class="tn">02</span> Contenido</div>
+      <div class="rtab" onclick="showTab('Embudo comercial')"><span class="dot"></span><span class="tn">03</span> Embudo comercial</div>
+      <div class="rtab" onclick="showTab('Performance')"><span class="dot"></span><span class="tn">04</span> Performance</div>
+      <div class="rtab" onclick="showTab('Demos')"><span class="dot"></span><span class="tn">05</span> Demos</div>
+      <div class="rtab" onclick="showTab('ROAS')"><span class="dot"></span><span class="tn">06</span> ROAS y velocidad</div>
+      <div class="rtab" onclick="showTab('Historico')"><span class="dot"></span><span class="tn">07</span> Histórico</div>
     </div>
 
     <!-- ══ TAB 01: CAMPAÑAS ACTIVAS ══════════════════════ -->
@@ -594,11 +593,16 @@ function csvUrl(tab) {
 }
 
 async function fetchTab(tab) {
-  const res = await fetch(csvUrl(tab));
-  if (!res.ok) return [];
-  const text = await res.text();
-  const { data } = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true });
-  return data;
+  try {
+    const res = await fetch(csvUrl(tab));
+    if (!res.ok) return [];
+    const text = await res.text();
+    if (!text || text.trim().length === 0) return [];
+    const { data } = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true });
+    return Array.isArray(data) ? data : [];
+  } catch(e) {
+    return [];
+  }
 }
 
 async function refreshAll() {
@@ -609,18 +613,20 @@ async function refreshAll() {
   btn.textContent = '↻ Actualizando…';
   setStatus('Actualizando…');
 
-  try {
-    const results = await Promise.all(TABS.map(t => fetchTab(t)));
-    TABS.forEach((t, i) => { DB[t] = results[i]; });
-    renderAll();
+  const results = await Promise.all(TABS.map(t => fetchTab(t)));
+  TABS.forEach((t, i) => { DB[t] = results[i]; });
+  renderAll();
+
+  const totalFilas = results.reduce((s, r) => s + r.length, 0);
+  if (totalFilas === 0) {
+    setStatus('Conectado — hojas vacías, agrega datos al Sheet', 'ok');
+  } else {
     setStatus('Actualizado ' + new Date().toLocaleTimeString('es-PE'), 'ok');
-  } catch(e) {
-    setStatus('Error al conectar con Google Sheets', 'err');
-  } finally {
-    isLoading = false;
-    btn.classList.remove('spin');
-    btn.textContent = '↻ Actualizar';
   }
+
+  isLoading = false;
+  btn.classList.remove('spin');
+  btn.textContent = '↻ Actualizar';
 }
 
 function setStatus(msg, type) {
