@@ -4,438 +4,1068 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comercial · CETLOG Intelligence Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="cetlog_shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  .block-hero.bh-comercial { background: linear-gradient(135deg, var(--navy) 0%, #2C3577 100%); }
+/* ══ TOKENS ══════════════════════════════════════════════ */
+:root{
+  --navy:#1D245C;--navy-mid:#252D7A;--navy-dim:#1D245C18;
+  --orange:#F68A0A;--orange-bg:#FEF3DC;--orange-tx:#B45309;
+  --success:#10B981;--success-bg:#D1FAE5;--success-tx:#065F46;
+  --warning:#F59E0B;--warning-bg:#FEF3C7;--warning-tx:#92400E;
+  --danger:#EF4444;--danger-bg:#FEE2E2;--danger-tx:#991B1B;
+  --purple:#7C3AED;--purple-bg:#EDE9FE;--purple-tx:#5B21B6;
+  --bg:#F8FAFC;--card:#FFFFFF;--border:#E5E7EB;
+  --text:#111827;--muted:#64748B;--subtle:#9CA3AF;
+  --sidebar-w:220px;--topbar-h:60px;
+  --radius:10px;--shadow:0 1px 4px #1D245C0a;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0F1117;--card:#1A1D27;--border:#2D3148;
+    --text:#F1F1F8;--muted:#8B8FAE;--subtle:#555870;
+    --navy-dim:#3D459655;
+    --success-bg:#0A2D1F;--success-tx:#34D399;
+    --warning-bg:#2D1F07;--warning-tx:#FBBF24;
+    --danger-bg:#2D0A0A;--danger-tx:#F87171;
+    --orange-bg:#2D1A00;--orange-tx:#FBA826;
+    --purple-bg:#1E1040;--purple-tx:#A78BFA;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ══ LAYOUT ══════════════════════════════════════════════ */
+.layout{display:flex;height:100vh;overflow:hidden}
+
+/* ══ SIDEBAR ═════════════════════════════════════════════ */
+.sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:fixed;left:0;top:0;z-index:100}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid #ffffff14;display:flex;align-items:center;gap:10px}
+.logo-mark{width:34px;height:34px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0}
+.logo-text strong{display:block;color:#fff;font-size:13px;font-weight:700}
+.logo-text span{color:#ffffff60;font-size:10px}
+.sidebar-section{padding:16px 12px 8px}
+.sidebar-section-label{font-size:9px;font-weight:600;color:#ffffff38;text-transform:uppercase;letter-spacing:.1em;padding:0 8px;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;cursor:pointer;color:#ffffffa0;font-size:13px;font-weight:500;transition:all .15s;text-decoration:none;margin-bottom:1px}
+.nav-item:hover{background:#ffffff12;color:#fff}
+.nav-item.active{background:#ffffff1a;color:#fff}
+.nav-item.active .nav-icon{color:var(--orange)}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
+.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid #ffffff14}
+.user-pill{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer}
+.user-pill:hover{background:#ffffff12}
+.avatar{width:28px;height:28px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.user-info strong{display:block;color:#fff;font-size:12px;font-weight:600}
+.user-info span{color:#ffffff50;font-size:10px}
+
+/* ══ MAIN ════════════════════════════════════════════════ */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ══ TOPBAR ══════════════════════════════════════════════ */
+.topbar{height:var(--topbar-h);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0}
+.topbar-crumb{flex:1;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.topbar-crumb a{color:var(--muted);text-decoration:none}
+.topbar-crumb a:hover{color:var(--navy)}
+.topbar-crumb .sep{opacity:.5}
+.topbar-crumb .cur{color:var(--text);font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.sync-status{font-size:11px;color:var(--subtle);white-space:nowrap}
+.sync-status.err{color:var(--danger-tx)}
+.sync-status.ok{color:var(--success-tx)}
+.btn-refresh{font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-refresh:hover{border-color:var(--navy);color:var(--navy)}
+.btn-refresh.spin{opacity:.6;pointer-events:none}
+
+/* ══ CONTENT ═════════════════════════════════════════════ */
+.content{flex:1;overflow-y:auto;padding:24px 28px}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ══ BLOCK HERO ══════════════════════════════════════════ */
+.block-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:14px;padding:24px 28px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden}
+.block-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:#fff;border-radius:50%;opacity:.05}
+.bh-eye{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.65;margin-bottom:8px}
+.bh-title{font-size:21px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px}
+.bh-sub{font-size:12px;opacity:.72;margin-bottom:14px;line-height:1.5}
+.bh-meta{display:flex;gap:20px;flex-wrap:wrap}
+.bh-meta div{display:flex;flex-direction:column;gap:2px}
+.bh-meta .n{font-size:18px;font-weight:700}
+.bh-meta .l{font-size:10px;opacity:.65;text-transform:uppercase;letter-spacing:.06em}
+
+/* ══ REPORT TABS ═════════════════════════════════════════ */
+.report-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.rtab{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.rtab:hover{border-color:var(--navy);color:var(--navy)}
+.rtab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.rtab .tn{font-size:9px;opacity:.6}
+.rtab .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;display:none}
+.rtab.active .dot{display:block;background:#6EE7B7}
+
+/* ══ REPORT PANELS ═══════════════════════════════════════ */
+.rpanel{display:none}
+.rpanel.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ CARDS ═══════════════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.card-sub{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:16px}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.meta-tags{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.mtag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px}
+.mtag.src{background:var(--navy-dim);color:var(--navy)}
+.mtag.frq{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+
+/* ══ KPI ROW ═════════════════════════════════════════════ */
+.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.kpi .kl{font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.3;min-height:28px}
+.kpi .kv{font-size:20px;font-weight:700;color:var(--text);line-height:1}
+.kpi .ks{font-size:11px;color:var(--subtle);margin-top:3px}
+.kpi.k-navy .kv{color:var(--navy)}
+.kpi.k-orange .kv{color:var(--orange-tx)}
+.kpi.k-success .kv{color:var(--success-tx)}
+.kpi.k-danger{background:var(--danger-bg)}.kpi.k-danger .kl,.kpi.k-danger .kv,.kpi.k-danger .ks{color:var(--danger-tx)}
+.kpi.k-warning{background:var(--warning-bg)}.kpi.k-warning .kl,.kpi.k-warning .kv,.kpi.k-warning .ks{color:var(--warning-tx)}
+
+/* ══ CHARTS (placeholders + reales) ══════════════════════ */
+.chart-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:4px}
+.chart-grid-1-2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:4px}
+.viz-label{font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.viz-label .dot{width:6px;height:6px;border-radius:50%}
+.chart-ph{background:var(--bg);border:1.5px dashed var(--border);border-radius:8px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted)}
+.chart-ph .ci{font-size:24px;opacity:.4}
+.chart-ph .cl{font-size:12px;font-weight:600}
+.chart-ph .cs{font-size:11px;opacity:.7;max-width:280px;text-align:center;line-height:1.4}
+
+/* ══ BUDGET BAR ══════════════════════════════════════════ */
+.budget-wrap{margin-bottom:16px}
+.budget-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.budget-amounts{display:flex;gap:18px;flex-wrap:wrap}
+.ba{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.ba .bl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.ba .bv{font-size:14px;font-weight:700;color:var(--text)}
+.ba.ok .bv{color:var(--success-tx)}
+.ba.warn .bv{color:var(--warning-tx)}
+.ba.danger .bv{color:var(--danger-tx)}
+.prog-track{height:14px;background:var(--bg);border-radius:7px;overflow:hidden;border:1px solid var(--border);margin-bottom:5px}
+.prog-fill{height:100%;border-radius:7px;transition:width .6s ease;background:var(--navy)}
+.prog-fill.almost{background:var(--warning)}
+.prog-fill.over{background:var(--danger)}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+/* ══ DUAL BAR (inscritos/meta) ════════════════════════════ */
+.dual-track{height:18px;background:var(--bg);border-radius:9px;overflow:hidden;border:1px solid var(--border);display:flex}
+.dual-in{height:100%;transition:width .5s ease;display:flex;align-items:center;padding-left:8px;flex-shrink:0}
+.dual-in span{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden}
+.dual-pend{flex:1;display:flex;align-items:center;padding-left:8px}
+.dual-pend span{font-size:11px;color:var(--muted)}
+.prog-row{margin-bottom:12px}
+.prog-row:last-child{margin-bottom:0}
+.prog-row-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.prog-name{font-size:12px;font-weight:600;color:var(--text)}
+.prog-nums{font-size:12px;color:var(--muted)}
+.prog-nums b{color:var(--text);font-weight:600}
+
+/* ══ LEAD BARS ═══════════════════════════════════════════ */
+.lead-bars{display:flex;flex-direction:column;gap:10px}
+.lbrow{display:flex;align-items:center;gap:10px}
+.lbl-lbl{font-size:12px;color:var(--muted);min-width:70px}
+.lbtrack{flex:1;height:24px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--border);position:relative}
+.lbfill{height:100%;border-radius:6px;transition:width .5s ease;display:flex;align-items:center;padding-left:8px}
+.lbfill span{font-size:12px;font-weight:600;color:#fff;white-space:nowrap}
+.lbnum{font-size:12px;font-weight:600;color:var(--text);min-width:32px;text-align:right}
+
+/* ══ TABLE ═══════════════════════════════════════════════ */
+.tbl-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:4px}
+.tbl-wrap table{width:100%;border-collapse:collapse}
+.tbl-wrap th{background:var(--bg);text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:9px 12px;border-bottom:1px solid var(--border)}
+.tbl-wrap td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text)}
+.tbl-wrap tr:last-child td{border-bottom:none}
+.tbl-wrap tr:hover td{background:var(--bg)}
+.td-muted{color:var(--muted)}
+.td-bold{font-weight:600}
+
+/* ══ TASA DE CIERRE BAR ══════════════════════════════════ */
+.cierre-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.cierre-meta .cl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.cierre-meta .cv{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.cierre-meta .cs{font-size:11px;color:var(--muted);margin-top:2px}
+.cierre-bar-wrap{flex:1;min-width:180px}
+.cierre-track{height:26px;background:var(--bg);border-radius:13px;overflow:hidden;border:1px solid var(--border)}
+.cierre-fill{height:100%;border-radius:13px;display:flex;align-items:center;padding:0 12px;transition:width .6s ease}
+.cierre-fill span{font-size:13px;font-weight:700;color:#fff}
+.cierre-bottom{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px}
+
+/* ══ PILLS / BADGES ══════════════════════════════════════ */
+.pill{font-size:10px;font-weight:600;padding:3px 9px;border-radius:5px;white-space:nowrap;display:inline-block}
+.pill-ok{background:var(--success-bg);color:var(--success-tx)}
+.pill-warn{background:var(--warning-bg);color:var(--warning-tx)}
+.pill-danger{background:var(--danger-bg);color:var(--danger-tx)}
+.pill-navy{background:var(--navy-dim);color:var(--navy)}
+
+/* ══ ALERTA ══════════════════════════════════════════════ */
+.alerta{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--danger-bg);border:1px solid var(--danger-tx)40;border-radius:8px;margin-top:12px;font-size:12px;color:var(--danger-tx);line-height:1.5}
+
+/* ══ FOOTER NAV ══════════════════════════════════════════ */
+.footer-nav{display:flex;justify-content:space-between;margin-top:28px;padding-top:18px;border-top:1px solid var(--border)}
+.fnav-link{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:8px;border:1px solid var(--border);transition:all .15s}
+.fnav-link:hover{border-color:var(--navy);color:var(--navy)}
+
+/* ══ EMPTY / LOADING ═════════════════════════════════════ */
+.data-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:12px;border:1px dashed var(--border);border-radius:8px}
+.loading-row{display:flex;gap:8px;align-items:center;padding:20px;color:var(--muted);font-size:12px}
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:680px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .chart-grid-2,.chart-grid-1-2{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div class="layout">
 
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">CT</div>
-      <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Principal</div>
-      <a class="nav-item" href="cetlog_home.html">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
-        Inicio
-      </a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">Bloques</div>
-      <a class="nav-item active" href="cetlog_comercial.html">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
-        Comercial<span class="nav-badge">6</span>
-      </a>
-      <a class="nav-item" href="cetlog_cobranza.html">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
-        Cobranza<span class="nav-badge">5</span>
-      </a>
-      <a class="nav-item" href="cetlog_academico.html">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
-        Académico<span class="nav-badge">5</span>
-      </a>
-      <a class="nav-item" href="cetlog_estrategico.html">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
-        Estratégico<span class="nav-badge">6</span>
-      </a>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="user-pill">
-        <div class="avatar">GE</div>
-        <div class="user-info"><strong>Gerencia</strong><span>Administrador</span></div>
-      </div>
-    </div>
-  </aside>
-
-  <div class="main">
-    <header class="topbar">
-      <div class="topbar-title">
-        <div class="topbar-crumb">
-          <a href="cetlog_home.html">Inicio</a>
-          <span class="sep">/</span>
-          <span class="current">Comercial</span>
-        </div>
-      </div>
-      <div class="topbar-actions">
-        <div class="period-selector">
-          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1v1H1.5A.5.5 0 0 0 1 2.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5H9V1H8v1H4V1H3zm-1 4h8v5H2V5z"/></svg>
-          Seleccionar período
-          <svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 5l3 3 3-3"/></svg>
-        </div>
-        <div class="icon-btn" data-tip="Notificaciones"><div class="notif-dot"></div>
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 0 0-5 5v3l-1.5 2.5h13L13 9V6a5 5 0 0 0-5-5zm0 14a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2z"/></svg>
-        </div>
-        <div class="icon-btn" data-tip="Configuración">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 1h3l.5 2a5 5 0 0 1 1.2.7l2-.5 1.5 2.6-1.5 1.4a5 5 0 0 1 0 1.6l1.5 1.4-1.5 2.6-2-.5A5 5 0 0 1 10 13l-.5 2h-3L6 13a5 5 0 0 1-1.2-.7l-2 .5L1.3 10.2l1.5-1.4a5 5 0 0 1 0-1.6L1.3 5.8 2.8 3.2l2 .5A5 5 0 0 1 6 3L6.5 1zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
-        </div>
-      </div>
-    </header>
-
-    <div class="content">
-
-      <div class="block-hero bh-comercial">
-        <div class="block-hero-eyebrow">Bloque 01 · Comercial</div>
-        <h2>Captación, seguimiento y conversión</h2>
-        <p>Desde el anuncio en META hasta la matrícula efectiva. Fuentes: META Ads, Kommo CRM y sistema interno de control comercial.</p>
-        <div class="block-hero-meta">
-          <div><span class="num">6</span><span class="lbl">Reportes</span></div>
-          <div><span class="num">3</span><span class="lbl">Fuentes de datos</span></div>
-          <div><span class="num">22</span><span class="lbl">Variables clave</span></div>
-        </div>
-      </div>
-
-      <div class="integration-banner">
-        <div class="icon">🔗</div>
-        <div>
-          <h5>Fuentes conectadas a este bloque</h5>
-          <p>META Marketing API · Kommo CRM API · Hoja de control comercial (Apps Script)</p>
-        </div>
-      </div>
-
-      <div class="report-tabs">
-        <div class="report-tab active" onclick="showReport('campanas')"><span class="tab-num">01</span> Campañas</div>
-        <div class="report-tab" onclick="showReport('contenido')"><span class="tab-num">02</span> Contenido</div>
-        <div class="report-tab" onclick="showReport('embudo')"><span class="tab-num">03</span> Embudo comercial</div>
-        <div class="report-tab" onclick="showReport('comerciales')"><span class="tab-num">04</span> Performance comercial</div>
-        <div class="report-tab" onclick="showReport('demos')"><span class="tab-num">05</span> Demos y activaciones</div>
-        <div class="report-tab" onclick="showReport('roas')"><span class="tab-num">06</span> ROAS y velocidad</div>
-      </div>
-
-      <!-- REPORT 1: CAMPAÑAS -->
-      <div class="report-panel active" id="panel-campanas">
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Rendimiento de campañas</h4><p class="question">¿Qué campaña y qué programa generan más leads? ¿Cuál es el costo por lead?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Diario</span></div>
-          </div>
-          <div class="kpi-row" style="margin-bottom:18px;">
-            <div class="kpi-mini"><div class="q">Costo por lead (CPL)</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">CTR promedio</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Tasa Click → Lead</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Alcance por sol invertido</div><div class="placeholder-value"></div></div>
-          </div>
-          <div class="chart-grid-1-2">
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Leads generados por campaña</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Campaña × Leads generados, ordenado de mayor a menor</div></div>
-            </div>
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Leads por programa</div>
-              <div class="chart-placeholder"><div class="icon">🥧</div><div class="label">Gráfico circular</div><div class="sub">Distribución de leads por programa</div></div>
-            </div>
-          </div>
-          <div style="height:16px;"></div>
-          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por campaña</div>
-          <div class="table-placeholder">
-            <table>
-              <thead><tr><th>Campaña</th><th>Programa</th><th>Gasto</th><th>Alcance</th><th>Impresiones</th><th>Clicks</th><th>Leads</th><th>CPL</th><th>CPC</th></tr></thead>
-              <tbody>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Evolución temporal de campañas</h4><p class="question">¿Cómo evolucionan el gasto y los leads generados en el tiempo?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Diario</span></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Tendencia: gasto y leads (agrupable por día / semana / mes)</div>
-          <div class="chart-placeholder" style="min-height:200px;"><div class="icon">📈</div><div class="label">Gráfico de líneas</div><div class="sub">Eje X: periodo (día/semana/mes) · Eje Y: gasto y leads generados (doble eje)</div></div>
-        </div>
-      </div>
-
-      <!-- REPORT 2: CONTENIDO -->
-      <div class="report-panel" id="panel-contenido">
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Rendimiento de contenido</h4><p class="question">¿Qué tipo de contenido genera mejores resultados?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Diario</span></div>
-          </div>
-          <div class="kpi-row" style="margin-bottom:18px;">
-            <div class="kpi-mini"><div class="q">Tipo de contenido top</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Alcance promedio por pieza</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Tasa de reacción</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Leads por pieza de contenido</div><div class="placeholder-value"></div></div>
-          </div>
-          <div class="chart-grid-2">
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Leads generados por tipo de contenido</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras horizontal</div><div class="sub">Video, imagen, carrusel, reel — comparación de leads</div></div>
-            </div>
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Reacciones por contenido</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico apilado</div><div class="sub">Me gusta, comentarios, compartidos por pieza</div></div>
-            </div>
-          </div>
-          <div style="height:16px;"></div>
-          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por contenido</div>
-          <div class="table-placeholder">
-            <table>
-              <thead><tr><th>ID Contenido</th><th>Tipo</th><th>Campaña</th><th>Programa</th><th>Alcance</th><th>Clicks</th><th>Leads</th><th>Reacciones</th></tr></thead>
-              <tbody>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Rendimiento por programa y aplicación</h4><p class="question">¿Qué programa rinde mejor según el tipo de aplicación de la campaña?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">META Ads API</span><span class="meta-tag freq">🔄 Semanal</span></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Programa × Aplicación, filtrable</div>
-          <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras agrupado + filtro</div><div class="sub">Comparación entre programas, filtrado por tipo de aplicación de campaña</div></div>
-        </div>
-      </div>
-
-      <!-- REPORT 3: EMBUDO COMERCIAL -->
-      <div class="report-panel" id="panel-embudo">
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Embudo comercial</h4><p class="question">¿En qué etapa se pierden más los leads? ¿Cuáles son los cuellos de botella?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Sistema interno</span><span class="meta-tag freq">🔄 Diario</span></div>
-          </div>
-          <div class="kpi-row" style="margin-bottom:18px;">
-            <div class="kpi-mini"><div class="q">% Contactabilidad</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">% De interés</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">% Descarte (lead closed)</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Leads pendientes en curso</div><div class="placeholder-value"></div></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Embudo: Leads → Contactados → Interesados → Demo → Matriculados</div>
-          <div class="chart-placeholder" style="min-height:240px;"><div class="icon">⏬</div><div class="label">Gráfico de embudo (funnel)</div><div class="sub">Cada etapa muestra cantidad absoluta y % de conversión respecto a la etapa anterior, filtrable por programa</div></div>
-          <div style="height:16px;"></div>
-          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Embudo por programa</div>
-          <div class="table-placeholder">
-            <table>
-              <thead><tr><th>Programa</th><th>Leads</th><th>Contactados</th><th>Interesados</th><th>No contestan</th><th>No interesados</th><th>% Contactab.</th><th>% Interés</th></tr></thead>
-              <tbody>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Motivos de no interés</h4><p class="question">¿Por qué se pierden las oportunidades comerciales?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Kommo CRM</span><span class="meta-tag freq">🔄 Semanal</span></div>
-          </div>
-          <div class="chart-grid-2">
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Distribución de motivos</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Precio, horario, provincia, edad, carrera, no responde, trabajo</div></div>
-            </div>
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Motivos por programa</div>
-              <div class="chart-placeholder"><div class="icon">🔲</div><div class="label">Mapa de calor (heatmap)</div><div class="sub">Cruce de programa × motivo de no interés</div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Descuentos otorgados</h4><p class="question">¿Los descuentos definen la decisión de matrícula?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Sistema interno</span><span class="meta-tag freq">🔄 Semanal</span></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>% Descuento vs. tasa de conversión, por programa y comercial</div>
-          <div class="chart-placeholder"><div class="icon">⚬</div><div class="label">Gráfico de dispersión (scatter)</div><div class="sub">Eje X: % de descuento otorgado · Eje Y: tasa de conversión a matrícula</div></div>
-        </div>
-      </div>
-
-      <!-- REPORT 4: PERFORMANCE COMERCIAL -->
-      <div class="report-panel" id="panel-comerciales">
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Rendimiento por comercial</h4><p class="question">¿Qué comercial tiene mayor productividad y mejor tasa de conversión?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Sistema interno</span><span class="meta-tag freq">🔄 Semanal</span></div>
-          </div>
-          <div class="kpi-row" style="margin-bottom:18px;">
-            <div class="kpi-mini"><div class="q">Mejor tasa de contactabilidad</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Mejor tasa de conversión</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Tiempo promedio de llamada</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Comerciales que cumplen meta</div><div class="placeholder-value"></div></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Ranking de comerciales</div>
-          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">🏆</div><div class="label">Tabla-ranking con barras de progreso</div><div class="sub">Comercial ordenado por cumplimiento de meta diaria, con leads asignados / contactados / interesados</div></div>
-          <div style="height:16px;"></div>
-          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por comercial</div>
-          <div class="table-placeholder">
-            <table>
-              <thead><tr><th>Comercial</th><th>Asignados</th><th>Contactados</th><th>Interesados</th><th>% Contactab.</th><th>% Interés</th><th>Tiempo prom. llamada</th><th>Descuentos otorgados</th><th>Meta</th></tr></thead>
-              <tbody>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Estado actual del pipeline</h4><p class="question">¿Cuántos leads hay en cada etapa del inventario comercial en este momento?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Kommo CRM</span><span class="meta-tag freq">⚡ Tiempo real</span></div>
-          </div>
-          <div class="chart-grid-2">
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Distribución del pipeline</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras horizontal</div><div class="sub">Nuevo, contactado, pendiente, interesado, no interesado, sin respuesta</div></div>
-            </div>
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Evolución comercial en el tiempo</div>
-              <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de líneas</div><div class="sub">Leads, contactados e interesados por semana/mes</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- REPORT 5: DEMOS Y ACTIVACIONES -->
-      <div class="report-panel" id="panel-demos">
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Rendimiento de demos</h4><p class="question">¿Qué demos generan más interés, asistencia y matrículas?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Listas y registros</span><span class="meta-tag freq">📅 Por evento</span></div>
-          </div>
-          <div class="kpi-row" style="margin-bottom:18px;">
-            <div class="kpi-mini"><div class="q">Tasa de asistencia</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">% Matriculados post-demo</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Nota promedio de satisfacción</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Demo con mejor conversión</div><div class="placeholder-value"></div></div>
-          </div>
-          <div class="chart-grid-1-2">
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Inscritos vs. asistentes vs. matriculados</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras agrupado</div><div class="sub">Por demo: inscritos, asistentes, matriculados</div></div>
-            </div>
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Origen de inscritos</div>
-              <div class="chart-placeholder"><div class="icon">🥧</div><div class="label">Gráfico circular</div><div class="sub">Campaña independiente vs. seguimiento comercial</div></div>
-            </div>
-          </div>
-          <div style="height:16px;"></div>
-          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle por demo</div>
-          <div class="table-placeholder">
-            <table>
-              <thead><tr><th>Demo</th><th>Programa</th><th>Fecha</th><th>Inscritos</th><th>Asistentes</th><th>% Asistencia</th><th>Matriculados</th><th>Ponente</th></tr></thead>
-              <tbody>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Activaciones</h4><p class="question">¿Qué activaciones generan más registros y conversión a matrícula?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Listas y registros</span><span class="meta-tag freq">📅 Por evento</span></div>
-          </div>
-          <div class="chart-grid-2">
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Registros por activación</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Activación × cantidad de registros generados</div></div>
-            </div>
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Tiempo activación → matrícula</div>
-              <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de cajas (boxplot)</div><div class="sub">Distribución de días entre activación y matrícula</div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Evaluación de ponentes</h4><p class="question">¿Qué expositores captan más interés comercial?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Encuestas + Sistema interno</span><span class="meta-tag freq">📅 Por demo</span></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Ranking de ponentes</div>
-          <div class="table-placeholder">
-            <table>
-              <thead><tr><th>Ponente</th><th>Demos realizadas</th><th>Asistentes totales</th><th>Nota promedio</th><th>Interesados</th><th>Matriculados</th></tr></thead>
-              <tbody>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- REPORT 6: ROAS Y VELOCIDAD -->
-      <div class="report-panel" id="panel-roas">
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>ROAS real por programa</h4><p class="question">¿Cuánto fue el retorno real considerando publicidad y demo?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">META + Q10 + Sistema interno</span><span class="meta-tag freq">🔄 Mensual</span></div>
-          </div>
-          <div class="kpi-row" style="margin-bottom:18px;">
-            <div class="kpi-mini"><div class="q">ROAS promedio</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Programa más rentable</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Gasto total (pub. + demo)</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Ingresos por matrícula</div><div class="placeholder-value"></div></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>ROAS por programa</div>
-          <div class="chart-placeholder" style="min-height:220px;"><div class="icon">📊</div><div class="label">Gráfico de barras con línea de referencia</div><div class="sub">Programa × ROAS (Ingresos / Gasto), línea en ROAS = 1 como punto de equilibrio</div></div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Tiempo de conversión por fase</h4><p class="question">¿Qué programas necesitan más seguimiento? ¿Cuánto tarda cada etapa?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">Kommo + Q10</span><span class="meta-tag freq">🔄 Mensual</span></div>
-          </div>
-          <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Velocidad por etapa: Contacto → Interés → Decisión → Matrícula</div>
-          <div class="chart-placeholder" style="min-height:200px;"><div class="icon">⏱️</div><div class="label">Gráfico de barras apiladas horizontal (tipo Gantt)</div><div class="sub">Días promedio acumulados por programa, desglosado por fase del embudo</div></div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-card-header">
-            <div><h4>Cohortes y fuentes de matrícula</h4><p class="question">¿Qué fuente y campaña producen matriculados reales? ¿Cómo evoluciona cada cohorte?</p></div>
-            <div class="report-meta-tags"><span class="meta-tag source">META + Kommo + Q10</span><span class="meta-tag freq">🔄 Mensual</span></div>
-          </div>
-          <div class="chart-grid-2">
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--navy);"></span>Matriculados por fuente</div>
-              <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Gráfico de barras</div><div class="sub">Fuente del lead × matriculados reales</div></div>
-            </div>
-            <div>
-              <div class="viz-label"><span class="dot" style="background:var(--orange);"></span>Cohortes mensuales</div>
-              <div class="chart-placeholder"><div class="icon">📈</div><div class="label">Gráfico de líneas múltiples</div><div class="sub">Mes de ingreso × leads, matriculados y ROAS</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="block-footer-nav">
-        <a class="footer-nav-link" href="cetlog_home.html">← Volver al inicio</a>
-        <a class="footer-nav-link" href="cetlog_cobranza.html">Siguiente: Cobranza →</a>
-      </div>
-
-      <div style="height:30px;"></div>
+<!-- ══ SIDEBAR ═══════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">CT</div>
+    <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Principal</div>
+    <a class="nav-item" href="index.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+      Inicio
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Bloques</div>
+    <a class="nav-item active" href="cetlog_comercial.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
+      Comercial<span class="nav-badge">7</span>
+    </a>
+    <a class="nav-item" href="cetlog_cobranza.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
+      Cobranza<span class="nav-badge">5</span>
+    </a>
+    <a class="nav-item" href="cetlog_academico.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
+      Académico<span class="nav-badge">5</span>
+    </a>
+    <a class="nav-item" href="cetlog_estrategico.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+      Estratégico<span class="nav-badge">6</span>
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="avatar">GE</div>
+      <div class="user-info"><strong>Gerencia</strong><span>Administrador</span></div>
     </div>
   </div>
-</div>
+</aside>
+
+<!-- ══ MAIN ═══════════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-crumb">
+      <a href="index.html">Inicio</a>
+      <span class="sep">/</span>
+      <span class="cur">Comercial</span>
+    </div>
+    <div class="topbar-right">
+      <span class="sync-status" id="syncStatus">Cargando datos…</span>
+      <button class="btn-refresh" id="btnRefresh" onclick="refreshAll()">↻ Actualizar</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- HERO -->
+    <div class="block-hero">
+    
+      <div class="bh-title">Bloque Comercial: Campañas y conversión a ventas</div>
+      
+      <div class="bh-meta">
+        
+              </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="report-tabs">
+      <div class="rtab active" onclick="showTab('campanas')"><span class="dot"></span><span class="tn">01</span> Campañas activas</div>
+      <div class="rtab" onclick="showTab('contenido')"><span class="dot"></span><span class="tn">02</span> Contenido</div>
+      <div class="rtab" onclick="showTab('embudo')"><span class="dot"></span><span class="tn">03</span> Embudo comercial</div>
+      <div class="rtab" onclick="showTab('performance')"><span class="dot"></span><span class="tn">04</span> Performance</div>
+      <div class="rtab" onclick="showTab('demos')"><span class="dot"></span><span class="tn">05</span> Demos</div>
+      <div class="rtab" onclick="showTab('roas')"><span class="dot"></span><span class="tn">06</span> ROAS y velocidad</div>
+      <div class="rtab" onclick="showTab('historico')"><span class="dot"></span><span class="tn">07</span> Histórico</div>
+    </div>
+
+    <!-- ══ TAB 01: CAMPAÑAS ACTIVAS ══════════════════════ -->
+    <div class="rpanel active" id="tab-campanas">
+      <div id="campanas-loading" class="loading-row"><div class="spinner"></div>Cargando campañas…</div>
+      <div id="campanas-content" style="display:none">
+
+        <!-- Selector de campaña -->
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+          <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
+          <select id="campSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px"></select>
+        </div>
+
+        <!-- Header campaña -->
+        <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.6;margin-bottom:6px">Campaña activa</div>
+          <div style="font-size:18px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px" id="cNombre">—</div>
+          <div style="font-size:12px;opacity:.7;margin-bottom:14px" id="cFechas">—</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div id="cDuracion" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:#ffffff1a;border:1px solid #ffffff22">—</div>
+            <div id="cDiasRest" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px">—</div>
+          </div>
+        </div>
+
+        <!-- Presupuesto -->
+        <div class="card">
+          <div class="budget-wrap" style="margin-bottom:0">
+            <div class="budget-header">
+              <span style="font-size:13px;font-weight:600;color:var(--text)">Presupuesto</span>
+              <div class="budget-amounts">
+                <div class="ba"><span class="bl">A invertir</span><span class="bv" id="bInvertir">—</span></div>
+                <div class="ba"><span class="bl">Gastado</span><span class="bv" id="bGastado">—</span></div>
+                <div class="ba" id="bRestBox"><span class="bl">Disponible</span><span class="bv" id="bRest">—</span></div>
+              </div>
+            </div>
+            <div class="prog-track"><div class="prog-fill" id="budBar" style="width:0%"></div></div>
+            <div class="prog-labels"><span id="bPct">0% ejecutado</span><span id="bRestLabel">—</span></div>
+          </div>
+        </div>
+
+        <!-- KPIs leads -->
+        <div class="kpi-row">
+          <div class="kpi k-navy"><div class="kl">Leads META</div><div class="kv" id="kLeadsMeta">—</div><div class="ks">generados en plataforma</div></div>
+          <div class="kpi k-orange"><div class="kl">Leads Kommo</div><div class="kv" id="kLeadsKommo">—</div><div class="ks">registrados en CRM</div></div>
+          <div class="kpi k-danger"><div class="kl">Leads perdidos</div><div class="kv" id="kPerdidos">—</div><div class="ks" id="kPerdSub">—% de leads META</div></div>
+          <div class="kpi k-success"><div class="kl">Tasa de cierre</div><div class="kv" id="kCierre">—</div><div class="ks" id="kCierreSub">—</div></div>
+        </div>
+
+        <!-- Leads compare + costos -->
+        <div class="chart-grid-1-2">
+          <div class="card" style="margin-bottom:0">
+            <div class="viz-label"><span class="dot" style="background:var(--navy)"></span>META vs. Kommo vs. Perdidos</div>
+            <div class="lead-bars" id="leadBars">
+              <div class="lbrow"><span class="lbl-lbl">META</span><div class="lbtrack"><div class="lbfill" id="lbMeta" style="width:0%;background:var(--navy)"><span id="lbMetaTxt"></span></div></div><span class="lbnum" id="lbMetaN">—</span></div>
+              <div class="lbrow"><span class="lbl-lbl">Kommo</span><div class="lbtrack"><div class="lbfill" id="lbKommo" style="width:0%;background:var(--orange)"><span id="lbKommoTxt"></span></div></div><span class="lbnum" id="lbKommoN">—</span></div>
+              <div class="lbrow"><span class="lbl-lbl">Perdidos</span><div class="lbtrack"><div class="lbfill" id="lbPerd" style="width:0%;background:var(--danger)"><span id="lbPerdTxt"></span></div></div><span class="lbnum" id="lbPerdN">—</span></div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:0">
+            <div class="viz-label"><span class="dot" style="background:var(--muted)"></span>Costos clave</div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+              <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px">CPL — costo por lead META</div><div style="font-size:20px;font-weight:700;color:var(--navy)" id="cCPL">—</div></div>
+              <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px">Costo por lead Kommo</div><div style="font-size:20px;font-weight:700;color:var(--orange-tx)" id="cCPLK">—</div></div>
+              <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px">CPA — costo por inscrito</div><div style="font-size:20px;font-weight:700;color:var(--success-tx)" id="cCPA">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inscritos por programa -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+            <span style="font-size:13px;font-weight:600;color:var(--text)">Inscritos por programa vs. meta</span>
+            <span style="font-size:12px;color:var(--muted)">Meta total: <b id="metaTot">—</b></span>
+          </div>
+          <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:12px">
+            <span><span style="width:10px;height:10px;border-radius:3px;background:var(--success);display:inline-block;margin-right:4px;vertical-align:middle"></span>Inscritos</span>
+            <span><span style="width:10px;height:10px;border-radius:3px;background:var(--border);display:inline-block;margin-right:4px;vertical-align:middle"></span>Pendiente para meta</span>
+          </div>
+          <div id="progBars"></div>
+        </div>
+
+        <!-- Tasa de cierre -->
+        <div class="card">
+          <div class="cierre-wrap">
+            <div class="cierre-meta">
+              <div class="cl">Tasa de cierre global</div>
+              <div class="cv" id="tcVal" style="color:var(--navy)">—</div>
+              <div class="cs" id="tcSub">inscritos / leads META</div>
+            </div>
+            <div class="cierre-bar-wrap">
+              <div class="cierre-track">
+                <div class="cierre-fill" id="tcFill" style="width:0%;background:var(--navy)"><span id="tcFillLbl">—</span></div>
+              </div>
+              <div class="cierre-bottom"><span>0%</span><span id="tcDetail">—</span><span>100%</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /campanas-content -->
+    </div>
+
+    <!-- ══ TAB 02: CONTENIDO ══════════════════════════════ -->
+    <div class="rpanel" id="tab-contenido">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento de contenido</div><div class="card-sub">¿Qué tipo de contenido genera mejores resultados?</div></div>
+          <div class="meta-tags"><span class="mtag src">META Ads</span><span class="mtag frq">🔄 Diario</span></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi k-navy"><div class="kl">Tipo top por leads</div><div class="kv" id="contenidoTipoTop">—</div></div>
+          <div class="kpi"><div class="kl">Alcance promedio / pieza</div><div class="kv" id="contenidoAlcance">—</div></div>
+          <div class="kpi"><div class="kl">Tasa de reacción</div><div class="kv" id="contenidoReaccion">—</div></div>
+          <div class="kpi k-success"><div class="kl">Leads / pieza promedio</div><div class="kv" id="contenidoLeadsPieza">—</div></div>
+        </div>
+        <div class="chart-grid-2">
+          <div>
+            <div class="viz-label"><span class="dot" style="background:var(--navy)"></span>Leads por tipo de contenido</div>
+            <div class="chart-ph"><div class="ci">📊</div><div class="cl">Barras horizontales</div><div class="cs">Video · Imagen · Carrusel · Reel — por leads generados</div></div>
+          </div>
+          <div>
+            <div class="viz-label"><span class="dot" style="background:var(--orange)"></span>Reacciones por tipo</div>
+            <div class="chart-ph"><div class="ci">📊</div><div class="cl">Gráfico apilado</div><div class="cs">Me gusta · Comentarios · Compartidos por tipo</div></div>
+          </div>
+        </div>
+        <div style="height:14px"></div>
+        <div class="viz-label"><span class="dot" style="background:var(--muted)"></span>Detalle por pieza de contenido</div>
+        <div class="tbl-wrap" id="contenidoTable">
+          <table><thead><tr><th>Contenido</th><th>Tipo</th><th>Campaña</th><th>Programa</th><th>Alcance</th><th>Clicks</th><th>Leads</th><th>Reacciones</th></tr></thead>
+          <tbody id="contenidoTbody"><tr><td colspan="8" class="data-empty" style="border:none;padding:24px;text-align:center">Sin datos aún</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 03: EMBUDO ═════════════════════════════════ -->
+    <div class="rpanel" id="tab-embudo">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Embudo comercial</div><div class="card-sub">¿En qué etapa se pierden más los leads?</div></div>
+          <div class="meta-tags"><span class="mtag src">Kommo + Sistema</span><span class="mtag frq">🔄 Diario</span></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kl">% Contactabilidad</div><div class="kv" id="embudoContactab">—</div></div>
+          <div class="kpi"><div class="kl">% De interés</div><div class="kv" id="embudoInteres">—</div></div>
+          <div class="kpi k-danger"><div class="kl">% Descarte</div><div class="kv" id="embudoDescarte">—</div></div>
+          <div class="kpi k-warning"><div class="kl">Leads en curso</div><div class="kv" id="embudoEnCurso">—</div></div>
+        </div>
+        <div class="viz-label"><span class="dot" style="background:var(--navy)"></span>Embudo: Leads → Contactados → Interesados → Demo → Matriculados</div>
+        <div class="chart-ph" style="min-height:220px"><div class="ci">⏬</div><div class="cl">Gráfico de embudo</div><div class="cs">Cantidad y % de conversión por etapa, filtrable por programa</div></div>
+        <div style="height:14px"></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Programa</th><th>Leads</th><th>Contactados</th><th>Interesados</th><th>No contestan</th><th>No interesados</th><th>Demo</th><th>Matriculados</th><th>% Contactab.</th><th>% Interés</th></tr></thead>
+          <tbody id="embudoTbody"><tr><td colspan="10" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Motivos de no interés</div><div class="card-sub">¿Por qué se pierde la oportunidad?</div></div>
+          <div class="meta-tags"><span class="mtag src">Kommo</span><span class="mtag frq">🔄 Semanal</span></div>
+        </div>
+        <div class="chart-grid-2">
+          <div>
+            <div class="viz-label"><span class="dot" style="background:var(--danger)"></span>Distribución de motivos</div>
+            <div class="chart-ph"><div class="ci">📊</div><div class="cl">Barras</div><div class="cs">Precio · Horario · Provincia · No responde · Trabajo</div></div>
+          </div>
+          <div>
+            <div class="viz-label"><span class="dot" style="background:var(--orange)"></span>Motivos por programa</div>
+            <div class="chart-ph"><div class="ci">🔲</div><div class="cl">Mapa de calor</div><div class="cs">Programa × motivo de no interés</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 04: PERFORMANCE ════════════════════════════ -->
+    <div class="rpanel" id="tab-performance">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento por comercial</div><div class="card-sub">¿Qué comercial tiene mayor productividad y mejor tasa de conversión?</div></div>
+          <div class="meta-tags"><span class="mtag src">Kommo + Sistema</span><span class="mtag frq">🔄 Semanal</span></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kl">Mejor contactabilidad</div><div class="kv" id="perfMejorContact">—</div></div>
+          <div class="kpi k-success"><div class="kl">Mejor conversión</div><div class="kv" id="perfMejorConv">—</div></div>
+          <div class="kpi"><div class="kl">Tiempo prom. llamada</div><div class="kv" id="perfTiempoLlamada">—</div></div>
+          <div class="kpi k-warning"><div class="kl">Cumplen meta</div><div class="kv" id="perfCumplenMeta">—</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Comercial</th><th>Asignados</th><th>Contactados</th><th>Interesados</th><th>Tibios</th><th>Calientes</th><th>Por pagar</th><th>Inscritos</th><th>Meta</th><th>% Avance</th><th>Tasa cierre</th></tr></thead>
+          <tbody id="perfTbody"><tr><td colspan="11" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 05: DEMOS ══════════════════════════════════ -->
+    <div class="rpanel" id="tab-demos">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento de demos</div><div class="card-sub">¿Qué demos generan más interés, asistencia y matrículas?</div></div>
+          <div class="meta-tags"><span class="mtag src">Registros</span><span class="mtag frq">📅 Por evento</span></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kl">Tasa asistencia prom.</div><div class="kv" id="demosTasaAsist">—</div></div>
+          <div class="kpi k-success"><div class="kl">% Matriculados post-demo</div><div class="kv" id="demosMatriculados">—</div></div>
+          <div class="kpi k-navy"><div class="kl">Nota satisfacción prom.</div><div class="kv" id="demosNota">—</div></div>
+          <div class="kpi"><div class="kl">Demos realizados</div><div class="kv" id="demosTotal">—</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Demo</th><th>Programa</th><th>Fecha</th><th>Ponente</th><th>Inscritos</th><th>Asistentes</th><th>% Asistencia</th><th>Matriculados</th><th>Origen</th><th>Nota</th></tr></thead>
+          <tbody id="demosTbody"><tr><td colspan="10" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 06: ROAS ═══════════════════════════════════ -->
+    <div class="rpanel" id="tab-roas">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">ROAS por programa</div><div class="card-sub">¿Cuánto fue el retorno considerando publicidad y demo?</div></div>
+          <div class="meta-tags"><span class="mtag src">META + Q10 + Sistema</span><span class="mtag frq">🔄 Mensual</span></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi k-navy"><div class="kl">ROAS promedio</div><div class="kv" id="roasPromedio">—</div></div>
+          <div class="kpi k-success"><div class="kl">Programa más rentable</div><div class="kv" id="roasMejorProg">—</div></div>
+          <div class="kpi"><div class="kl">Gasto total</div><div class="kv" id="roasGastoTotal">—</div></div>
+          <div class="kpi k-orange"><div class="kl">Ingresos matrícula</div><div class="kv" id="roasIngresos">—</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Campaña</th><th>Programa</th><th>Gasto pub.</th><th>Gasto demo</th><th>Gasto total</th><th>Ingresos</th><th>ROAS</th><th>Lead→Contacto</th><th>Contacto→Interés</th><th>Interés→Decisión</th><th>Decisión→Matrícula</th></tr></thead>
+          <tbody id="roasTbody"><tr><td colspan="11" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr></tbody></table>
+        </div>
+        <div style="height:14px"></div>
+        <div class="viz-label"><span class="dot" style="background:var(--navy)"></span>Velocidad por etapa (días promedio)</div>
+        <div class="chart-ph"><div class="ci">⏱️</div><div class="cl">Barras apiladas horizontal</div><div class="cs">Días promedio por fase: Contacto → Interés → Decisión → Matrícula</div></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 07: HISTÓRICO ══════════════════════════════ -->
+    <div class="rpanel" id="tab-historico">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Histórico comercial</div><div class="card-sub">Evolución de campañas, leads e inscritos en el tiempo</div></div>
+          <div class="meta-tags"><span class="mtag src">Todas las fuentes</span><span class="mtag frq">🔄 Mensual</span></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi k-navy"><div class="kl">Total leads histórico</div><div class="kv" id="histLeads">—</div></div>
+          <div class="kpi k-success"><div class="kl">Total inscritos histórico</div><div class="kv" id="histInscritos">—</div></div>
+          <div class="kpi"><div class="kl">Gasto histórico total</div><div class="kv" id="histGasto">—</div></div>
+          <div class="kpi k-orange"><div class="kl">CPL histórico promedio</div><div class="kv" id="histCPL">—</div></div>
+        </div>
+        <div class="chart-ph" style="min-height:200px;margin-bottom:14px"><div class="ci">📈</div><div class="cl">Líneas múltiples</div><div class="cs">Leads, inscritos y gasto mes a mes por programa</div></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Mes</th><th>Campaña</th><th>Programa</th><th>Leads</th><th>Inscritos</th><th>Gasto</th><th>CPL</th><th>CPA</th><th>ROAS</th></tr></thead>
+          <tbody id="histTbody"><tr><td colspan="9" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER NAV -->
+    <div class="footer-nav">
+      <a class="fnav-link" href="index.html">← Volver al inicio</a>
+      <a class="fnav-link" href="cetlog_cobranza.html">Siguiente: Cobranza →</a>
+    </div>
+    <div style="height:30px"></div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
 
 <script>
-  function showReport(id) {
-    document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
-    const idx = ['campanas','contenido','embudo','comerciales','demos','roas'].indexOf(id);
-    document.querySelectorAll('.report-tab')[idx].classList.add('active');
-    document.getElementById('panel-' + id).classList.add('active');
-    document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+// ══════════════════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ══════════════════════════════════════════════════════════
+const SHEET_ID = '1pszZzjm_dW88t56E3eVO-lK_C8Was3MuhvkD4HrUtYI';
+const AUTO_MS  = 60 * 1000; // auto-refresh cada 60 s
+
+const TABS = ['Campañas','Contenido','Embudo','Performance','Demos','ROAS','Historico'];
+
+let DB = {};       // { Campañas: [...], Contenido: [...], ... }
+let isLoading = false;
+
+// ══════════════════════════════════════════════════════════
+//  FETCH TODAS LAS HOJAS
+// ══════════════════════════════════════════════════════════
+function csvUrl(tab) {
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+}
+
+async function fetchTab(tab) {
+  const res = await fetch(csvUrl(tab));
+  if (!res.ok) return [];
+  const text = await res.text();
+  const { data } = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true });
+  return data;
+}
+
+async function refreshAll() {
+  if (isLoading) return;
+  isLoading = true;
+  const btn = document.getElementById('btnRefresh');
+  btn.classList.add('spin');
+  btn.textContent = '↻ Actualizando…';
+  setStatus('Actualizando…');
+
+  try {
+    const results = await Promise.all(TABS.map(t => fetchTab(t)));
+    TABS.forEach((t, i) => { DB[t] = results[i]; });
+    renderAll();
+    setStatus('Actualizado ' + new Date().toLocaleTimeString('es-PE'), 'ok');
+  } catch(e) {
+    setStatus('Error al conectar con Google Sheets', 'err');
+  } finally {
+    isLoading = false;
+    btn.classList.remove('spin');
+    btn.textContent = '↻ Actualizar';
   }
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('syncStatus');
+  el.textContent = msg;
+  el.className = 'sync-status' + (type ? ' ' + type : '');
+}
+
+// ══════════════════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════════════════
+const TAB_IDS = ['campanas','contenido','embudo','performance','demos','roas','historico'];
+function showTab(id) {
+  document.querySelectorAll('.rtab').forEach((t,i) => t.classList.toggle('active', TAB_IDS[i] === id));
+  document.querySelectorAll('.rpanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════
+const money = n => (n == null || isNaN(n)) ? '—' : 'S/ ' + Number(n).toLocaleString('es-PE', {minimumFractionDigits:0, maximumFractionDigits:0});
+const numF  = n => (n == null || isNaN(n)) ? '—' : Number(n).toLocaleString('es-PE');
+const pctF  = n => (n == null || isNaN(n)) ? '—' : Math.round(n * 100) + '%';
+const barColor = p => p >= .75 ? 'var(--success)' : p >= .4 ? 'var(--warning)' : 'var(--danger)';
+
+function parseFecha(raw) {
+  if (!raw) return null;
+  const s = String(raw).trim();
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if (m) {
+    let [,a,b,y] = m.map(Number);
+    if (y < 100) y += 2000;
+    return a > 12 ? new Date(y, b-1, a) : new Date(y, a-1, b);
+  }
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+const fmtDate = d => d ? d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+
+// ══════════════════════════════════════════════════════════
+//  RENDER ALL
+// ══════════════════════════════════════════════════════════
+function renderAll() {
+  renderHero();
+  renderCampanas();
+  renderContenido();
+  renderEmbudo();
+  renderPerformance();
+  renderDemos();
+  renderROAS();
+  renderHistorico();
+}
+
+// ── HERO TOTALES ──────────────────────────────────────────
+function renderHero() {
+  const rows = DB['Campañas'] || [];
+  const totalLeads = rows.reduce((s,r) => s + (Number(r['Leads plataforma']) || 0), 0);
+  const totalInsc  = rows.reduce((s,r) => s + (Number(r['Inscritos']) || 0), 0);
+  const totalGasto = rows.reduce((s,r) => s + (Number(r['Monto gastado']) || 0), 0);
+  document.getElementById('heroTotalLeads').textContent     = totalLeads > 0 ? numF(totalLeads) : '—';
+  document.getElementById('heroTotalInscritos').textContent = totalInsc > 0  ? numF(totalInsc)  : '—';
+  document.getElementById('heroTotalGasto').textContent     = totalGasto > 0 ? money(totalGasto) : '—';
+}
+
+// ── TAB 01: CAMPAÑAS ──────────────────────────────────────
+function renderCampanas() {
+  const rows = DB['Campañas'] || [];
+  document.getElementById('campanas-loading').style.display = 'none';
+  document.getElementById('campanas-content').style.display = rows.length ? 'block' : 'none';
+  if (!rows.length) return;
+
+  // Agrupar campañas únicas
+  const camps = [...new Set(rows.map(r => r['Campaña']))].filter(Boolean);
+  const sel = document.getElementById('campSelect');
+  const prev = sel.value;
+  sel.innerHTML = '';
+  camps.forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o);
+  });
+  if (camps.includes(prev)) sel.value = prev;
+  sel.onchange = () => renderCampanaDetalle(sel.value, rows);
+  renderCampanaDetalle(sel.value || camps[0], rows);
+}
+
+function renderCampanaDetalle(nombre, rows) {
+  const campRows = rows.filter(r => r['Campaña'] === nombre);
+  if (!campRows.length) return;
+  const r0 = campRows[0];
+
+  // Fechas
+  const fi = parseFecha(r0['Fecha inicio']);
+  const ff = parseFecha(r0['Fecha fin']);
+  const hoy = new Date();
+  const durDias = (fi && ff) ? Math.round((ff-fi)/864e5) : null;
+  const diasRest = ff ? Math.ceil((ff-hoy)/864e5) : null;
+
+  document.getElementById('cNombre').textContent = nombre;
+  document.getElementById('cFechas').textContent = fmtDate(fi) + ' → ' + fmtDate(ff);
+  document.getElementById('cDuracion').textContent = durDias != null ? durDias + ' días de campaña' : '—';
+
+  const drEl = document.getElementById('cDiasRest');
+  if (diasRest != null) {
+    drEl.textContent = diasRest >= 0 ? 'Faltan ' + diasRest + ' días' : 'Terminó hace ' + Math.abs(diasRest) + ' días';
+    const c = diasRest < 0 ? 'background:#EF444422;border:1px solid #EF444455;color:#FCA5A5' :
+              diasRest < 7 ? 'background:#F59E0B22;border:1px solid #F59E0B55;color:#FCD34D' :
+                             'background:#10B98122;border:1px solid #10B98155;color:#6EE7B7';
+    drEl.style.cssText = 'font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;' + c;
+  }
+
+  // Presupuesto (suma de todas las filas de la campaña)
+  const invertir = campRows.reduce((s,r) => s + (Number(r['Monto a invertir']) || 0), 0);
+  const gastado  = campRows.reduce((s,r) => s + (Number(r['Monto gastado'])    || 0), 0);
+  const rest = invertir - gastado;
+  const budPct = invertir ? Math.min(100, Math.round(gastado/invertir*100)) : 0;
+  document.getElementById('bInvertir').textContent = money(invertir);
+  document.getElementById('bGastado').textContent  = money(gastado);
+  document.getElementById('bRest').textContent     = money(Math.abs(rest));
+  const rb = document.getElementById('bRestBox');
+  rb.querySelector('.bl').textContent = rest >= 0 ? 'Disponible' : 'Sobrepasado';
+  rb.className = 'ba ' + (rest < 0 ? 'danger' : rest < invertir * .1 ? 'warn' : 'ok');
+  const bar = document.getElementById('budBar');
+  bar.style.width = budPct + '%';
+  bar.className = 'prog-fill' + (budPct >= 100 ? ' over' : budPct >= 85 ? ' almost' : '');
+  document.getElementById('bPct').textContent     = budPct + '% ejecutado';
+  document.getElementById('bRestLabel').textContent = rest >= 0 ? money(rest) + ' disponible' : money(Math.abs(rest)) + ' sobrepasado';
+
+  // KPIs leads
+  const leadsMeta  = campRows.reduce((s,r) => s + (Number(r['Leads plataforma']) || 0), 0);
+  const leadsKommo = campRows.reduce((s,r) => s + (Number(r['Leads kommo'])      || 0), 0);
+  const perdidos   = leadsMeta - leadsKommo;
+  const pctPerd    = leadsMeta ? perdidos / leadsMeta : 0;
+  const inscritos  = campRows.reduce((s,r) => s + (Number(r['Inscritos'])        || 0), 0);
+  const cierre     = leadsMeta ? inscritos / leadsMeta : null;
+
+  document.getElementById('kLeadsMeta').textContent  = numF(leadsMeta);
+  document.getElementById('kLeadsKommo').textContent = numF(leadsKommo);
+  document.getElementById('kPerdidos').textContent   = numF(perdidos);
+  document.getElementById('kPerdSub').textContent    = pctF(pctPerd) + ' de leads META';
+  document.getElementById('kCierre').textContent    = pctF(cierre);
+  document.getElementById('kCierreSub').textContent = numF(inscritos) + ' inscritos / ' + numF(leadsMeta) + ' leads';
+
+  // Barras comparativo
+  const maxL = Math.max(leadsMeta, 1);
+  [['lbMeta','lbMetaTxt','lbMetaN', leadsMeta,  '#1D245C'],
+   ['lbKommo','lbKommoTxt','lbKommoN', leadsKommo,'var(--orange)'],
+   ['lbPerd','lbPerdTxt','lbPerdN',  perdidos,  'var(--danger)']
+  ].forEach(([bid, tid, nid, val, color]) => {
+    const p = Math.round(val/maxL*100);
+    document.getElementById(bid).style.width = p + '%';
+    document.getElementById(bid).style.background = color;
+    document.getElementById(tid).textContent = val > 0 && p > 15 ? val : '';
+    document.getElementById(nid).textContent = numF(val);
+  });
+
+  // Costos
+  const cpl  = leadsMeta  ? gastado / leadsMeta  : null;
+  const cplk = leadsKommo ? gastado / leadsKommo : null;
+  const cpa  = inscritos  ? gastado / inscritos  : null;
+  document.getElementById('cCPL').textContent  = money(cpl);
+  document.getElementById('cCPLK').textContent = money(cplk);
+  document.getElementById('cCPA').textContent  = money(cpa);
+
+  // Inscritos por programa (barra dual)
+  const metaTot = campRows.reduce((s,r) => s + (Number(r['Meta inscritos']) || 0), 0);
+  document.getElementById('metaTot').textContent = numF(metaTot) + ' inscritos';
+  const cont = document.getElementById('progBars');
+  cont.innerHTML = '';
+  campRows.forEach(r => {
+    const prog = r['Programa'] || 'General';
+    const ins  = Number(r['Inscritos']) || 0;
+    const meta = Number(r['Meta inscritos']) || ins;
+    const av   = meta > 0 ? Math.min(1, ins / meta) : 0;
+    const avP  = Math.round(av * 100);
+    const col  = barColor(av);
+    const div = document.createElement('div'); div.className = 'prog-row';
+    div.innerHTML = `
+      <div class="prog-row-hdr">
+        <span class="prog-name">${prog}</span>
+        <span class="prog-nums"><b>${numF(ins)}</b> de ${numF(meta)} <span style="color:${col};font-weight:600">(${avP}%)</span></span>
+      </div>
+      <div class="dual-track">
+        <div class="dual-in" style="width:${avP}%;background:${col}"><span>${ins > 0 && avP > 12 ? ins : ''}</span></div>
+        <div class="dual-pend"><span>${(100-avP) > 15 ? (meta-ins) + ' pendientes' : ''}</span></div>
+      </div>`;
+    cont.appendChild(div);
+  });
+
+  // Tasa de cierre
+  const cierrePct = cierre != null ? Math.round(cierre * 100) : 0;
+  const cc = barColor(cierre || 0);
+  document.getElementById('tcVal').textContent   = pctF(cierre);
+  document.getElementById('tcVal').style.color   = cc;
+  document.getElementById('tcSub').textContent   = numF(inscritos) + ' inscritos de ' + numF(leadsMeta) + ' leads';
+  document.getElementById('tcFill').style.width  = Math.min(100, cierrePct) + '%';
+  document.getElementById('tcFill').style.background = cc;
+  document.getElementById('tcFillLbl').textContent   = cierrePct + '%';
+  document.getElementById('tcDetail').textContent    = numF(inscritos) + ' / ' + numF(leadsMeta);
+}
+
+// ── TAB 02: CONTENIDO ─────────────────────────────────────
+function renderContenido() {
+  const rows = DB['Contenido'] || [];
+  const tbody = document.getElementById('contenidoTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr>'; return; }
+
+  // KPIs
+  const porTipo = {};
+  rows.forEach(r => {
+    const t = r['Tipo'] || 'Sin tipo';
+    if (!porTipo[t]) porTipo[t] = { leads: 0, alcance: 0, reacciones: 0, count: 0 };
+    porTipo[t].leads      += Number(r['Leads']) || 0;
+    porTipo[t].alcance    += Number(r['Alcance']) || 0;
+    porTipo[t].reacciones += (Number(r['Reacciones']) || 0) + (Number(r['Comentarios']) || 0) + (Number(r['Compartidos']) || 0);
+    porTipo[t].count++;
+  });
+  const tipoTop = Object.entries(porTipo).sort((a,b) => b[1].leads - a[1].leads)[0];
+  const totalAlcance = rows.reduce((s,r) => s + (Number(r['Alcance']) || 0), 0);
+  const totalImpresiones = rows.reduce((s,r) => s + (Number(r['Impresiones']) || 0), 0);
+  const totalLeads = rows.reduce((s,r) => s + (Number(r['Leads']) || 0), 0);
+
+  document.getElementById('contenidoTipoTop').textContent   = tipoTop ? tipoTop[0] : '—';
+  document.getElementById('contenidoAlcance').textContent   = numF(Math.round(totalAlcance / (rows.length || 1)));
+  document.getElementById('contenidoReaccion').textContent  = totalImpresiones ? pctF(rows.reduce((s,r) => s + (Number(r['Reacciones']) || 0), 0) / totalImpresiones) : '—';
+  document.getElementById('contenidoLeadsPieza').textContent = numF(Math.round(totalLeads / (rows.length || 1)));
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="td-bold">${r['ID Contenido'] || '—'}</td>
+      <td><span class="pill pill-navy">${r['Tipo'] || '—'}</span></td>
+      <td class="td-muted">${r['Campaña'] || '—'}</td>
+      <td>${r['Programa'] || '—'}</td>
+      <td>${numF(r['Alcance'])}</td>
+      <td>${numF(r['Clicks'])}</td>
+      <td class="td-bold">${numF(r['Leads'])}</td>
+      <td>${numF((Number(r['Reacciones'])||0)+(Number(r['Comentarios'])||0)+(Number(r['Compartidos'])||0))}</td>
+    </tr>`).join('');
+}
+
+// ── TAB 03: EMBUDO ────────────────────────────────────────
+function renderEmbudo() {
+  const rows = DB['Embudo'] || [];
+  const tbody = document.getElementById('embudoTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="10" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr>'; return; }
+
+  const totLeads = rows.reduce((s,r) => s + (Number(r['Leads'])||0), 0);
+  const totContact = rows.reduce((s,r) => s + (Number(r['Contactados'])||0), 0);
+  const totInteres = rows.reduce((s,r) => s + (Number(r['Interesados'])||0), 0);
+  const totDesc = rows.reduce((s,r) => s + (Number(r['No interesados'])||0), 0);
+  const totEnCurso = totLeads - totContact;
+
+  document.getElementById('embudoContactab').textContent = totLeads ? pctF(totContact/totLeads) : '—';
+  document.getElementById('embudoInteres').textContent   = totContact ? pctF(totInteres/totContact) : '—';
+  document.getElementById('embudoDescarte').textContent  = totLeads ? pctF(totDesc/totLeads) : '—';
+  document.getElementById('embudoEnCurso').textContent   = numF(Math.max(0, totEnCurso));
+
+  tbody.innerHTML = rows.map(r => {
+    const leads = Number(r['Leads'])||0;
+    const contact = Number(r['Contactados'])||0;
+    const interes = Number(r['Interesados'])||0;
+    const pctC = leads ? pctF(contact/leads) : '—';
+    const pctI = contact ? pctF(interes/contact) : '—';
+    return `<tr>
+      <td class="td-bold">${r['Programa']||'—'}</td>
+      <td>${numF(r['Leads'])}</td>
+      <td>${numF(r['Contactados'])}</td>
+      <td>${numF(r['Interesados'])}</td>
+      <td class="td-muted">${numF(r['No contestan'])}</td>
+      <td class="td-muted">${numF(r['No interesados'])}</td>
+      <td>${numF(r['Demo'])}</td>
+      <td class="td-bold">${numF(r['Matriculados'])}</td>
+      <td><span class="pill ${contact/leads >= .7 ? 'pill-ok' : contact/leads >= .4 ? 'pill-warn' : 'pill-danger'}">${pctC}</span></td>
+      <td><span class="pill ${interes/contact >= .5 ? 'pill-ok' : 'pill-warn'}">${pctI}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TAB 04: PERFORMANCE ───────────────────────────────────
+function renderPerformance() {
+  const rows = DB['Performance'] || [];
+  const tbody = document.getElementById('perfTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr>'; return; }
+
+  const cumplen = rows.filter(r => { const t = Number(r['Target individual'])||0; const i = Number(r['Inscritos'])||0; return t > 0 && i >= t; }).length;
+  const mejorContact = rows.reduce((best, r) => {
+    const leads = Number(r['Leads asignados'])||0;
+    const cont  = Number(r['Contactados'])||0;
+    const tasa  = leads ? cont/leads : 0;
+    return tasa > (best.tasa||0) ? { nombre: r['Comercial'], tasa } : best;
+  }, {});
+  const mejorConv = rows.reduce((best, r) => {
+    const leads = Number(r['Leads asignados'])||0;
+    const insc  = Number(r['Inscritos'])||0;
+    const tasa  = leads ? insc/leads : 0;
+    return tasa > (best.tasa||0) ? { nombre: r['Comercial'], tasa } : best;
+  }, {});
+
+  document.getElementById('perfMejorContact').textContent   = mejorContact.nombre || '—';
+  document.getElementById('perfMejorConv').textContent      = mejorConv.nombre || '—';
+  document.getElementById('perfTiempoLlamada').textContent  = '—';
+  document.getElementById('perfCumplenMeta').textContent    = cumplen + ' / ' + rows.length;
+
+  tbody.innerHTML = rows.map(r => {
+    const leads = Number(r['Leads asignados'])||0;
+    const insc  = Number(r['Inscritos'])||0;
+    const target= Number(r['Target individual'])||0;
+    const av    = target ? Math.min(1, insc/target) : 0;
+    const avP   = Math.round(av*100);
+    const col   = barColor(av);
+    return `<tr>
+      <td class="td-bold">${r['Comercial']||'—'}</td>
+      <td>${numF(r['Leads asignados'])}</td>
+      <td>${numF(r['Contactados'])}</td>
+      <td>${numF(r['Interesados'])}</td>
+      <td><span class="pill pill-warn">${numF(r['Tibios'])}</span></td>
+      <td><span class="pill pill-danger">${numF(r['Calientes'])}</span></td>
+      <td><span class="pill" style="background:var(--purple-bg);color:var(--purple-tx)">${numF(r['Por pagar'])}</span></td>
+      <td class="td-bold">${numF(insc)}</td>
+      <td>${numF(target)}</td>
+      <td><span class="pill" style="background:${col}22;color:${col}">${avP}%</span></td>
+      <td>${leads ? pctF(insc/leads) : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TAB 05: DEMOS ─────────────────────────────────────────
+function renderDemos() {
+  const rows = DB['Demos'] || [];
+  const tbody = document.getElementById('demosTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="10" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr>'; return; }
+
+  const totInscritos = rows.reduce((s,r) => s + (Number(r['Inscritos demo'])||0), 0);
+  const totAsistentes= rows.reduce((s,r) => s + (Number(r['Asistentes'])||0), 0);
+  const totMatric    = rows.reduce((s,r) => s + (Number(r['Matriculados post demo'])||0), 0);
+  const notas        = rows.filter(r => r['Nota satisfacción']).map(r => Number(r['Nota satisfacción']));
+  const notaProm     = notas.length ? notas.reduce((s,n) => s+n, 0)/notas.length : null;
+
+  document.getElementById('demosTasaAsist').textContent   = totInscritos ? pctF(totAsistentes/totInscritos) : '—';
+  document.getElementById('demosMatriculados').textContent= totAsistentes ? pctF(totMatric/totAsistentes) : '—';
+  document.getElementById('demosNota').textContent        = notaProm != null ? notaProm.toFixed(1) + ' / 5' : '—';
+  document.getElementById('demosTotal').textContent       = numF(rows.length);
+
+  tbody.innerHTML = rows.map(r => {
+    const ins  = Number(r['Inscritos demo'])||0;
+    const asi  = Number(r['Asistentes'])||0;
+    const tasaA = ins ? asi/ins : 0;
+    return `<tr>
+      <td class="td-bold">${r['Demo']||'—'}</td>
+      <td>${r['Programa']||'—'}</td>
+      <td class="td-muted">${r['Fecha']||'—'}</td>
+      <td>${r['Ponente']||'—'}</td>
+      <td>${numF(ins)}</td>
+      <td>${numF(asi)}</td>
+      <td><span class="pill ${tasaA >= .7 ? 'pill-ok' : tasaA >= .4 ? 'pill-warn' : 'pill-danger'}">${pctF(tasaA)}</span></td>
+      <td class="td-bold">${numF(r['Matriculados post demo'])}</td>
+      <td class="td-muted">${r['Origen']||'—'}</td>
+      <td>${r['Nota satisfacción'] != null ? r['Nota satisfacción'] + '/5' : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TAB 06: ROAS ──────────────────────────────────────────
+function renderROAS() {
+  const rows = DB['ROAS'] || [];
+  const tbody = document.getElementById('roasTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr>'; return; }
+
+  const rowsCalc = rows.map(r => {
+    const gpub  = Number(r['Gasto publicidad'])||0;
+    const gdemo = Number(r['Gasto demo'])||0;
+    const gtot  = gpub + gdemo;
+    const ing   = Number(r['Ingresos matrícula'])||0;
+    const roas  = gtot > 0 ? ing / gtot : null;
+    return { ...r, _gtot: gtot, _ing: ing, _roas: roas };
+  });
+
+  const totGasto   = rowsCalc.reduce((s,r) => s + r._gtot, 0);
+  const totIng     = rowsCalc.reduce((s,r) => s + r._ing, 0);
+  const roasProm   = totGasto ? totIng / totGasto : null;
+  const mejorRoas  = rowsCalc.reduce((best, r) => r._roas > (best._roas||0) ? r : best, {});
+
+  document.getElementById('roasPromedio').textContent  = roasProm != null ? roasProm.toFixed(2) + 'x' : '—';
+  document.getElementById('roasMejorProg').textContent = mejorRoas['Programa'] || '—';
+  document.getElementById('roasGastoTotal').textContent= money(totGasto);
+  document.getElementById('roasIngresos').textContent  = money(totIng);
+
+  tbody.innerHTML = rowsCalc.map(r => {
+    const roas = r._roas;
+    const col = roas == null ? '' : roas >= 2 ? 'pill-ok' : roas >= 1 ? 'pill-warn' : 'pill-danger';
+    return `<tr>
+      <td class="td-muted">${r['Campaña']||'—'}</td>
+      <td class="td-bold">${r['Programa']||'—'}</td>
+      <td>${money(r['Gasto publicidad'])}</td>
+      <td>${money(r['Gasto demo'])}</td>
+      <td class="td-bold">${money(r._gtot)}</td>
+      <td>${money(r._ing)}</td>
+      <td><span class="pill ${col}">${roas != null ? roas.toFixed(2)+'x' : '—'}</span></td>
+      <td class="td-muted">${r['Días lead a contacto'] != null ? r['Días lead a contacto']+'d' : '—'}</td>
+      <td class="td-muted">${r['Días contacto a interés'] != null ? r['Días contacto a interés']+'d' : '—'}</td>
+      <td class="td-muted">${r['Días interés a decisión'] != null ? r['Días interés a decisión']+'d' : '—'}</td>
+      <td class="td-muted">${r['Días decisión a matrícula'] != null ? r['Días decisión a matrícula']+'d' : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TAB 07: HISTÓRICO ─────────────────────────────────────
+function renderHistorico() {
+  const rows = DB['Historico'] || [];
+  const tbody = document.getElementById('histTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="9" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr>'; return; }
+
+  const totLeads = rows.reduce((s,r) => s + (Number(r['Leads'])||0), 0);
+  const totInsc  = rows.reduce((s,r) => s + (Number(r['Inscritos'])||0), 0);
+  const totGasto = rows.reduce((s,r) => s + (Number(r['Gasto'])||0), 0);
+  const cplHist  = totLeads ? totGasto / totLeads : null;
+
+  document.getElementById('histLeads').textContent    = numF(totLeads);
+  document.getElementById('histInscritos').textContent= numF(totInsc);
+  document.getElementById('histGasto').textContent    = money(totGasto);
+  document.getElementById('histCPL').textContent      = money(cplHist);
+
+  tbody.innerHTML = rows.map(r => `<tr>
+    <td class="td-bold">${r['Mes']||'—'}</td>
+    <td class="td-muted">${r['Campaña']||'—'}</td>
+    <td>${r['Programa']||'—'}</td>
+    <td>${numF(r['Leads'])}</td>
+    <td>${numF(r['Inscritos'])}</td>
+    <td>${money(r['Gasto'])}</td>
+    <td>${money(r['CPL'])}</td>
+    <td>${money(r['CPA'])}</td>
+    <td>${r['ROAS'] != null ? Number(r['ROAS']).toFixed(2)+'x' : '—'}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  refreshAll();
+  setInterval(refreshAll, AUTO_MS);
+});
 </script>
 </body>
 </html>
