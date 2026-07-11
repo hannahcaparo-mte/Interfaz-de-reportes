@@ -324,13 +324,28 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         </div>
 
         <!-- Header campaña -->
-        <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none">
-          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.6;margin-bottom:6px">Campaña activa</div>
-          <div style="font-size:18px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px" id="cNombre">—</div>
-          <div style="font-size:12px;opacity:.7;margin-bottom:14px" id="cFechas">—</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <div id="cDuracion" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:#ffffff1a;border:1px solid #ffffff22">—</div>
-            <div id="cDiasRest" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px">—</div>
+        <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.6;margin-bottom:8px">Campaña activa</div>
+            <div style="font-size:26px;font-weight:700;letter-spacing:-.5px" id="cNombre">—</div>
+          </div>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;flex-shrink:0">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6">Fechas</div>
+              <div style="font-size:13px;font-weight:500;opacity:.9" id="cFechas">—</div>
+            </div>
+            <div style="width:1px;background:#ffffff20;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6">Duración</div>
+              <div style="font-size:22px;font-weight:700;line-height:1" id="cDuracionNum">—</div>
+              <div style="font-size:10px;opacity:.6">días de campaña</div>
+            </div>
+            <div style="width:1px;background:#ffffff20;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6">Tiempo restante</div>
+              <div style="font-size:22px;font-weight:700;line-height:1" id="cDiasRestNum">—</div>
+              <div style="font-size:10px;opacity:.6" id="cDiasRestLbl">días restantes</div>
+            </div>
           </div>
         </div>
 
@@ -352,20 +367,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
         <!-- KPIs leads -->
         <div class="kpi-row">
-          <div class="kpi k-navy"><div class="kl">Leads META</div><div class="kv" id="kLeadsMeta">—</div><div class="ks">generados en plataforma</div></div>
-          <div class="kpi k-orange"><div class="kl">Leads Kommo</div><div class="kv" id="kLeadsKommo">—</div><div class="ks">registrados en CRM</div></div>
-          <div class="kpi k-danger"><div class="kl">Leads perdidos</div><div class="kv" id="kPerdidos">—</div><div class="ks" id="kPerdSub">—% de leads META</div></div>
-          <div class="kpi k-success"><div class="kl">Tasa de cierre</div><div class="kv" id="kCierre">—</div><div class="ks" id="kCierreSub">—</div></div>
+          <div class="kpi k-navy"><div class="kv" id="kLeadsMeta">—</div><div class="kl" style="margin-top:6px;min-height:auto">Leads generados en META</div></div>
+          <div class="kpi k-orange"><div class="kv" id="kLeadsKommo">—</div><div class="kl" style="margin-top:6px;min-height:auto">Leads registrados en Kommo</div></div>
+          <div class="kpi k-danger"><div class="kv" id="kPerdidos">—</div><div class="kl" style="margin-top:6px;min-height:auto" id="kPerdSub">—% de leads perdidos</div></div>
+          <div class="kpi k-success"><div class="kv" id="kCierre">—</div><div class="kl" style="margin-top:6px;min-height:auto">Tasa de cierre</div></div>
         </div>
 
         <!-- Leads compare + costos -->
         <div class="chart-grid-1-2">
           <div class="card" style="margin-bottom:0">
-            <div class="viz-label"><span class="dot" style="background:var(--navy)"></span>META vs. Kommo vs. Perdidos</div>
+            <div class="viz-label"><span class="dot" style="background:var(--navy)"></span>Diferencia de leads entre plataformas</div>
             <div class="lead-bars" id="leadBars">
-              <div class="lbrow"><span class="lbl-lbl">META</span><div class="lbtrack"><div class="lbfill" id="lbMeta" style="width:0%;background:var(--navy)"><span id="lbMetaTxt"></span></div></div><span class="lbnum" id="lbMetaN">—</span></div>
-              <div class="lbrow"><span class="lbl-lbl">Kommo</span><div class="lbtrack"><div class="lbfill" id="lbKommo" style="width:0%;background:var(--orange)"><span id="lbKommoTxt"></span></div></div><span class="lbnum" id="lbKommoN">—</span></div>
-              <div class="lbrow"><span class="lbl-lbl">Perdidos</span><div class="lbtrack"><div class="lbfill" id="lbPerd" style="width:0%;background:var(--danger)"><span id="lbPerdTxt"></span></div></div><span class="lbnum" id="lbPerdN">—</span></div>
+              <div class="lbrow"><span class="lbl-lbl">META</span><div class="lbtrack"><div class="lbfill" id="lbMeta" style="width:0%;background:var(--navy)"></div></div><span class="lbnum" id="lbMetaN">—</span></div>
+              <div class="lbrow"><span class="lbl-lbl">Kommo</span><div class="lbtrack"><div class="lbfill" id="lbKommo" style="width:0%;background:var(--orange)"></div></div><span class="lbnum" id="lbKommoN">—</span></div>
+              <div class="lbrow"><span class="lbl-lbl">Perdidos</span><div class="lbtrack"><div class="lbfill" id="lbPerd" style="width:0%;background:var(--danger)"></div></div><span class="lbnum" id="lbPerdN">—</span></div>
             </div>
           </div>
           <div class="card" style="margin-bottom:0">
@@ -380,13 +395,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
         <!-- Inscritos por programa -->
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-            <span style="font-size:13px;font-weight:600;color:var(--text)">Inscritos por programa vs. meta</span>
-            <span style="font-size:12px;color:var(--muted)">Meta total: <b id="metaTot">—</b></span>
-          </div>
-          <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:12px">
-            <span><span style="width:10px;height:10px;border-radius:3px;background:var(--success);display:inline-block;margin-right:4px;vertical-align:middle"></span>Inscritos</span>
-            <span><span style="width:10px;height:10px;border-radius:3px;background:var(--border);display:inline-block;margin-right:4px;vertical-align:middle"></span>Pendiente para meta</span>
+          <div style="margin-bottom:14px">
+            <span style="font-size:13px;font-weight:600;color:var(--text)">Inscritos por programa</span>
           </div>
           <div id="progBars"></div>
         </div>
@@ -400,10 +410,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
               <div class="cs" id="tcSub">inscritos / leads META</div>
             </div>
             <div class="cierre-bar-wrap">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+                <span style="font-size:11px;color:var(--muted)">Avance hacia meta del <b id="tcMeta">3%</b></span>
+                <span style="font-size:11px;color:var(--muted)" id="tcDetail">—</span>
+              </div>
               <div class="cierre-track">
                 <div class="cierre-fill" id="tcFill" style="width:0%;background:var(--navy)"><span id="tcFillLbl">—</span></div>
               </div>
-              <div class="cierre-bottom"><span>0%</span><span id="tcDetail">—</span><span>100%</span></div>
+              <div class="cierre-bottom"><span>0%</span><span style="color:var(--warning);font-weight:600">▲ Meta 3%</span><span>100% de la meta</span></div>
             </div>
           </div>
         </div>
@@ -749,15 +763,20 @@ function renderCampanaDetalle(nombre, rows) {
 
   setText('cNombre', nombre);
   setText('cFechas', fmtDate(fi) + ' → ' + fmtDate(ff));
-  setText('cDuracion', durDias != null ? durDias + ' días de campaña' : '—');
+  setText('cDuracionNum', durDias != null ? durDias : '—');
 
-  const drEl = document.getElementById('cDiasRest');
-  if (diasRest != null) {
-    drEl.textContent = diasRest >= 0 ? 'Faltan ' + diasRest + ' días' : 'Terminó hace ' + Math.abs(diasRest) + ' días';
-    const c = diasRest < 0 ? 'background:#EF444422;border:1px solid #EF444455;color:#FCA5A5' :
-              diasRest < 7 ? 'background:#F59E0B22;border:1px solid #F59E0B55;color:#FCD34D' :
-                             'background:#10B98122;border:1px solid #10B98155;color:#6EE7B7';
-    drEl.style.cssText = 'font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;' + c;
+  const drNumEl = document.getElementById('cDiasRestNum');
+  const drLblEl = document.getElementById('cDiasRestLbl');
+  if (diasRest != null && drNumEl && drLblEl) {
+    if (diasRest >= 0) {
+      drNumEl.textContent = diasRest;
+      drNumEl.style.color = diasRest < 7 ? '#FCD34D' : '#6EE7B7';
+      drLblEl.textContent = 'días restantes';
+    } else {
+      drNumEl.textContent = Math.abs(diasRest);
+      drNumEl.style.color = '#FCA5A5';
+      drLblEl.textContent = 'días transcurridos';
+    }
   }
 
   // Presupuesto (suma de todas las filas de la campaña)
@@ -794,15 +813,15 @@ function renderCampanaDetalle(nombre, rows) {
 
   // Barras comparativo
   const maxL = Math.max(leadsMeta, 1);
-  [['lbMeta','lbMetaTxt','lbMetaN', leadsMeta,  '#1D245C'],
-   ['lbKommo','lbKommoTxt','lbKommoN', leadsKommo,'var(--orange)'],
-   ['lbPerd','lbPerdTxt','lbPerdN',  perdidos,  'var(--danger)']
-  ].forEach(([bid, tid, nid, val, color]) => {
+  [['lbMeta','lbMetaN', leadsMeta,  '#1D245C'],
+   ['lbKommo','lbKommoN', leadsKommo,'var(--orange)'],
+   ['lbPerd','lbPerdN',  perdidos,  'var(--danger)']
+  ].forEach(([bid, nid, val, color]) => {
     const p = Math.round(val/maxL*100);
-    document.getElementById(bid).style.width = p + '%';
-    document.getElementById(bid).style.background = color;
-    document.getElementById(tid).textContent = val > 0 && p > 15 ? val : '';
-    document.getElementById(nid).textContent = numF(val);
+    const barEl = document.getElementById(bid);
+    const numEl = document.getElementById(nid);
+    if (barEl) { barEl.style.width = p + '%'; barEl.style.background = color; }
+    if (numEl) numEl.textContent = numF(val);
   });
 
   // Costos
@@ -838,16 +857,20 @@ function renderCampanaDetalle(nombre, rows) {
     cont.appendChild(div);
   });
 
-  // Tasa de cierre
-  const cierrePct = cierre != null ? Math.round(cierre * 100) : 0;
-  const cc = barColor(cierre || 0);
+  // Tasa de cierre (meta = 3%)
+  const META_CIERRE = 0.03;
+  const cierrePct    = cierre != null ? cierre * 100 : 0;
+  const cierreVsMeta = META_CIERRE > 0 ? Math.min(100, Math.round(cierrePct / (META_CIERRE * 100) * 100)) : 0;
+  const faltaPct     = Math.max(0, META_CIERRE * 100 - cierrePct);
+  const cc = cierrePct >= META_CIERRE * 100 ? 'var(--success)' : cierrePct >= META_CIERRE * 100 * 0.6 ? 'var(--warning)' : 'var(--danger)';
   setText('tcVal', pctF(cierre));
   setStyle('tcVal', 'color', cc);
-  setText('tcSub', numF(inscritos) + ' inscritos de ' + numF(leadsMeta) + ' leads');
-  setStyle('tcFill', 'width', Math.min(100, cierrePct) + '%');
+  setText('tcSub', numF(inscritos) + ' inscritos de ' + numF(leadsMeta) + ' leads · Meta: 3%');
+  setStyle('tcFill', 'width', cierreVsMeta + '%');
   setStyle('tcFill', 'background', cc);
-  setText('tcFillLbl', cierrePct + '%');
-  setText('tcDetail', numF(inscritos) + ' / ' + numF(leadsMeta));
+  setText('tcFillLbl', cierrePct.toFixed(1) + '%');
+  setText('tcDetail', 'Faltan ' + faltaPct.toFixed(1) + 'pp para la meta del 3%');
+  setText('tcMeta', '3%');
 }
 
 // ── TAB 02: CONTENIDO ─────────────────────────────────────
