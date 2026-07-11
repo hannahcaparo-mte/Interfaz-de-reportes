@@ -290,22 +290,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
     <!-- HERO -->
     <div class="block-hero">
-            <div class="bh-title">Bloque Comercial: Captación, seguimiento y conversión</div>
-      
+      <div class="bh-eye">Bloque 01 · Comercial</div>
+      <div class="bh-title">Captación, seguimiento y conversión</div>
+      <div class="bh-sub">Desde el anuncio en META hasta la matrícula. Datos en tiempo real desde Google Sheets.</div>
       <div class="bh-meta">
-        
+        <div><span class="n">7</span><span class="l">Reportes</span></div>
+        <div><span class="n" id="heroTotalLeads">—</span><span class="l">Leads totales</span></div>
+        <div><span class="n" id="heroTotalInscritos">—</span><span class="l">Inscritos</span></div>
+        <div><span class="n" id="heroTotalGasto">—</span><span class="l">Invertido</span></div>
       </div>
     </div>
 
     <!-- TABS -->
     <div class="report-tabs">
-      <div class="rtab active" onclick="showTab('Campanas Activas')"><span class="dot"></span><span class="tn">01</span> Campañas activas</div>
-      <div class="rtab" onclick="showTab('Contenido')"><span class="dot"></span><span class="tn">02</span> Contenido</div>
-      <div class="rtab" onclick="showTab('Embudo comercial')"><span class="dot"></span><span class="tn">03</span> Embudo comercial</div>
-      <div class="rtab" onclick="showTab('Performance')"><span class="dot"></span><span class="tn">04</span> Performance</div>
-      <div class="rtab" onclick="showTab('Demos')"><span class="dot"></span><span class="tn">05</span> Demos</div>
-      <div class="rtab" onclick="showTab('ROAS')"><span class="dot"></span><span class="tn">06</span> ROAS y velocidad</div>
-      <div class="rtab" onclick="showTab('Historico')"><span class="dot"></span><span class="tn">07</span> Histórico</div>
+      <div class="rtab active" onclick="showTab('campanas')"><span class="dot"></span><span class="tn">01</span> Campañas activas</div>
+      <div class="rtab" onclick="showTab('contenido')"><span class="dot"></span><span class="tn">02</span> Contenido</div>
+      <div class="rtab" onclick="showTab('embudo')"><span class="dot"></span><span class="tn">03</span> Embudo comercial</div>
+      <div class="rtab" onclick="showTab('performance')"><span class="dot"></span><span class="tn">04</span> Performance</div>
+      <div class="rtab" onclick="showTab('demos')"><span class="dot"></span><span class="tn">05</span> Demos</div>
+      <div class="rtab" onclick="showTab('roas')"><span class="dot"></span><span class="tn">06</span> ROAS y velocidad</div>
+      <div class="rtab" onclick="showTab('historico')"><span class="dot"></span><span class="tn">07</span> Histórico</div>
     </div>
 
     <!-- ══ TAB 01: CAMPAÑAS ACTIVAS ══════════════════════ -->
@@ -580,10 +584,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 const SHEET_ID = '1pszZzjm_dW88t56E3eVO-lK_C8Was3MuhvkD4HrUtYI';
 const AUTO_MS  = 60 * 1000; // auto-refresh cada 60 s
 
-const TABS = ['Campañas','Contenido','Embudo','Performance','Demos','ROAS','Historico'];
+const TABS = ['Campanas','Contenido','Embudo','Performance','Demos','ROAS','Historico'];
 
 let DB = {};       // { Campañas: [...], Contenido: [...], ... }
 let isLoading = false;
+
+// ══════════════════════════════════════════════════════════
+//  HELPER DEFENSIVO
+// ══════════════════════════════════════════════════════════
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function setStyle(id, prop, val) {
+  const el = document.getElementById(id);
+  if (el) el.style[prop] = val;
+}
 
 // ══════════════════════════════════════════════════════════
 //  FETCH TODAS LAS HOJAS
@@ -687,20 +703,23 @@ function renderAll() {
 
 // ── HERO TOTALES ──────────────────────────────────────────
 function renderHero() {
-  const rows = DB['Campañas'] || [];
+  const rows = DB['Campanas'] || [];
   const totalLeads = rows.reduce((s,r) => s + (Number(r['Leads plataforma']) || 0), 0);
   const totalInsc  = rows.reduce((s,r) => s + (Number(r['Inscritos']) || 0), 0);
   const totalGasto = rows.reduce((s,r) => s + (Number(r['Monto gastado']) || 0), 0);
-  document.getElementById('heroTotalLeads').textContent     = totalLeads > 0 ? numF(totalLeads) : '—';
-  document.getElementById('heroTotalInscritos').textContent = totalInsc > 0  ? numF(totalInsc)  : '—';
-  document.getElementById('heroTotalGasto').textContent     = totalGasto > 0 ? money(totalGasto) : '—';
+  const elLeads  = document.getElementById('heroTotalLeads');
+  const elInsc   = document.getElementById('heroTotalInscritos');
+  const elGasto  = document.getElementById('heroTotalGasto');
+  if (elLeads)  elLeads.textContent  = totalLeads > 0 ? numF(totalLeads)  : '—';
+  if (elInsc)   elInsc.textContent   = totalInsc  > 0 ? numF(totalInsc)   : '—';
+  if (elGasto)  elGasto.textContent  = totalGasto > 0 ? money(totalGasto) : '—';
 }
 
 // ── TAB 01: CAMPAÑAS ──────────────────────────────────────
 function renderCampanas() {
-  const rows = DB['Campañas'] || [];
-  document.getElementById('campanas-loading').style.display = 'none';
-  document.getElementById('campanas-content').style.display = rows.length ? 'block' : 'none';
+  const rows = DB['Campanas'] || [];
+  setStyle('campanas-loading', 'display', 'none');
+  setStyle('campanas-content', 'display', rows.length ? 'block' : 'none');
   if (!rows.length) return;
 
   // Agrupar campañas únicas
@@ -728,9 +747,9 @@ function renderCampanaDetalle(nombre, rows) {
   const durDias = (fi && ff) ? Math.round((ff-fi)/864e5) : null;
   const diasRest = ff ? Math.ceil((ff-hoy)/864e5) : null;
 
-  document.getElementById('cNombre').textContent = nombre;
-  document.getElementById('cFechas').textContent = fmtDate(fi) + ' → ' + fmtDate(ff);
-  document.getElementById('cDuracion').textContent = durDias != null ? durDias + ' días de campaña' : '—';
+  setText('cNombre', nombre);
+  setText('cFechas', fmtDate(fi) + ' → ' + fmtDate(ff));
+  setText('cDuracion', durDias != null ? durDias + ' días de campaña' : '—');
 
   const drEl = document.getElementById('cDiasRest');
   if (diasRest != null) {
@@ -746,17 +765,17 @@ function renderCampanaDetalle(nombre, rows) {
   const gastado  = campRows.reduce((s,r) => s + (Number(r['Monto gastado'])    || 0), 0);
   const rest = invertir - gastado;
   const budPct = invertir ? Math.min(100, Math.round(gastado/invertir*100)) : 0;
-  document.getElementById('bInvertir').textContent = money(invertir);
-  document.getElementById('bGastado').textContent  = money(gastado);
-  document.getElementById('bRest').textContent     = money(Math.abs(rest));
+  setText('bInvertir', money(invertir));
+  setText('bGastado', money(gastado));
+  setText('bRest', money(Math.abs(rest)));
   const rb = document.getElementById('bRestBox');
   rb.querySelector('.bl').textContent = rest >= 0 ? 'Disponible' : 'Sobrepasado';
   rb.className = 'ba ' + (rest < 0 ? 'danger' : rest < invertir * .1 ? 'warn' : 'ok');
   const bar = document.getElementById('budBar');
   bar.style.width = budPct + '%';
   bar.className = 'prog-fill' + (budPct >= 100 ? ' over' : budPct >= 85 ? ' almost' : '');
-  document.getElementById('bPct').textContent     = budPct + '% ejecutado';
-  document.getElementById('bRestLabel').textContent = rest >= 0 ? money(rest) + ' disponible' : money(Math.abs(rest)) + ' sobrepasado';
+  setText('bPct', budPct + '% ejecutado');
+  setText('bRestLabel', rest >= 0 ? money(rest) + ' disponible' : money(Math.abs(rest)) + ' sobrepasado');
 
   // KPIs leads
   const leadsMeta  = campRows.reduce((s,r) => s + (Number(r['Leads plataforma']) || 0), 0);
@@ -766,12 +785,12 @@ function renderCampanaDetalle(nombre, rows) {
   const inscritos  = campRows.reduce((s,r) => s + (Number(r['Inscritos'])        || 0), 0);
   const cierre     = leadsMeta ? inscritos / leadsMeta : null;
 
-  document.getElementById('kLeadsMeta').textContent  = numF(leadsMeta);
-  document.getElementById('kLeadsKommo').textContent = numF(leadsKommo);
-  document.getElementById('kPerdidos').textContent   = numF(perdidos);
-  document.getElementById('kPerdSub').textContent    = pctF(pctPerd) + ' de leads META';
-  document.getElementById('kCierre').textContent    = pctF(cierre);
-  document.getElementById('kCierreSub').textContent = numF(inscritos) + ' inscritos / ' + numF(leadsMeta) + ' leads';
+  setText('kLeadsMeta', numF(leadsMeta));
+  setText('kLeadsKommo', numF(leadsKommo));
+  setText('kPerdidos', numF(perdidos));
+  setText('kPerdSub', pctF(pctPerd) + ' de leads META');
+  setText('kCierre', pctF(cierre));
+  setText('kCierreSub', numF(inscritos) + ' inscritos / ' + numF(leadsMeta) + ' leads');
 
   // Barras comparativo
   const maxL = Math.max(leadsMeta, 1);
@@ -790,13 +809,13 @@ function renderCampanaDetalle(nombre, rows) {
   const cpl  = leadsMeta  ? gastado / leadsMeta  : null;
   const cplk = leadsKommo ? gastado / leadsKommo : null;
   const cpa  = inscritos  ? gastado / inscritos  : null;
-  document.getElementById('cCPL').textContent  = money(cpl);
-  document.getElementById('cCPLK').textContent = money(cplk);
-  document.getElementById('cCPA').textContent  = money(cpa);
+  setText('cCPL', money(cpl));
+  setText('cCPLK', money(cplk));
+  setText('cCPA', money(cpa));
 
   // Inscritos por programa (barra dual)
   const metaTot = campRows.reduce((s,r) => s + (Number(r['Meta inscritos']) || 0), 0);
-  document.getElementById('metaTot').textContent = numF(metaTot) + ' inscritos';
+  setText('metaTot', numF(metaTot) + ' inscritos');
   const cont = document.getElementById('progBars');
   cont.innerHTML = '';
   campRows.forEach(r => {
@@ -822,13 +841,13 @@ function renderCampanaDetalle(nombre, rows) {
   // Tasa de cierre
   const cierrePct = cierre != null ? Math.round(cierre * 100) : 0;
   const cc = barColor(cierre || 0);
-  document.getElementById('tcVal').textContent   = pctF(cierre);
-  document.getElementById('tcVal').style.color   = cc;
-  document.getElementById('tcSub').textContent   = numF(inscritos) + ' inscritos de ' + numF(leadsMeta) + ' leads';
-  document.getElementById('tcFill').style.width  = Math.min(100, cierrePct) + '%';
-  document.getElementById('tcFill').style.background = cc;
-  document.getElementById('tcFillLbl').textContent   = cierrePct + '%';
-  document.getElementById('tcDetail').textContent    = numF(inscritos) + ' / ' + numF(leadsMeta);
+  setText('tcVal', pctF(cierre));
+  setStyle('tcVal', 'color', cc);
+  setText('tcSub', numF(inscritos) + ' inscritos de ' + numF(leadsMeta) + ' leads');
+  setStyle('tcFill', 'width', Math.min(100, cierrePct) + '%');
+  setStyle('tcFill', 'background', cc);
+  setText('tcFillLbl', cierrePct + '%');
+  setText('tcDetail', numF(inscritos) + ' / ' + numF(leadsMeta));
 }
 
 // ── TAB 02: CONTENIDO ─────────────────────────────────────
@@ -852,10 +871,10 @@ function renderContenido() {
   const totalImpresiones = rows.reduce((s,r) => s + (Number(r['Impresiones']) || 0), 0);
   const totalLeads = rows.reduce((s,r) => s + (Number(r['Leads']) || 0), 0);
 
-  document.getElementById('contenidoTipoTop').textContent   = tipoTop ? tipoTop[0] : '—';
-  document.getElementById('contenidoAlcance').textContent   = numF(Math.round(totalAlcance / (rows.length || 1)));
-  document.getElementById('contenidoReaccion').textContent  = totalImpresiones ? pctF(rows.reduce((s,r) => s + (Number(r['Reacciones']) || 0), 0) / totalImpresiones) : '—';
-  document.getElementById('contenidoLeadsPieza').textContent = numF(Math.round(totalLeads / (rows.length || 1)));
+  setText('contenidoTipoTop', tipoTop ? tipoTop[0] : '—');
+  setText('contenidoAlcance', numF(Math.round(totalAlcance / (rows.length || 1))));
+  setText('contenidoReaccion', totalImpresiones ? pctF(rows.reduce((s,r) => s + (Number(r['Reacciones']) || 0), 0) / totalImpresiones) : '—');
+  setText('contenidoLeadsPieza', numF(Math.round(totalLeads / (rows.length || 1))));
 
   tbody.innerHTML = rows.map(r => `
     <tr>
@@ -882,10 +901,10 @@ function renderEmbudo() {
   const totDesc = rows.reduce((s,r) => s + (Number(r['No interesados'])||0), 0);
   const totEnCurso = totLeads - totContact;
 
-  document.getElementById('embudoContactab').textContent = totLeads ? pctF(totContact/totLeads) : '—';
-  document.getElementById('embudoInteres').textContent   = totContact ? pctF(totInteres/totContact) : '—';
-  document.getElementById('embudoDescarte').textContent  = totLeads ? pctF(totDesc/totLeads) : '—';
-  document.getElementById('embudoEnCurso').textContent   = numF(Math.max(0, totEnCurso));
+  setText('embudoContactab', totLeads ? pctF(totContact/totLeads) : '—');
+  setText('embudoInteres', totContact ? pctF(totInteres/totContact) : '—');
+  setText('embudoDescarte', totLeads ? pctF(totDesc/totLeads) : '—');
+  setText('embudoEnCurso', numF(Math.max(0, totEnCurso)));
 
   tbody.innerHTML = rows.map(r => {
     const leads = Number(r['Leads'])||0;
@@ -928,10 +947,10 @@ function renderPerformance() {
     return tasa > (best.tasa||0) ? { nombre: r['Comercial'], tasa } : best;
   }, {});
 
-  document.getElementById('perfMejorContact').textContent   = mejorContact.nombre || '—';
-  document.getElementById('perfMejorConv').textContent      = mejorConv.nombre || '—';
-  document.getElementById('perfTiempoLlamada').textContent  = '—';
-  document.getElementById('perfCumplenMeta').textContent    = cumplen + ' / ' + rows.length;
+  setText('perfMejorContact', mejorContact.nombre || '—');
+  setText('perfMejorConv', mejorConv.nombre || '—');
+  setText('perfTiempoLlamada', '—');
+  setText('perfCumplenMeta', cumplen + ' / ' + rows.length);
 
   tbody.innerHTML = rows.map(r => {
     const leads = Number(r['Leads asignados'])||0;
@@ -968,10 +987,10 @@ function renderDemos() {
   const notas        = rows.filter(r => r['Nota satisfacción']).map(r => Number(r['Nota satisfacción']));
   const notaProm     = notas.length ? notas.reduce((s,n) => s+n, 0)/notas.length : null;
 
-  document.getElementById('demosTasaAsist').textContent   = totInscritos ? pctF(totAsistentes/totInscritos) : '—';
-  document.getElementById('demosMatriculados').textContent= totAsistentes ? pctF(totMatric/totAsistentes) : '—';
-  document.getElementById('demosNota').textContent        = notaProm != null ? notaProm.toFixed(1) + ' / 5' : '—';
-  document.getElementById('demosTotal').textContent       = numF(rows.length);
+  setText('demosTasaAsist', totInscritos ? pctF(totAsistentes/totInscritos) : '—');
+  setText('demosMatriculados', totAsistentes ? pctF(totMatric/totAsistentes) : '—');
+  setText('demosNota', notaProm != null ? notaProm.toFixed(1) + ' / 5' : '—');
+  setText('demosTotal', numF(rows.length));
 
   tbody.innerHTML = rows.map(r => {
     const ins  = Number(r['Inscritos demo'])||0;
@@ -1012,10 +1031,10 @@ function renderROAS() {
   const roasProm   = totGasto ? totIng / totGasto : null;
   const mejorRoas  = rowsCalc.reduce((best, r) => r._roas > (best._roas||0) ? r : best, {});
 
-  document.getElementById('roasPromedio').textContent  = roasProm != null ? roasProm.toFixed(2) + 'x' : '—';
-  document.getElementById('roasMejorProg').textContent = mejorRoas['Programa'] || '—';
-  document.getElementById('roasGastoTotal').textContent= money(totGasto);
-  document.getElementById('roasIngresos').textContent  = money(totIng);
+  setText('roasPromedio', roasProm != null ? roasProm.toFixed(2) + 'x' : '—');
+  setText('roasMejorProg', mejorRoas['Programa'] || '—');
+  setText('roasGastoTotal', money(totGasto));
+  setText('roasIngresos', money(totIng));
 
   tbody.innerHTML = rowsCalc.map(r => {
     const roas = r._roas;
@@ -1047,10 +1066,10 @@ function renderHistorico() {
   const totGasto = rows.reduce((s,r) => s + (Number(r['Gasto'])||0), 0);
   const cplHist  = totLeads ? totGasto / totLeads : null;
 
-  document.getElementById('histLeads').textContent    = numF(totLeads);
-  document.getElementById('histInscritos').textContent= numF(totInsc);
-  document.getElementById('histGasto').textContent    = money(totGasto);
-  document.getElementById('histCPL').textContent      = money(cplHist);
+  setText('histLeads', numF(totLeads));
+  setText('histInscritos', numF(totInsc));
+  setText('histGasto', money(totGasto));
+  setText('histCPL', money(cplHist));
 
   tbody.innerHTML = rows.map(r => `<tr>
     <td class="td-bold">${r['Mes']||'—'}</td>
