@@ -324,15 +324,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
   <div class="content">
 
     <!-- HERO -->
-    <div class="block-hero">
-      <div class="bh-eye">Bloque 01 · Comercial</div>
-      <div class="bh-title">Captación, seguimiento y conversión</div>
-      <div class="bh-sub">Desde el anuncio en META hasta la matrícula. Datos en tiempo real desde Google Sheets.</div>
-      <div class="bh-meta">
-        <div><span class="n">7</span><span class="l">Reportes</span></div>
-        <div><span class="n" id="heroTotalLeads">—</span><span class="l">Leads totales</span></div>
-        <div><span class="n" id="heroTotalInscritos">—</span><span class="l">Inscritos</span></div>
-        <div><span class="n" id="heroTotalGasto">—</span><span class="l">Invertido</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px">
+      <div>
+        <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)">Bloque Comercial</span>
+        <h1 style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.4px;margin-top:2px">Captación, seguimiento y conversión de leads</h1>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Leads totales</span>
+          <span style="font-size:18px;font-weight:700;color:var(--navy)" id="heroTotalLeads">—</span>
+        </div>
+        <div style="width:1px;background:var(--border)"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Inscritos</span>
+          <span style="font-size:18px;font-weight:700;color:var(--success-tx)" id="heroTotalInscritos">—</span>
+        </div>
+        <div style="width:1px;background:var(--border)"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Invertido</span>
+          <span style="font-size:18px;font-weight:700;color:var(--orange-tx)" id="heroTotalGasto">—</span>
+        </div>
       </div>
     </div>
 
@@ -556,7 +567,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
       <!-- Resumen global de todas las campañas -->
       <div class="perf-resumen">
-        <div class="pr-title">Resumen global — todas las campañas</div>
+        <div class="pr-title">Resumen de la campaña: <span id="prCampNombre" style="opacity:1;color:#6EE7B7">—</span></div>
         <div class="pr-kpis">
           <div class="pr-kpi"><span class="pkl">Total leads</span><span class="pkv" id="prLeads">—</span><span class="pks">asignados</span></div>
           <div class="pr-kpi"><span class="pkl">Total inscritos</span><span class="pkv" id="prInscritos">—</span><span class="pks">sobre todas las metas</span></div>
@@ -1016,14 +1027,16 @@ function renderPerformance() {
     return;
   }
 
-  // Poblar selector de campaña
+  // Poblar selector de campaña (sin "Todas" — siempre una campaña a la vez)
   const sel = document.getElementById('perfCampSelect');
-  const camps = ['Todas', ...new Set(allRows.map(r => r['Campaña']).filter(Boolean))];
+  const camps = [...new Set(allRows.map(r => r['Campaña']).filter(Boolean))];
   if (sel.options.length !== camps.length) {
+    const prev = sel.value;
     sel.innerHTML = camps.map(c => `<option value="${c}">${c}</option>`).join('');
+    if (camps.includes(prev)) sel.value = prev;
   }
-  const campFil = sel.value || 'Todas';
-  const rows = campFil === 'Todas' ? allRows : allRows.filter(r => r['Campaña'] === campFil);
+  const campFil = sel.value || camps[0] || '';
+  const rows = allRows.filter(r => r['Campaña'] === campFil);
 
   // Ordenar
   const sortBy = document.getElementById('perfSort')?.value || 'inscritos';
@@ -1060,8 +1073,8 @@ function renderPerformance() {
     const avP    = Math.round(av * 100);
     const col    = barColor(av);
     const cierre = leads ? insc/leads : 0;
-    const cierreP= Math.round(cierre * 100);
-    const cierreCol = cierreP >= 3 ? 'var(--success)' : cierreP >= 1.5 ? 'var(--warning)' : 'var(--danger)';
+    const cierreP= Math.round(cierre * 10000) / 100; // 2 decimales
+    const cierreCol = cierreP >= 3 ? 'var(--success)' : cierreP >= 1 ? 'var(--warning)' : 'var(--danger)';
     const pendTgt = Math.max(0, tgt - insc);
 
     const card = document.createElement('div');
@@ -1103,7 +1116,7 @@ function renderPerformance() {
         </div>
         <div class="perf-stat" style="background:${cierreCol}18;border:1px solid ${cierreCol}40">
           <span class="psl" style="color:${cierreCol}">Tasa cierre</span>
-          <span class="psv" style="color:${cierreCol}">${cierreP}%</span>
+          <span class="psv" style="color:${cierreCol}">${cierreP.toFixed(2)}%</span>
         </div>
       </div>
 
@@ -1147,10 +1160,10 @@ function renderPerformance() {
     container.appendChild(card);
   });
 
-  renderPerfGlobal(allRows);
+  renderPerfGlobal(rows, campFil);
 }
 
-function renderPerfGlobal(rows) {
+function renderPerfGlobal(rows, campNombre) {
   const totLeads  = rows.reduce((s,r) => s + (Number(r['Leads asignados'])||0), 0);
   const totInsc   = rows.reduce((s,r) => s + (Number(r['Inscritos'])||0), 0);
   const totTibios = rows.reduce((s,r) => s + (Number(r['Tibios'])||0), 0);
@@ -1158,9 +1171,10 @@ function renderPerfGlobal(rows) {
   const totPagar  = rows.reduce((s,r) => s + (Number(r['Por pagar'])||0), 0);
   const cierre    = totLeads ? totInsc/totLeads : 0;
 
+  setText('prCampNombre', campNombre || '—');
   setText('prLeads',    numF(totLeads));
   setText('prInscritos',numF(totInsc));
-  setText('prCierre',   Math.round(cierre*100) + '%');
+  setText('prCierre',   (Math.round(cierre*10000)/100).toFixed(2) + '%');
   setText('prTibios',   numF(totTibios));
   setText('prPagar',    numF(totPagar));
 
