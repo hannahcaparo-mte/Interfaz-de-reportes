@@ -188,6 +188,41 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .td-muted{color:var(--muted)}
 .td-bold{font-weight:600}
 
+/* ══ PERFORMANCE ════════════════════════════════════════ */
+.perf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:20px}
+.perf-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.perf-card-header{display:flex;justify-content:space-between;align-items:flex-start}
+.perf-name{font-size:16px;font-weight:700;color:var(--text)}
+.perf-camp{font-size:11px;color:var(--muted);margin-top:2px}
+.perf-badge-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.perf-avance-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.perf-avance-val{font-size:22px;font-weight:700;line-height:1}
+.perf-track{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border);display:flex}
+.perf-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.perf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.perf-stat{background:var(--bg);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.perf-stat .psl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.perf-stat .psv{font-size:17px;font-weight:700;color:var(--text)}
+.perf-pipeline{display:flex;gap:6px;flex-wrap:wrap}
+.pp-badge{font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;display:flex;align-items:center;gap:5px}
+.pp-badge .ppn{font-size:13px;font-weight:700}
+.pp-tibio{background:var(--orange-bg);color:var(--orange-tx)}
+.pp-cal{background:var(--danger-bg);color:var(--danger-tx)}
+.pp-pagar{background:var(--purple-bg);color:var(--purple-tx)}
+.perf-mini-bars{display:flex;flex-direction:column;gap:6px}
+.pmb-row{display:flex;align-items:center;gap:8px}
+.pmb-lbl{font-size:10px;color:var(--muted);min-width:70px}
+.pmb-track{flex:1;height:12px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.pmb-fill{height:100%;border-radius:6px;transition:width .5s ease}
+.pmb-val{font-size:10px;font-weight:600;color:var(--text);min-width:28px;text-align:right}
+.perf-resumen{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:var(--radius);padding:22px 24px;color:#fff;margin-bottom:16px}
+.pr-title{font-size:13px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.pr-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.pr-kpi{display:flex;flex-direction:column;gap:4px}
+.pr-kpi .pkl{font-size:10px;opacity:.6;text-transform:uppercase;letter-spacing:.06em}
+.pr-kpi .pkv{font-size:22px;font-weight:700;line-height:1}
+.pr-kpi .pks{font-size:11px;opacity:.65}
+
 /* ══ TASA DE CIERRE BAR ══════════════════════════════════ */
 .cierre-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .cierre-meta .cl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
@@ -499,22 +534,40 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
     <!-- ══ TAB 04: PERFORMANCE ════════════════════════════ -->
     <div class="rpanel" id="tab-performance">
-      <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Rendimiento por comercial</div><div class="card-sub">¿Qué comercial tiene mayor productividad y mejor tasa de conversión?</div></div>
-          <div class="meta-tags"><span class="mtag src">Kommo + Sistema</span><span class="mtag frq">🔄 Semanal</span></div>
-        </div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kl">Mejor contactabilidad</div><div class="kv" id="perfMejorContact">—</div></div>
-          <div class="kpi k-success"><div class="kl">Mejor conversión</div><div class="kv" id="perfMejorConv">—</div></div>
-          <div class="kpi"><div class="kl">Tiempo prom. llamada</div><div class="kv" id="perfTiempoLlamada">—</div></div>
-          <div class="kpi k-warning"><div class="kl">Cumplen meta</div><div class="kv" id="perfCumplenMeta">—</div></div>
-        </div>
-        <div class="tbl-wrap">
-          <table><thead><tr><th>Comercial</th><th>Asignados</th><th>Contactados</th><th>Interesados</th><th>Tibios</th><th>Calientes</th><th>Por pagar</th><th>Inscritos</th><th>Meta</th><th>% Avance</th><th>Tasa cierre</th></tr></thead>
-          <tbody id="perfTbody"><tr><td colspan="11" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr></tbody></table>
-        </div>
+
+      <!-- Selector de campaña -->
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+        <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
+        <select id="perfCampSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px" onchange="renderPerformance()"></select>
+        <label style="font-size:12px;color:var(--muted);font-weight:600;margin-left:8px">Ordenar por:</label>
+        <select id="perfSort" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer" onchange="renderPerformance()">
+          <option value="inscritos">Inscritos</option>
+          <option value="avance">% Avance meta</option>
+          <option value="cierre">Tasa de cierre</option>
+          <option value="leads">Leads asignados</option>
+        </select>
+        <div class="meta-tags" style="margin-left:auto"><span class="mtag src">Kommo + Sistema</span><span class="mtag frq">🔄 Semanal</span></div>
       </div>
+
+      <!-- Cards individuales por comercial -->
+      <div class="perf-grid" id="perfCards">
+        <div style="padding:40px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--border);border-radius:var(--radius);grid-column:1/-1">Sin datos aún</div>
+      </div>
+
+      <!-- Resumen global de todas las campañas -->
+      <div class="perf-resumen">
+        <div class="pr-title">Resumen global — todas las campañas</div>
+        <div class="pr-kpis">
+          <div class="pr-kpi"><span class="pkl">Total leads</span><span class="pkv" id="prLeads">—</span><span class="pks">asignados</span></div>
+          <div class="pr-kpi"><span class="pkl">Total inscritos</span><span class="pkv" id="prInscritos">—</span><span class="pks">sobre todas las metas</span></div>
+          <div class="pr-kpi"><span class="pkl">Tasa de cierre</span><span class="pkv" id="prCierre">—</span><span class="pks">inscritos / leads</span></div>
+          <div class="pr-kpi"><span class="pkl">Pipeline tibios</span><span class="pkv" id="prTibios">—</span><span class="pks">en seguimiento</span></div>
+          <div class="pr-kpi"><span class="pkl">Por pagar</span><span class="pkv" id="prPagar">—</span><span class="pks">listos para inscribir</span></div>
+        </div>
+        <div style="height:16px"></div>
+        <div id="perfGlobalBars" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
     </div>
 
     <!-- ══ TAB 05: DEMOS ══════════════════════════════════ -->
@@ -955,49 +1008,181 @@ function renderEmbudo() {
 
 // ── TAB 04: PERFORMANCE ───────────────────────────────────
 function renderPerformance() {
-  const rows = DB['Performance'] || [];
-  const tbody = document.getElementById('perfTbody');
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="padding:24px;text-align:center;color:var(--muted)">Sin datos aún</td></tr>'; return; }
+  const allRows = DB['Performance'] || [];
+  const container = document.getElementById('perfCards');
+  if (!allRows.length) {
+    container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--border);border-radius:var(--radius);grid-column:1/-1">Sin datos aún en la hoja Performance</div>';
+    renderPerfGlobal(allRows);
+    return;
+  }
 
-  const cumplen = rows.filter(r => { const t = Number(r['Target individual'])||0; const i = Number(r['Inscritos'])||0; return t > 0 && i >= t; }).length;
-  const mejorContact = rows.reduce((best, r) => {
-    const leads = Number(r['Leads asignados'])||0;
-    const cont  = Number(r['Contactados'])||0;
-    const tasa  = leads ? cont/leads : 0;
-    return tasa > (best.tasa||0) ? { nombre: r['Comercial'], tasa } : best;
-  }, {});
-  const mejorConv = rows.reduce((best, r) => {
-    const leads = Number(r['Leads asignados'])||0;
-    const insc  = Number(r['Inscritos'])||0;
-    const tasa  = leads ? insc/leads : 0;
-    return tasa > (best.tasa||0) ? { nombre: r['Comercial'], tasa } : best;
-  }, {});
+  // Poblar selector de campaña
+  const sel = document.getElementById('perfCampSelect');
+  const camps = ['Todas', ...new Set(allRows.map(r => r['Campaña']).filter(Boolean))];
+  if (sel.options.length !== camps.length) {
+    sel.innerHTML = camps.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+  const campFil = sel.value || 'Todas';
+  const rows = campFil === 'Todas' ? allRows : allRows.filter(r => r['Campaña'] === campFil);
 
-  setText('perfMejorContact', mejorContact.nombre || '—');
-  setText('perfMejorConv', mejorConv.nombre || '—');
-  setText('perfTiempoLlamada', '—');
-  setText('perfCumplenMeta', cumplen + ' / ' + rows.length);
+  // Ordenar
+  const sortBy = document.getElementById('perfSort')?.value || 'inscritos';
+  const sorted = [...rows].sort((a, b) => {
+    const getV = r => {
+      const leads = Number(r['Leads asignados'])||0;
+      const insc  = Number(r['Inscritos'])||0;
+      const tgt   = Number(r['Target individual'])||0;
+      if (sortBy === 'inscritos') return insc;
+      if (sortBy === 'avance')   return tgt ? insc/tgt : 0;
+      if (sortBy === 'cierre')   return leads ? insc/leads : 0;
+      if (sortBy === 'leads')    return leads;
+      return insc;
+    };
+    return getV(b) - getV(a);
+  });
 
-  tbody.innerHTML = rows.map(r => {
-    const leads = Number(r['Leads asignados'])||0;
-    const insc  = Number(r['Inscritos'])||0;
-    const target= Number(r['Target individual'])||0;
-    const av    = target ? Math.min(1, insc/target) : 0;
-    const avP   = Math.round(av*100);
-    const col   = barColor(av);
-    return `<tr>
-      <td class="td-bold">${r['Comercial']||'—'}</td>
-      <td>${numF(r['Leads asignados'])}</td>
-      <td>${numF(r['Contactados'])}</td>
-      <td>${numF(r['Interesados'])}</td>
-      <td><span class="pill pill-warn">${numF(r['Tibios'])}</span></td>
-      <td><span class="pill pill-danger">${numF(r['Calientes'])}</span></td>
-      <td><span class="pill" style="background:var(--purple-bg);color:var(--purple-tx)">${numF(r['Por pagar'])}</span></td>
-      <td class="td-bold">${numF(insc)}</td>
-      <td>${numF(target)}</td>
-      <td><span class="pill" style="background:${col}22;color:${col}">${avP}%</span></td>
-      <td>${leads ? pctF(insc/leads) : '—'}</td>
-    </tr>`;
+  // Máximos para escalar mini-barras
+  const maxLeads = Math.max(...sorted.map(r => Number(r['Leads asignados'])||0), 1);
+  const maxInsc  = Math.max(...sorted.map(r => Number(r['Inscritos'])||0), 1);
+  const maxTibio = Math.max(...sorted.map(r => Number(r['Tibios'])||0), 1);
+  const maxCal   = Math.max(...sorted.map(r => Number(r['Calientes'])||0), 1);
+
+  container.innerHTML = '';
+  sorted.forEach(r => {
+    const leads  = Number(r['Leads asignados'])||0;
+    const cont   = Number(r['Contactados'])||0;
+    const tibios = Number(r['Tibios'])||0;
+    const cal    = Number(r['Calientes'])||0;
+    const pagar  = Number(r['Por pagar'])||0;
+    const insc   = Number(r['Inscritos'])||0;
+    const tgt    = Number(r['Target individual'])||0;
+    const av     = tgt ? Math.min(1, insc/tgt) : 0;
+    const avP    = Math.round(av * 100);
+    const col    = barColor(av);
+    const cierre = leads ? insc/leads : 0;
+    const cierreP= Math.round(cierre * 100);
+    const cierreCol = cierreP >= 3 ? 'var(--success)' : cierreP >= 1.5 ? 'var(--warning)' : 'var(--danger)';
+    const pendTgt = Math.max(0, tgt - insc);
+
+    const card = document.createElement('div');
+    card.className = 'perf-card';
+    card.innerHTML = `
+      <!-- Header: nombre + avance meta -->
+      <div class="perf-card-header">
+        <div>
+          <div class="perf-name">${r['Comercial']||'—'}</div>
+          <div class="perf-camp">${r['Campaña']||''}</div>
+        </div>
+        <div class="perf-badge-meta">
+          <span class="perf-avance-lbl">Avance meta</span>
+          <span class="perf-avance-val" style="color:${col}">${avP}%</span>
+          <span style="font-size:10px;color:var(--muted)">${numF(insc)} / ${numF(tgt)}</span>
+        </div>
+      </div>
+
+      <!-- Barra de progreso dual -->
+      <div>
+        <div class="perf-track">
+          <div class="perf-fill" style="width:${avP}%;background:${col}"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
+          <span style="color:${col};font-weight:600">${numF(insc)} inscritos</span>
+          <span>${numF(pendTgt)} pendientes</span>
+        </div>
+      </div>
+
+      <!-- Stats principales -->
+      <div class="perf-stats">
+        <div class="perf-stat">
+          <span class="psl">Leads</span>
+          <span class="psv">${numF(leads)}</span>
+        </div>
+        <div class="perf-stat">
+          <span class="psl">Contactados</span>
+          <span class="psv">${numF(cont)}</span>
+        </div>
+        <div class="perf-stat" style="background:${cierreCol}18;border:1px solid ${cierreCol}40">
+          <span class="psl" style="color:${cierreCol}">Tasa cierre</span>
+          <span class="psv" style="color:${cierreCol}">${cierreP}%</span>
+        </div>
+      </div>
+
+      <!-- Pipeline badges -->
+      <div>
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Pipeline activo</div>
+        <div class="perf-pipeline">
+          <div class="pp-badge pp-tibio"><span>🟡</span><span class="ppn">${numF(tibios)}</span> tibios</div>
+          <div class="pp-badge pp-cal"><span>🔴</span><span class="ppn">${numF(cal)}</span> calientes</div>
+          <div class="pp-badge pp-pagar"><span>💜</span><span class="ppn">${numF(pagar)}</span> por pagar</div>
+        </div>
+      </div>
+
+      <!-- Mini barras comparativas -->
+      <div>
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">Comparativo con el equipo</div>
+        <div class="perf-mini-bars">
+          <div class="pmb-row">
+            <span class="pmb-lbl">Leads</span>
+            <div class="pmb-track"><div class="pmb-fill" style="width:${Math.round(leads/maxLeads*100)}%;background:var(--navy)"></div></div>
+            <span class="pmb-val">${numF(leads)}</span>
+          </div>
+          <div class="pmb-row">
+            <span class="pmb-lbl">Inscritos</span>
+            <div class="pmb-track"><div class="pmb-fill" style="width:${Math.round(insc/maxInsc*100)}%;background:${col}"></div></div>
+            <span class="pmb-val">${numF(insc)}</span>
+          </div>
+          <div class="pmb-row">
+            <span class="pmb-lbl">Tibios</span>
+            <div class="pmb-track"><div class="pmb-fill" style="width:${Math.round(tibios/maxTibio*100)}%;background:var(--orange)"></div></div>
+            <span class="pmb-val">${numF(tibios)}</span>
+          </div>
+          <div class="pmb-row">
+            <span class="pmb-lbl">Calientes</span>
+            <div class="pmb-track"><div class="pmb-fill" style="width:${Math.round(cal/maxCal*100)}%;background:var(--danger)"></div></div>
+            <span class="pmb-val">${numF(cal)}</span>
+          </div>
+        </div>
+      </div>`;
+
+    container.appendChild(card);
+  });
+
+  renderPerfGlobal(allRows);
+}
+
+function renderPerfGlobal(rows) {
+  const totLeads  = rows.reduce((s,r) => s + (Number(r['Leads asignados'])||0), 0);
+  const totInsc   = rows.reduce((s,r) => s + (Number(r['Inscritos'])||0), 0);
+  const totTibios = rows.reduce((s,r) => s + (Number(r['Tibios'])||0), 0);
+  const totCal    = rows.reduce((s,r) => s + (Number(r['Calientes'])||0), 0);
+  const totPagar  = rows.reduce((s,r) => s + (Number(r['Por pagar'])||0), 0);
+  const cierre    = totLeads ? totInsc/totLeads : 0;
+
+  setText('prLeads',    numF(totLeads));
+  setText('prInscritos',numF(totInsc));
+  setText('prCierre',   Math.round(cierre*100) + '%');
+  setText('prTibios',   numF(totTibios));
+  setText('prPagar',    numF(totPagar));
+
+  // Barras globales por comercial dentro del resumen
+  const cont = document.getElementById('perfGlobalBars');
+  if (!cont || !rows.length) return;
+  const maxI = Math.max(...rows.map(r => Number(r['Inscritos'])||0), 1);
+  const sorted = [...rows].sort((a,b) => (Number(b['Inscritos'])||0) - (Number(a['Inscritos'])||0));
+  cont.innerHTML = sorted.map(r => {
+    const insc = Number(r['Inscritos'])||0;
+    const tgt  = Number(r['Target individual'])||0;
+    const av   = tgt ? Math.min(1, insc/tgt) : 0;
+    const col  = barColor(av);
+    const w    = Math.round(insc/maxI*100);
+    return `<div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:11px;font-weight:600;color:#ffffffc0;min-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r['Comercial']||'—'}</span>
+      <div style="flex:1;height:14px;background:#ffffff18;border-radius:7px;overflow:hidden">
+        <div style="width:${w}%;height:100%;border-radius:7px;background:${col};transition:width .5s ease"></div>
+      </div>
+      <span style="font-size:11px;font-weight:700;color:#fff;min-width:40px;text-align:right">${numF(insc)}</span>
+      <span style="font-size:10px;color:#ffffff60;min-width:32px">${Math.round(av*100)}%</span>
+    </div>`;
   }).join('');
 }
 
