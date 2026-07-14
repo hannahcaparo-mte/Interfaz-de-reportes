@@ -550,13 +550,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
         <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
         <select id="perfCampSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px" onchange="renderPerformance()"></select>
-        <label style="font-size:12px;color:var(--muted);font-weight:600;margin-left:8px">Ordenar por:</label>
-        <select id="perfSort" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer" onchange="renderPerformance()">
-          <option value="inscritos">Inscritos</option>
-          <option value="avance">% Avance meta</option>
-          <option value="cierre">Tasa de cierre</option>
-          <option value="leads">Leads asignados</option>
-        </select>
         <div class="meta-tags" style="margin-left:auto"><span class="mtag src">Kommo + Sistema</span><span class="mtag frq">🔄 Semanal</span></div>
       </div>
 
@@ -1039,20 +1032,10 @@ function renderPerformance() {
   const rows = allRows.filter(r => r['Campaña'] === campFil);
 
   // Ordenar
-  const sortBy = document.getElementById('perfSort')?.value || 'inscritos';
-  const sorted = [...rows].sort((a, b) => {
-    const getV = r => {
-      const leads = Number(r['Leads asignados'])||0;
-      const insc  = Number(r['Inscritos'])||0;
-      const tgt   = Number(r['Target individual'])||0;
-      if (sortBy === 'inscritos') return insc;
-      if (sortBy === 'avance')   return tgt ? insc/tgt : 0;
-      if (sortBy === 'cierre')   return leads ? insc/leads : 0;
-      if (sortBy === 'leads')    return leads;
-      return insc;
-    };
-    return getV(b) - getV(a);
-  });
+  // Ordenar siempre por inscritos descendente
+  const sorted = [...rows].sort((a, b) =>
+    (Number(b['Inscritos'])||0) - (Number(a['Inscritos'])||0)
+  );
 
   // Máximos para escalar mini-barras
   const maxLeads = Math.max(...sorted.map(r => Number(r['Leads asignados'])||0), 1);
