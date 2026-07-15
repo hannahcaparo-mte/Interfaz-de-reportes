@@ -1030,7 +1030,7 @@ function renderPerformance() {
     // Sección de avance: distinta si es libre
     const avanceHTML = esLibre
       ? `<div style="display:flex;align-items:center;gap:8px">
-           <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;background:var(--purple-bg);color:var(--purple-tx)">✦ Sin límite — venta libre</span>
+           <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;background:var(--purple-bg);color:var(--purple-tx)">✦ Venta libre</span>
            <span style="font-size:13px;font-weight:700;color:var(--purple-tx)">${numF(insc)} inscritos</span>
          </div>`
       : `<div>
@@ -1053,9 +1053,9 @@ function renderPerformance() {
           <div class="perf-camp">${r['Campaña']||''}</div>
         </div>
         <div class="perf-badge-meta">
-          <span class="perf-avance-lbl">${esLibre ? 'Modalidad' : 'Avance meta'}</span>
+          <span class="perf-avance-lbl">${esLibre ? 'Venta' : 'Avance meta'}</span>
           <span class="perf-avance-val" style="color:${col}">${esLibre ? 'Libre' : avP + '%'}</span>
-          <span style="font-size:10px;color:var(--muted)">${esLibre ? 'Sin mínimo' : numF(insc) + ' / ' + numF(tgt)}</span>
+          <span style="font-size:10px;color:var(--muted)">${esLibre ? 'Sin target' : numF(insc) + ' / ' + numF(tgt)}</span>
         </div>
       </div>
 
