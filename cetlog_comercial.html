@@ -323,29 +323,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
   <!-- CONTENT -->
   <div class="content">
 
-    <!-- HERO -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px">
-      <div>
-        <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)">Bloque Comercial</span>
-        <h1 style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.4px;margin-top:2px">Captación, seguimiento y conversión de leads</h1>
-      </div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap">
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
-          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Leads totales</span>
-          <span style="font-size:18px;font-weight:700;color:var(--navy)" id="heroTotalLeads">—</span>
-        </div>
-        <div style="width:1px;background:var(--border)"></div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
-          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Inscritos</span>
-          <span style="font-size:18px;font-weight:700;color:var(--success-tx)" id="heroTotalInscritos">—</span>
-        </div>
-        <div style="width:1px;background:var(--border)"></div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
-          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Invertido</span>
-          <span style="font-size:18px;font-weight:700;color:var(--orange-tx)" id="heroTotalGasto">—</span>
-        </div>
-      </div>
-    </div>
+
 
     <!-- TABS -->
     <div class="report-tabs">
@@ -765,7 +743,6 @@ const fmtDate = d => d ? d.toLocaleDateString('es-PE',{day:'2-digit',month:'shor
 //  RENDER ALL
 // ══════════════════════════════════════════════════════════
 function renderAll() {
-  renderHero();
   renderCampanas();
   renderContenido();
   renderEmbudo();
@@ -775,19 +752,7 @@ function renderAll() {
   renderHistorico();
 }
 
-// ── HERO TOTALES ──────────────────────────────────────────
-function renderHero() {
-  const rows = DB['Campanas'] || [];
-  const totalLeads = rows.reduce((s,r) => s + (Number(r['Leads plataforma']) || 0), 0);
-  const totalInsc  = rows.reduce((s,r) => s + (Number(r['Inscritos']) || 0), 0);
-  const totalGasto = rows.reduce((s,r) => s + (Number(r['Monto gastado']) || 0), 0);
-  const elLeads  = document.getElementById('heroTotalLeads');
-  const elInsc   = document.getElementById('heroTotalInscritos');
-  const elGasto  = document.getElementById('heroTotalGasto');
-  if (elLeads)  elLeads.textContent  = totalLeads > 0 ? numF(totalLeads)  : '—';
-  if (elInsc)   elInsc.textContent   = totalInsc  > 0 ? numF(totalInsc)   : '—';
-  if (elGasto)  elGasto.textContent  = totalGasto > 0 ? money(totalGasto) : '—';
-}
+
 
 // ── TAB 01: CAMPAÑAS ──────────────────────────────────────
 function renderCampanas() {
@@ -1029,7 +994,7 @@ function renderPerformance() {
     if (camps.includes(prev)) sel.value = prev;
   }
   const campFil = sel.value || camps[0] || '';
-  const rows = allRows.filter(r => r['Campaña'] === campFil);
+  const rows = allRows.filter(r => r['Campaña'] === campFil && String(r['Reporte']||'').trim().toLowerCase() === 'si');
 
   // Ordenar
   // Ordenar siempre por inscritos descendente
@@ -1051,14 +1016,32 @@ function renderPerformance() {
     const cal    = Number(r['Calientes'])||0;
     const pagar  = Number(r['Por pagar'])||0;
     const insc   = Number(r['Inscritos'])||0;
-    const tgt    = Number(r['Target individual'])||0;
-    const av     = tgt ? Math.min(1, insc/tgt) : 0;
-    const avP    = Math.round(av * 100);
-    const col    = barColor(av);
+    const tgtRaw = String(r['Target individual']||'').trim().toLowerCase();
+    const esLibre = tgtRaw === 'libre' || tgtRaw === '';
+    const tgt    = esLibre ? 0 : Number(r['Target individual'])||0;
+    const av     = (!esLibre && tgt) ? Math.min(1, insc/tgt) : null;
+    const avP    = av !== null ? Math.round(av * 100) : null;
+    const col    = av !== null ? barColor(av) : 'var(--purple)';
     const cierre = leads ? insc/leads : 0;
     const cierreP= Math.round(cierre * 10000) / 100; // 2 decimales
     const cierreCol = cierreP >= 3 ? 'var(--success)' : cierreP >= 1 ? 'var(--warning)' : 'var(--danger)';
-    const pendTgt = Math.max(0, tgt - insc);
+    const pendTgt = (!esLibre && tgt) ? Math.max(0, tgt - insc) : null;
+
+    // Sección de avance: distinta si es libre
+    const avanceHTML = esLibre
+      ? `<div style="display:flex;align-items:center;gap:8px">
+           <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;background:var(--purple-bg);color:var(--purple-tx)">✦ Sin límite — venta libre</span>
+           <span style="font-size:13px;font-weight:700;color:var(--purple-tx)">${numF(insc)} inscritos</span>
+         </div>`
+      : `<div>
+           <div class="perf-track">
+             <div class="perf-fill" style="width:${avP}%;background:${col}"></div>
+           </div>
+           <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
+             <span style="color:${col};font-weight:600">${numF(insc)} inscritos</span>
+             <span>${numF(pendTgt)} pendientes</span>
+           </div>
+         </div>`;
 
     const card = document.createElement('div');
     card.className = 'perf-card';
@@ -1070,22 +1053,14 @@ function renderPerformance() {
           <div class="perf-camp">${r['Campaña']||''}</div>
         </div>
         <div class="perf-badge-meta">
-          <span class="perf-avance-lbl">Avance meta</span>
-          <span class="perf-avance-val" style="color:${col}">${avP}%</span>
-          <span style="font-size:10px;color:var(--muted)">${numF(insc)} / ${numF(tgt)}</span>
+          <span class="perf-avance-lbl">${esLibre ? 'Modalidad' : 'Avance meta'}</span>
+          <span class="perf-avance-val" style="color:${col}">${esLibre ? 'Libre' : avP + '%'}</span>
+          <span style="font-size:10px;color:var(--muted)">${esLibre ? 'Sin mínimo' : numF(insc) + ' / ' + numF(tgt)}</span>
         </div>
       </div>
 
-      <!-- Barra de progreso dual -->
-      <div>
-        <div class="perf-track">
-          <div class="perf-fill" style="width:${avP}%;background:${col}"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
-          <span style="color:${col};font-weight:600">${numF(insc)} inscritos</span>
-          <span>${numF(pendTgt)} pendientes</span>
-        </div>
-      </div>
+      <!-- Barra de progreso o badge libre -->
+      ${avanceHTML}
 
       <!-- Stats principales -->
       <div class="perf-stats">
@@ -1147,6 +1122,9 @@ function renderPerformance() {
 }
 
 function renderPerfGlobal(rows, campNombre) {
+  rows = [...rows]; // copia para no mutar
+  // Solo comerciales con Reporte = Si
+  rows = rows.filter(r => String(r['Reporte']||'').trim().toLowerCase() === 'si');
   const totLeads  = rows.reduce((s,r) => s + (Number(r['Leads asignados'])||0), 0);
   const totInsc   = rows.reduce((s,r) => s + (Number(r['Inscritos'])||0), 0);
   const totTibios = rows.reduce((s,r) => s + (Number(r['Tibios'])||0), 0);
