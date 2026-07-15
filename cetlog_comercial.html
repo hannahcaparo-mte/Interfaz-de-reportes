@@ -1125,12 +1125,13 @@ function renderPerfGlobal(rows, campNombre) {
   rows = [...rows]; // copia para no mutar
   // Solo comerciales con Reporte = Si
   rows = rows.filter(r => String(r['Reporte']||'').trim().toLowerCase() === 'si');
+  // Totales incluyendo comerciales de venta libre
   const totLeads  = rows.reduce((s,r) => s + (Number(r['Leads asignados'])||0), 0);
   const totInsc   = rows.reduce((s,r) => s + (Number(r['Inscritos'])||0), 0);
   const totTibios = rows.reduce((s,r) => s + (Number(r['Tibios'])||0), 0);
   const totCal    = rows.reduce((s,r) => s + (Number(r['Calientes'])||0), 0);
   const totPagar  = rows.reduce((s,r) => s + (Number(r['Por pagar'])||0), 0);
-  const cierre    = totLeads ? totInsc/totLeads : 0;
+  const cierre    = totLeads ? totInsc/totLeads : 0; // incluye libres
 
   setText('prCampNombre', campNombre || '—');
   setText('prLeads',    numF(totLeads));
@@ -1145,18 +1146,23 @@ function renderPerfGlobal(rows, campNombre) {
   const maxI = Math.max(...rows.map(r => Number(r['Inscritos'])||0), 1);
   const sorted = [...rows].sort((a,b) => (Number(b['Inscritos'])||0) - (Number(a['Inscritos'])||0));
   cont.innerHTML = sorted.map(r => {
-    const insc = Number(r['Inscritos'])||0;
-    const tgt  = Number(r['Target individual'])||0;
-    const av   = tgt ? Math.min(1, insc/tgt) : 0;
-    const col  = barColor(av);
-    const w    = Math.round(insc/maxI*100);
+    const insc   = Number(r['Inscritos'])||0;
+    const tgtRaw = String(r['Target individual']||'').trim().toLowerCase();
+    const libre  = tgtRaw === 'libre' || tgtRaw === '';
+    const tgt    = libre ? 0 : Number(r['Target individual'])||0;
+    const av     = (!libre && tgt) ? Math.min(1, insc/tgt) : null;
+    const col    = libre ? '#A78BFA' : barColor(av||0);
+    const w      = Math.round(insc/maxI*100);
+    const badge  = libre
+      ? `<span style="font-size:10px;font-weight:600;color:#A78BFA;white-space:nowrap">venta libre</span>`
+      : `<span style="font-size:10px;color:#ffffff60;min-width:32px">${Math.round((av||0)*100)}%</span>`;
     return `<div style="display:flex;align-items:center;gap:10px">
       <span style="font-size:11px;font-weight:600;color:#ffffffc0;min-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r['Comercial']||'—'}</span>
       <div style="flex:1;height:14px;background:#ffffff18;border-radius:7px;overflow:hidden">
         <div style="width:${w}%;height:100%;border-radius:7px;background:${col};transition:width .5s ease"></div>
       </div>
-      <span style="font-size:11px;font-weight:700;color:#fff;min-width:40px;text-align:right">${numF(insc)}</span>
-      <span style="font-size:10px;color:#ffffff60;min-width:32px">${Math.round(av*100)}%</span>
+      <span style="font-size:11px;font-weight:700;color:#fff;min-width:28px;text-align:right">${numF(insc)}</span>
+      ${badge}
     </div>`;
   }).join('');
 }
