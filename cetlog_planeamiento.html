@@ -429,10 +429,6 @@ async function refreshAll() {
   const results = await Promise.all(TABS_DB.map(t => fetchTab(t)));
   TABS_DB.forEach((t, i) => { DB[t] = results[i]; });
 
-  // DEBUG temporal
-  console.log('[CETLOG] avance:', (DB['avance']||[]).length, 'filas', JSON.stringify((DB['avance']||[])[0]));
-  console.log('[CETLOG] checklist:', (DB['checklist']||[]).length, 'filas', JSON.stringify((DB['checklist']||[])[0]));
-
   renderAll();
 
   const total = results.reduce((s,r) => s+r.length, 0);
@@ -583,7 +579,6 @@ function renderGantt() {
   const cont = document.getElementById('ganttRows');
   if (!Object.keys(porProg).length) {
     cont.innerHTML = '<div class="empty-state" style="margin:16px 0">Sin datos para este filtro</div>';
-    renderGanttSummary(rows);
     return;
   }
 
@@ -773,39 +768,8 @@ function renderGantt() {
     row.appendChild(track);
     cont.appendChild(row);
   });
-
-  renderGanttSummary(rows);
 }
 
-function renderGanttSummary(rows) {
-  // Agrupar por Programa
-  const porProg = {};
-  rows.forEach(r => {
-    const p = r['Programa'] || r['Nomenclatura'] || '—';
-    if (!porProg[p]) porProg[p] = { total:0, proceso:0, pendiente:0, culminado:0 };
-    porProg[p].total++;
-    const s = String(r['Status'] || '').trim().toLowerCase().replace('é','e');
-    if (s.includes('proceso')) porProg[p].proceso++;
-    else if (s.includes('pendiente')) porProg[p].pendiente++;
-    else if (s.includes('culminado')) porProg[p].culminado++;
-  });
-
-  const cont = document.getElementById('ganttSummary');
-  cont.innerHTML = Object.entries(porProg).map(([prog, d]) => `
-    <div class="gs-card">
-      <div class="gsn">${prog}</div>
-      <div class="gss"><span>${d.total} turno${d.total!==1?'s':''}</span><span class="gsv">${d.total}</span></div>
-      <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">
-        ${d.proceso   ? `<span class="pill pill-proceso">${d.proceso} en proceso</span>`   : ''}
-        ${d.pendiente ? `<span class="pill pill-pendiente">${d.pendiente} pendiente${d.pendiente!==1?'s':''}</span>` : ''}
-        ${d.culminado ? `<span class="pill pill-culminado">${d.culminado} culminado${d.culminado!==1?'s':''}</span>` : ''}
-      </div>
-    </div>`).join('');
-}
-
-// ══════════════════════════════════════════════════════════
-//  TAB 02 — AVANCE
-// ══════════════════════════════════════════════════════════
 function renderAvance() {
   const rows = DB['avance'] || [];
   const alertasCont = document.getElementById('avanceAlertas');
