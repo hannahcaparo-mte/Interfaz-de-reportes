@@ -517,13 +517,25 @@ function renderGantt() {
 
   const todayPct = pct(dayOffset(HOY));
 
-  // Filtrar primero por status
-  const filtradas = tlFiltro === 'todos' ? rows : rows.filter(r => r['Status'] === tlFiltro);
+  // Filtrar por status (case-insensitive y sin tildes)
+  const normalizeStatus = s => String(s||'').trim().toLowerCase()
+    .replace('é','e').replace('ó','o').replace('ú','u').replace('á','a').replace('í','i');
+  const filtradas = tlFiltro === 'todos' ? rows : rows.filter(r => {
+    const rs = normalizeStatus(r['Status']);
+    const tf = normalizeStatus(tlFiltro);
+    return rs === tf || rs.includes(tf) || tf.includes(rs);
+  });
 
-  // Agrupar por Nomenclatura (un programa = una fila)
+  // Agrupar por Nomenclatura pura (solo la sigla, sin edición)
+  // Si Nomenclatura tiene edición concatenada (ej: "TCI 2026-I"), extraemos solo la sigla
+  const getKey = r => {
+    const nom = String(r['Nomenclatura'] || r['Programa'] || '—').trim();
+    // Si contiene año (2026, 2025, 2027...) tomamos solo la parte antes
+    return nom.replace(/\s*20\d\d.*$/, '').trim();
+  };
   const porProg = {};
   filtradas.forEach(r => {
-    const key = r['Nomenclatura'] || r['Programa'] || '—';
+    const key = getKey(r);
     if (!porProg[key]) porProg[key] = { nombre: r['Programa'] || key, ediciones: [] };
     porProg[key].ediciones.push(r);
   });
@@ -699,10 +711,10 @@ function renderGanttSummary(rows) {
     const p = r['Programa'] || r['Nomenclatura'] || '—';
     if (!porProg[p]) porProg[p] = { total:0, proceso:0, pendiente:0, culminado:0 };
     porProg[p].total++;
-    const s = r['Status'] || '';
-    if (s === 'En Proceso') porProg[p].proceso++;
-    else if (s === 'Pendiente') porProg[p].pendiente++;
-    else if (s === 'Culminado') porProg[p].culminado++;
+    const s = String(r['Status'] || '').trim().toLowerCase().replace('é','e');
+    if (s.includes('proceso')) porProg[p].proceso++;
+    else if (s.includes('pendiente')) porProg[p].pendiente++;
+    else if (s.includes('culminado')) porProg[p].culminado++;
   });
 
   const cont = document.getElementById('ganttSummary');
@@ -728,7 +740,7 @@ function renderAvance() {
 
   // Alertas de programas que arrancan pronto (basado en Dias_Alerta)
   const proximos = rows
-    .filter(r => r['Status'] !== 'Culminado')
+    .filter(r => !String(r['Status']||'').toLowerCase().includes('culminado'))
     .map(r => ({ ...r, _dias: Number(r['Dias_Alerta']) || 9999 }))
     .filter(r => r._dias >= 0 && r._dias <= 90)
     .sort((a,b) => a._dias - b._dias);
@@ -743,7 +755,7 @@ function renderAvance() {
       </div>`;
   });
 
-  const enProceso = rows.filter(r => r['Status'] === 'En Proceso');
+  const enProceso = rows.filter(r => String(r['Status']||'').toLowerCase().replace('é','e').includes('proceso'));
   const cont = document.getElementById('avanceCards');
 
   if (!enProceso.length) {

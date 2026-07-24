@@ -278,7 +278,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
     </a>
   </div>
   <div class="sidebar-section">
-
     <div class="sidebar-section-label">Bloques</div>
     <a class="nav-item active" href="cetlog_comercial.html">
       <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
@@ -296,6 +295,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
       Estratégico<span class="nav-badge">6</span>
     </a>
+      <a class="nav-item" href="cetlog_planeamiento.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v2H1V2zm0 4h9v2H1V6zm0 4h11v2H1v-2zm0 4h7v2H1v-2z"/></svg>
+        Planeamiento<span class="nav-badge">4</span>
+      </a>
   </div>
   <div class="sidebar-bottom">
     <div class="user-pill">
@@ -531,7 +534,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         <select id="perfCampSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px" onchange="renderPerformance()"></select>
 
       </div>
- <!-- Resumen global de todas las campañas -->
+
+      <!-- Cards individuales por comercial -->
+      <div class="perf-grid" id="perfCards">
+        <div style="padding:40px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--border);border-radius:var(--radius);grid-column:1/-1">Sin datos aún</div>
+      </div>
+
+      <!-- Resumen global de todas las campañas -->
       <div class="perf-resumen">
         <div class="pr-title">Resumen de la campaña: <span id="prCampNombre" style="opacity:1;color:#6EE7B7">—</span></div>
         <div class="pr-kpis">
@@ -545,12 +554,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         <div id="perfGlobalBars" style="display:flex;flex-direction:column;gap:8px"></div>
       </div>
 
-      <!-- Cards individuales por comercial -->
-      <div class="perf-grid" id="perfCards">
-        <div style="padding:40px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--border);border-radius:var(--radius);grid-column:1/-1">Sin datos aún</div>
-      </div>
-
-     
     </div>
 
     <!-- ══ TAB 05: DEMOS ══════════════════════════════════ -->

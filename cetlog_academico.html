@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> Bloque Académico </title>
+<title>Académico · CETLOG Intelligence Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="cetlog_shared.css">
 <style>
@@ -16,11 +16,11 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-mark">CT</div>
-      <div class="logo-text"><strong>CETLOG</strong></div>
+      <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-section-label">Principal</div>
-      <a class="nav-item" href="cetlog_home.html">
+      <a class="nav-item" href="index.html">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
         Inicio
       </a>
@@ -43,6 +43,10 @@
         <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
         Estratégico<span class="nav-badge">6</span>
       </a>
+      <a class="nav-item" href="cetlog_planeamiento.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v2H1V2zm0 4h9v2H1V6zm0 4h11v2H1v-2zm0 4h7v2H1v-2z"/></svg>
+        Planeamiento<span class="nav-badge">4</span>
+      </a>
     </div>
     <div class="sidebar-bottom">
       <div class="user-pill">
@@ -56,7 +60,7 @@
     <header class="topbar">
       <div class="topbar-title">
         <div class="topbar-crumb">
-          <a href="cetlog_home.html">Inicio</a>
+          <a href="index.html">Inicio</a>
           <span class="sep">/</span>
           <span class="current">Académico</span>
         </div>
@@ -79,16 +83,21 @@
     <div class="content">
 
       <div class="block-hero bh-academico">
-        <div class="block-hero-eyebrow">Bloque 03 · Bloque Académico</div>
-        <h2> ¿Qué ocurre dentro del laboratorio y cómo se relaciona con la retención y cobranza de los entrenados?</h2>
-        <p> Sistencia, participación y satisfacción en las sesiones. Calificaciones y certificaciones.</p>
+        <div class="block-hero-eyebrow">Bloque 03 · Académico</div>
+        <h2>Asistencia, participación y resultados de aprendizaje</h2>
+        <p>Lo que pasa dentro del aula y cómo se conecta con la retención y la cobranza. Fuentes: Q10, sistema interno de participación y encuestas de satisfacción/NPS.</p>
+        <div class="block-hero-meta">
+          <div><span class="num">5</span><span class="lbl">Reportes</span></div>
+          <div><span class="num">3</span><span class="lbl">Fuentes de datos</span></div>
+          <div><span class="num">17</span><span class="lbl">Variables clave</span></div>
+        </div>
       </div>
 
       <div class="integration-banner">
         <div class="icon">🔗</div>
         <div>
-          <h5>Fuentes conectadas</h5>
-          <p>Q10 (asistencia, notas, certificación) · Sistema interno (puntos de participación) · NPS (Encuestas de satisfacción)</p>
+          <h5>Fuentes conectadas a este bloque</h5>
+          <p>Q10 (asistencia, notas, certificación) · Sistema interno (puntos de participación) · Encuestas de satisfacción / NPS</p>
         </div>
       </div>
 
@@ -104,13 +113,13 @@
       <div class="report-panel active" id="panel-asistencia">
         <div class="report-card">
           <div class="report-card-header">
-            <div><h4>Asistencia por programa</h4><p class="question">¿Cuál es la asistencia general y por programa? ¿Cuántas faltas podrían llegar a predecir riesgo de retiro o de cobranza?</p></div>
+            <div><h4>Asistencia por programa</h4><p class="question">¿Cómo es la asistencia general y por programa? ¿Cuántas faltas predicen riesgo de retiro?</p></div>
             <div class="report-meta-tags"><span class="meta-tag source">Q10</span><span class="meta-tag freq">🔄 Diario</span></div>
           </div>
           <div class="kpi-row" style="margin-bottom:18px;">
             <div class="kpi-mini"><div class="q">% Asistencia promedio</div><div class="placeholder-value"></div></div>
             <div class="kpi-mini"><div class="q">Programa con menor asistencia</div><div class="placeholder-value"></div></div>
-            <div class="kpi-mini"><div class="q">Alumnos en zona de riesgo por faltas</div><div class="placeholder-value"></div></div>
+            <div class="kpi-mini"><div class="q">Alumnos en zona de riesgo (faltas)</div><div class="placeholder-value"></div></div>
             <div class="kpi-mini"><div class="q">Faltas promedio antes de retiro</div><div class="placeholder-value"></div></div>
           </div>
           <div class="chart-grid-2">
@@ -127,7 +136,7 @@
           <div class="viz-label"><span class="dot" style="background:var(--muted);"></span>Detalle de asistencia por programa</div>
           <div class="table-placeholder">
             <table>
-              <thead><tr><th>Programa</th><th>Alumnos</th><th>% Asistencia</th><th>En riesgo (definir rango)</th><th>Retirados del periodo</th></tr></thead>
+              <thead><tr><th>Programa</th><th>Alumnos</th><th>% Asistencia</th><th>En riesgo (≥3 faltas)</th><th>Retirados del periodo</th></tr></thead>
               <tbody>
                 <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
                 <tr><td class="label-col">—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
@@ -144,7 +153,7 @@
           <div class="viz-label"><span class="dot" style="background:var(--danger);"></span>Distribución de faltas previas al retiro</div>
           <div class="chart-placeholder"><div class="icon">📊</div><div class="label">Histograma</div><div class="sub">Número de faltas consecutivas × cantidad de retirados, marcando el umbral de alerta</div></div>
           <div style="height:10px;"></div>
-          <p style="font-size:11px;color:var(--muted);font-style:italic;">⚠️ Mi objetivo es que al final exista un relación modelable para poder alertar cuando un entrenado está en riesgo de retiro (falta tener en cuenta la cantidad de faltas que hace que se retire inmediatamente).</p>
+          <p style="font-size:11px;color:var(--muted);font-style:italic;">⚠️ Regla simple sugerida para fase 1: alertar cuando un alumno acumula 3+ faltas en las últimas 2 semanas. Un modelo predictivo formal queda para una fase posterior.</p>
         </div>
       </div>
 
