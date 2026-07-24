@@ -480,34 +480,16 @@ function hitoEstado(fecha){
   return 'pending';
 }
 function hitoIcon(e){return{done:'✓',active:'⏰',overdue:'⚠',pending:'○'}[e]||'○';}
-const fmtDate=d=>d?d.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}):'—';
+function fmtDate(d){if(!d)return'—';var dd=String(d.getDate()).padStart(2,'0'),mm=String(d.getMonth()+1).padStart(2,'0');return dd+'/'+mm+'/'+d.getFullYear();}
 const numF=n=>(n==null||n==='')?'—':Number(n).toLocaleString('es-PE');
 function statusPill(s){
   if(!s)return'';
   const map={'En Proceso':'pill-proceso','En proceso':'pill-proceso','Pendiente':'pill-pendiente','Culminado':'pill-culminado'};
   return'<span class="pill '+(map[s]||'')+'">'+(s)+'</span>';
 }
-function calcGanttRange(filas){
-  var minD=null,maxD=null;
-  filas.forEach(function(r){
-    ['Inicio_Campaña','Inicio_Programa','Fin_Programa'].forEach(function(k){
-      var d=parseFecha(getVal(r,k));
-      if(!d)return;
-      if(!minD||d<minD)minD=d;
-      if(!maxD||d>maxD)maxD=d;
-    });
-  });
-  if(!minD)minD=new Date(2026,0,1);
-  if(!maxD)maxD=new Date(2026,11,31);
-  GANTT_START=new Date(minD.getFullYear(),minD.getMonth(),1);
-  GANTT_END=new Date(maxD.getFullYear(),maxD.getMonth()+1,0);
-  GANTT_DAYS=Math.round((GANTT_END-GANTT_START)/86400000)+1;
-  GANTT_MESES=[];
-  var cur=new Date(GANTT_START);
-  while(cur<=GANTT_END){GANTT_MESES.push({mes:cur.getMonth(),anio:cur.getFullYear(),label:MESES_LABELS[cur.getMonth()]});cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);}
-}
 function dayOffset(date){if(!date)return null;const d=new Date(date);d.setHours(0,0,0,0);return Math.round((d-GANTT_START)/86400000);}
-function pct(offset){return Math.max(0,Math.min(100,(offset/GANTT_DAYS)*100));}
+const PX_DIA=3.3; // ancho en px de un día en la línea de tiempo (controla el ancho de cada mes)
+function pxOf(date){return dayOffset(date)*PX_DIA;}
 
 // ── renderAll ──────────────────────────────────────────────
 function renderAll(){
@@ -527,70 +509,119 @@ function toggleTlFilter(f){
 
 function renderGantt(){
   const rows=DB['avance']||[];
-  const normalSt=s=>String(s||'').trim().toLowerCase().replace(/[éê]/g,'e').replace(/[áâ]/g,'a').replace(/[íî]/g,'i').replace(/[óô]/g,'o').replace(/[úû]/g,'u');
+  const normalSt=s=>String(s||'').trim().toLowerCase().replace(/[\u00e9\u00ea]/g,'e').replace(/[\u00e1\u00e2]/g,'a').replace(/[\u00ed\u00ee]/g,'i').replace(/[\u00f3\u00f4]/g,'o').replace(/[\u00fa\u00fb]/g,'u');
   const filtradas=tlFiltros.has('todos')?rows:rows.filter(r=>[...tlFiltros].some(f=>normalSt(getVal(r,'Status')).includes(normalSt(f))));
-  calcGanttRange(filtradas);
-  const todayPct=pct(dayOffset(HOY));
-  const hdr=document.getElementById('ganttHeader');
-  hdr.innerHTML=GANTT_MESES.map((m,i)=>{
-    const isCur=m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear();
-    const showAnio=i===0||GANTT_MESES[i-1].anio!==m.anio;
-    const lbl=showAnio?m.label+'<br><span style="font-size:8px;opacity:.6">'+m.anio+'</span>':m.label;
-    return'<div class="gantt-month'+(isCur?' current':'')+'">'+ lbl+'</div>';
-  }).join('');
-  const getKey=r=>{const nom=String(getVal(r,'Nomenclatura')||getVal(r,'Programa')||'—').trim();return nom.replace(/\s*20\d\d.*$/,'').trim();};
+
+  // ── 1) Agrupar por programa/edici\u00f3n y resolver todas las fechas primero ──
+  const getKey=r=>{const nom=String(getVal(r,'Nomenclatura')||getVal(r,'Programa')||'\u2014').trim();return nom.replace(/\s*20\d\d.*$/,'').trim();};
   const porProg={};
   filtradas.forEach(r=>{const key=getKey(r);if(!porProg[key])porProg[key]={nombre:getVal(r,'Programa')||key,ediciones:[]};porProg[key].ediciones.push(r);});
-  const cont=document.getElementById('ganttRows');
-  if(!Object.keys(porProg).length){cont.innerHTML='<div class="empty-state" style="margin:16px 0">Sin datos para este filtro</div>';return;}
-  cont.innerHTML='';
-  Object.entries(porProg).forEach(([nom,prog])=>{
+
+  var minD=null,maxD=null;
+  function marcaRango(d){if(!d)return;if(!minD||d<minD)minD=d;if(!maxD||d>maxD)maxD=d;}
+  const grupos=Object.entries(porProg).map(function([nom,prog]){
     const edMap={};
     prog.ediciones.forEach(r=>{const ed=getVal(r,'Edicion')||'S/E';if(!edMap[ed])edMap[ed]={rows:[]};edMap[ed].rows.push(r);});
     const ediciones=Object.entries(edMap).map(([ed,d])=>{
       const r0=d.rows[0];
       const inicioP=parseFecha(getVal(r0,'Inicio_Programa'));
-      const inicioCamp=parseFecha(getVal(r0,'Inicio_Campaña'));
+      const inicioCamp=parseFecha(getVal(r0,'Inicio_Campa\u00f1a'));
       let matDeadline=inicioCamp?addDias(inicioCamp,MATERIAL_DIAS):null;
       if(matDeadline&&inicioP&&matDeadline>inicioP)matDeadline=inicioP;
-      return{edicion:ed,nFilas:d.rows.length,status:r0['Status']||getVal(r0,'Status')||'',
-        inicioCamp:inicioCamp,matDeadline:matDeadline,
-        demo1:parseFecha(getVal(r0,'Demo1')),demo2:parseFecha(getVal(r0,'Demo2')),
-        inicioP:inicioP,finP:parseFecha(getVal(r0,'Fin_Programa'))};
+      const finP=parseFecha(getVal(r0,'Fin_Programa'));
+      const demo1=parseFecha(getVal(r0,'Demo1'));
+      const demo2=parseFecha(getVal(r0,'Demo2'));
+      [inicioCamp,matDeadline,inicioP,finP,demo1,demo2].forEach(marcaRango);
+      return{edicion:ed,inicioCamp:inicioCamp,matDeadline:matDeadline,demo1:demo1,demo2:demo2,inicioP:inicioP,finP:finP};
     }).sort((a,b)=>(a.inicioP||a.inicioCamp||0)-(b.inicioP||b.inicioCamp||0));
+    return{nom:nom,nombre:prog.nombre,ediciones:ediciones};
+  });
+
+  const cont=document.getElementById('ganttRows');
+  if(!grupos.length||!minD){cont.innerHTML='<div class="empty-state" style="margin:16px 0">Sin datos para este filtro</div>';return;}
+
+  // ── 2) Rango del calendario ajustado EXACTAMENTE a los datos reales ──
+  //     (nunca deja meses en blanco al inicio o al final)
+  GANTT_START=new Date(minD.getFullYear(),minD.getMonth(),1);
+  GANTT_END=new Date(maxD.getFullYear(),maxD.getMonth()+1,0);
+  GANTT_DAYS=Math.round((GANTT_END-GANTT_START)/86400000)+1;
+  GANTT_MESES=[];
+  var cur=new Date(GANTT_START);
+  while(cur<=GANTT_END){
+    var dias=new Date(cur.getFullYear(),cur.getMonth()+1,0).getDate();
+    GANTT_MESES.push({mes:cur.getMonth(),anio:cur.getFullYear(),label:MESES_LABELS[cur.getMonth()],dias:dias});
+    cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);
+  }
+  const totalPx=GANTT_DAYS*PX_DIA;
+  const todayPx=Math.max(0,Math.min(totalPx,pxOf(HOY)));
+
+  // ── 3) Header — cada mes con su ancho real en px (proporcional a sus d\u00edas) ──
+  const hdr=document.getElementById('ganttHeader');
+  hdr.style.width=totalPx+'px';
+  hdr.innerHTML=GANTT_MESES.map((m,i)=>{
+    const isCur=m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear();
+    const showAnio=i===0||GANTT_MESES[i-1].anio!==m.anio;
+    const lbl=showAnio?m.label+'<br><span style="font-size:8px;opacity:.6">'+m.anio+'</span>':m.label;
+    return'<div class="gantt-month'+(isCur?' current':'')+'" style="flex:none;width:'+(m.dias*PX_DIA)+'px;min-width:0">'+ lbl+'</div>';
+  }).join('');
+
+  // ── 4) Filas ──
+  cont.innerHTML='';
+  grupos.forEach(function(prog){
+    const ediciones=prog.ediciones;
     const slotH=24,rowH=Math.max(44,ediciones.length*slotH+12);
     const row=document.createElement('div');row.className='gantt-row';row.style.minHeight=rowH+'px';row.style.alignItems='flex-start';row.style.borderBottom='1px solid var(--border)';
     const label=document.createElement('div');label.className='gantt-label';label.style.paddingTop='8px';
-    label.innerHTML='<span class="gl-name" title="'+prog.nombre+'">'+nom+'</span>';
+    label.innerHTML='<span class="gl-name" title="'+prog.nombre+'">'+prog.nom+'</span>';
     row.appendChild(label);
-    const track=document.createElement('div');track.className='gantt-track';track.style.cssText='position:relative;flex-direction:column;align-items:stretch;min-height:'+rowH+'px';
-    track.innerHTML='<div style="position:absolute;inset:0;display:flex;z-index:0">'+GANTT_MESES.map(function(m){return'<div style="flex:1;min-width:92px;border-right:1px solid var(--border);'+(m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear()?'background:rgba(239,68,68,.06)':'')+'" ></div>';}).join('')+'</div>';
-    const todayLine=document.createElement('div');todayLine.className='today-line';todayLine.style.left=todayPct+'%';track.appendChild(todayLine);
+    const track=document.createElement('div');track.className='gantt-track';track.style.cssText='position:relative;flex:none;width:'+totalPx+'px;flex-direction:column;align-items:stretch;min-height:'+rowH+'px';
+    track.innerHTML='<div style="position:absolute;inset:0;display:flex;z-index:0">'+GANTT_MESES.map(function(m){
+      return'<div style="flex:none;width:'+(m.dias*PX_DIA)+'px;border-right:1px solid var(--border);'+(m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear()?'background:rgba(239,68,68,.06)':'')+'"></div>';
+    }).join('')+'</div>';
+    const todayLine=document.createElement('div');todayLine.className='today-line';todayLine.style.left=todayPx+'px';track.appendChild(todayLine);
     ediciones.forEach(function(ed,idx){
       const colProg=COL_PROGRAMA,colVenta=COL_VENTA,colMat=COL_MATERIAL;
       const topBase=8+idx*slotH,barTop=topBase+Math.floor(slotH/2)-6,dotTop=topBase+Math.floor(slotH/2);
-      var campStart=ed.inicioCamp?pct(dayOffset(ed.inicioCamp)):null;
-      var matEndPt=ed.matDeadline?pct(dayOffset(ed.matDeadline)):campStart;
-      var campEnd=ed.inicioP?pct(dayOffset(ed.inicioP)):matEndPt;
-      var matW=(campStart!=null&&matEndPt!=null)?Math.max(0,matEndPt-campStart):0;
-      var ventaW=(matEndPt!=null&&campEnd!=null)?Math.max(0,campEnd-matEndPt):0;
-      var progStart=ed.inicioP?pct(dayOffset(ed.inicioP)):null,progEnd=ed.finP?pct(dayOffset(ed.finP)):progStart;
-      var progW=(progStart!=null&&progEnd!=null)?Math.max(0.2,progEnd-progStart):0;
-      var d1Pct=ed.demo1?pct(dayOffset(ed.demo1)):null,d2Pct=ed.demo2?pct(dayOffset(ed.demo2)):null;
+      var campStartPx=ed.inicioCamp?pxOf(ed.inicioCamp):null;
+      var matEndPx=ed.matDeadline?pxOf(ed.matDeadline):campStartPx;
+      var campEndPx=ed.inicioP?pxOf(ed.inicioP):matEndPx;
+      var matWpx=(campStartPx!=null&&matEndPx!=null)?Math.max(0,matEndPx-campStartPx):0;
+      var ventaWpx=(matEndPx!=null&&campEndPx!=null)?Math.max(0,campEndPx-matEndPx):0;
+      var progStartPx=ed.inicioP?pxOf(ed.inicioP):null,progEndPx=ed.finP?pxOf(ed.finP):progStartPx;
+      var progWpx=(progStartPx!=null&&progEndPx!=null)?Math.max(3,progEndPx-progStartPx):0;
       var durMeses='';
       if(ed.inicioP&&ed.finP){var mRaw=(ed.finP.getFullYear()-ed.inicioP.getFullYear())*12+(ed.finP.getMonth()-ed.inicioP.getMonth());var mR=mRaw<=3.5?3:mRaw<=4.5?4:5;durMeses=mR+' meses';}
       function addTooltip(el,html){el.style.cursor='pointer';el.addEventListener('mouseenter',function(e){var tt=document.getElementById('gantt-tooltip');if(!tt){tt=document.createElement('div');tt.id='gantt-tooltip';tt.style.cssText='position:fixed;z-index:9999;background:#1D245C;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.6;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:260px';document.body.appendChild(tt);}tt.innerHTML=html;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-10)+'px';});el.addEventListener('mousemove',function(e){var tt=document.getElementById('gantt-tooltip');if(tt){tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-10)+'px';}});el.addEventListener('mouseleave',function(){var tt=document.getElementById('gantt-tooltip');if(tt)tt.style.display='none';});}
-      if(progStart!=null&&progW>5&&durMeses){var lbl=document.createElement('div');lbl.style.cssText='position:absolute;left:calc('+progStart+'% + 4px);top:'+topBase+'px;display:flex;align-items:center;justify-content:center;z-index:6;pointer-events:none;height:12px';lbl.innerHTML='<span style="font-size:8px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.4)">'+durMeses+'</span>';track.appendChild(lbl);}
-      if(campStart!=null&&matW>0){var bm=document.createElement('div');bm.style.cssText='position:absolute;left:'+campStart+'%;width:'+matW+'%;top:'+barTop+'px;height:12px;background:'+colMat+';opacity:.9;border-radius:4px 0 0 4px;z-index:3';addTooltip(bm,'<b>'+ed.edicion+' — Material</b><br>Inicio: '+fmtDate(ed.inicioCamp)+'<br>Listo: '+fmtDate(ed.matDeadline));track.appendChild(bm);}
-      if(matEndPt!=null&&ventaW>0){var bv=document.createElement('div');bv.style.cssText='position:absolute;left:'+matEndPt+'%;width:'+ventaW+'%;top:'+barTop+'px;height:12px;background:'+colVenta+';opacity:.85;border-radius:0 4px 4px 0;z-index:3';addTooltip(bv,'<b>'+ed.edicion+' — Venta</b><br>Inicio: '+fmtDate(ed.matDeadline)+'<br>Fin: '+fmtDate(ed.inicioP));track.appendChild(bv);}
-      if(progStart!=null&&progW>0){var b2=document.createElement('div');b2.style.cssText='position:absolute;left:'+progStart+'%;width:'+progW+'%;top:'+barTop+'px;height:12px;background:'+colProg+';border-radius:4px;z-index:3';addTooltip(b2,'<b>'+ed.edicion+' — Programa</b><br>Inicio: '+fmtDate(ed.inicioP)+'<br>Fin: '+fmtDate(ed.finP)+'<br>Duración: '+durMeses);track.appendChild(b2);}
-      if(campEnd!=null&&progStart!=null&&campEnd<progStart){var c=document.createElement('div');c.style.cssText='position:absolute;left:'+campEnd+'%;width:'+(progStart-campEnd)+'%;top:'+(barTop+5)+'px;height:2px;border-top:2px dashed '+colVenta+'55;z-index:2;pointer-events:none';track.appendChild(c);}
-      if(d1Pct!=null){var d=document.createElement('div');d.style.cssText='position:absolute;left:'+d1Pct+'%;top:'+dotTop+'px;width:12px;height:12px;border-radius:50%;background:'+COL_DEMO+';transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';addTooltip(d,'<b>'+ed.edicion+' — Demo 1</b><br>Fecha: '+fmtDate(ed.demo1));track.appendChild(d);}
-      if(d2Pct!=null){var d2=document.createElement('div');d2.style.cssText='position:absolute;left:'+d2Pct+'%;top:'+dotTop+'px;width:12px;height:12px;border-radius:50%;background:'+COL_DEMO+';transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';addTooltip(d2,'<b>'+ed.edicion+' — Demo 2</b><br>Fecha: '+fmtDate(ed.demo2));track.appendChild(d2);}
+      // Barra Material
+      if(campStartPx!=null&&matWpx>0){var bm=document.createElement('div');bm.style.cssText='position:absolute;left:'+campStartPx+'px;width:'+matWpx+'px;top:'+barTop+'px;height:12px;background:'+colMat+';opacity:.9;border-radius:4px 0 0 4px;z-index:3';addTooltip(bm,'<b>'+ed.edicion+' \u2014 Material</b><br>Inicio: '+fmtDate(ed.inicioCamp)+'<br>Listo: '+fmtDate(ed.matDeadline));track.appendChild(bm);}
+      // Barra Venta
+      if(matEndPx!=null&&ventaWpx>0){var bv=document.createElement('div');bv.style.cssText='position:absolute;left:'+matEndPx+'px;width:'+ventaWpx+'px;top:'+barTop+'px;height:12px;background:'+colVenta+';opacity:.85;border-radius:0 4px 4px 0;z-index:3';addTooltip(bv,'<b>'+ed.edicion+' \u2014 Venta</b><br>Inicio: '+fmtDate(ed.matDeadline)+'<br>Fin: '+fmtDate(ed.inicioP));track.appendChild(bv);}
+      // Barra Programa (clases) — la duraci\u00f3n va CENTRADA dentro de la propia barra
+      if(progStartPx!=null&&progWpx>0){
+        var b2=document.createElement('div');
+        b2.style.cssText='position:absolute;left:'+progStartPx+'px;width:'+progWpx+'px;top:'+barTop+'px;height:12px;background:'+colProg+';border-radius:4px;z-index:3;display:flex;align-items:center;justify-content:center;overflow:hidden';
+        if(durMeses&&progWpx>32){b2.innerHTML='<span style="font-size:8px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.4)">'+durMeses+'</span>';}
+        addTooltip(b2,'<b>'+ed.edicion+' \u2014 Programa</b><br>Inicio: '+fmtDate(ed.inicioP)+'<br>Fin: '+fmtDate(ed.finP)+'<br>Duraci\u00f3n: '+durMeses);
+        track.appendChild(b2);
+      }
+      if(campEndPx!=null&&progStartPx!=null&&campEndPx<progStartPx){var c=document.createElement('div');c.style.cssText='position:absolute;left:'+campEndPx+'px;width:'+(progStartPx-campEndPx)+'px;top:'+(barTop+5)+'px;height:2px;border-top:2px dashed '+colVenta+'55;z-index:2;pointer-events:none';track.appendChild(c);}
+      // Puntos de Demo: check si ya pas\u00f3, vac\u00edo si a\u00fan no
+      function demoDot(px,fecha,label){
+        if(px==null||!fecha)return;
+        var pasado=fecha<=HOY;
+        var d=document.createElement('div');
+        d.style.cssText='position:absolute;left:'+px+'px;top:'+dotTop+'px;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);z-index:4;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;line-height:1;'+(pasado?'background:var(--success-bg);border:2px solid var(--success);color:var(--success-tx)':'background:var(--card);border:2px solid '+COL_DEMO+';color:'+COL_DEMO);
+        d.textContent=pasado?'\u2713':'';
+        addTooltip(d,'<b>'+ed.edicion+' \u2014 '+label+'</b><br>Fecha: '+fmtDate(fecha));
+        track.appendChild(d);
+      }
+      demoDot(ed.demo1?pxOf(ed.demo1):null,ed.demo1,'Demo 1');
+      demoDot(ed.demo2?pxOf(ed.demo2):null,ed.demo2,'Demo 2');
     });
     row.appendChild(track);cont.appendChild(row);
   });
 }
+
 
 // ══════════════════════════════════════════════════════════
 //  TAB 02-04 — AVANCE (Marketing / Comercial / Operaciones)
