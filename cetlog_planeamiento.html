@@ -206,6 +206,41 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 /* ══ EMPTY ═══════════════════════════════════════════════ */
 .empty-state{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;border:1px dashed var(--border);border-radius:var(--radius)}
 .empty-state b{color:var(--text)}
+
+/* ══ AVANCE SUB-TABS ════════════════════════════════ */
+.av-subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.av-stab{font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s}
+.av-stab:hover{border-color:var(--navy);color:var(--navy)}
+.av-stab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.av-subpanel{display:none}
+.av-subpanel.active{display:block;animation:fadeIn .2s ease}
+.av-prog-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.av-prog-card.urgente{border-left:4px solid var(--danger)}
+.av-prog-card.proximo{border-left:4px solid var(--warning)}
+.av-prog-card.tranquilo{border-left:4px solid var(--success)}
+.av-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px;flex-wrap:wrap}
+.av-card-name{font-size:13px;font-weight:700;color:var(--text)}
+.av-card-ed{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px}
+.av-alert-box{padding:8px 12px;border-radius:7px;font-size:12px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.av-alert-box.r{background:var(--danger-bg);color:var(--danger-tx)}
+.av-alert-box.y{background:var(--warning-bg);color:var(--warning-tx)}
+.av-alert-box.g{background:var(--success-bg);color:var(--success-tx)}
+.av-mini-timeline{display:flex;align-items:flex-start;gap:0;margin-top:8px;overflow-x:auto;padding-bottom:4px}
+.av-hito{display:flex;flex-direction:column;align-items:center;flex:1;min-width:65px;position:relative}
+.av-hito:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:2px;background:var(--border);z-index:0}
+.av-hito.done::after{background:var(--success)}
+.av-hito.active-h::after{background:var(--warning)}
+.av-hdot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;z-index:1;border:2px solid var(--border);background:var(--card);flex-shrink:0}
+.av-hito.done .av-hdot{background:var(--success-bg);border-color:var(--success)}
+.av-hito.active-h .av-hdot{background:var(--warning-bg);border-color:var(--warning);box-shadow:0 0 0 3px var(--warning-bg)}
+.av-hito.overdue .av-hdot{background:var(--danger-bg);border-color:var(--danger)}
+.av-hito.pending .av-hdot{background:var(--bg);border-color:var(--border)}
+.av-hlabel{font-size:9px;font-weight:600;color:var(--muted);text-align:center;margin-top:4px;line-height:1.3;max-width:65px}
+.av-hdate{font-size:9px;color:var(--subtle);text-align:center;margin-top:1px}
+.av-res-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);flex-wrap:wrap}
+.av-res-name{font-size:12px;font-weight:600;color:var(--text);flex:1;min-width:160px}
+.av-chips{display:flex;gap:5px;flex-wrap:wrap}
+.av-chip{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -275,8 +310,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
     <div class="report-tabs">
       <div class="rtab active" onclick="showTab('timeline')"><span class="tab-dot"></span><span class="tn">01</span> Línea de tiempo</div>
       <div class="rtab" onclick="showTab('avance')"><span class="tab-dot"></span><span class="tn">02</span> Avance de programas</div>
-      <div class="rtab" onclick="showTab('checklist')"><span class="tab-dot"></span><span class="tn">03</span> Checklist de responsables</div>
-      <div class="rtab" onclick="showTab('ejecucion')"><span class="tab-dot"></span><span class="tn">04</span> Ejecución</div>
+      <div class="rtab" onclick="showTab('ejecucion')"><span class="tab-dot"></span><span class="tn">03</span> Ejecución</div>
     </div>
 
     <!-- ══ TAB 01: LÍNEA DE TIEMPO ════════════════════════ -->
@@ -310,28 +344,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
     </div>
 
-    <!-- ══ TAB 02: AVANCE ═════════════════════════════════ -->
+        <!-- ══ TAB 02: AVANCE ═════════════════════════════ -->
     <div class="rpanel" id="tab-avance">
-
-      <div id="avanceAlertas" style="margin-bottom:16px"></div>
-
-      <div class="card">
-        <div class="card-title">Programas en proceso</div>
-        <div class="avance-grid" id="avanceCards">
-          <div class="empty-state">Sin datos aún</div>
-        </div>
+      <div class="av-subtabs">
+        <button class="av-stab active" onclick="showAvTab('resumen')">📊 Resumen general</button>
+        <button class="av-stab" onclick="showAvTab('marketing')">📣 Marketing</button>
+        <button class="av-stab" onclick="showAvTab('comercial')">💼 Comercial</button>
+        <button class="av-stab" onclick="showAvTab('operaciones')">🎓 Operaciones</button>
       </div>
-
+      <div id="av-resumen" class="av-subpanel active"></div>
+      <div id="av-marketing" class="av-subpanel"></div>
+      <div id="av-comercial" class="av-subpanel"></div>
+      <div id="av-operaciones" class="av-subpanel"></div>
     </div>
 
-    <!-- ══ TAB 03: CHECKLIST ══════════════════════════════ -->
-    <div class="rpanel" id="tab-checklist">
-      <div id="ckCards">
-        <div class="empty-state">Sin datos aún</div>
-      </div>
-    </div>
-
-    <!-- ══ TAB 04: EJECUCIÓN ══════════════════════════════ -->
+    
+    <!-- ══ TAB 03: EJECUCIÓN ══════════════════════════════ -->
     <div class="rpanel" id="tab-ejecucion">
       <div class="card">
         <div class="card-title">Ejecución de programas activos</div>
@@ -342,10 +370,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
     </div>
 
     <div style="height:40px"></div>
-  </div>
-</div>
-</div>
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════
 //  CONFIG
@@ -353,723 +382,368 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 const SHEET_ID = '1eQLnsW3JxzgqmIA52MWUd423EfufHmNPWXnm9S14vYs';
 const TABS_DB  = ['linea_tiempo','avance','checklist','ejecucion'];
 const AUTO_MS  = 60000;
-
 let DB = {};
-let tlFiltros = new Set(['Pendiente','En Proceso']); // multi-selección
+let tlFiltros = new Set(['Pendiente','En Proceso']);
 let isLoading = false;
-
-const HOY = new Date();
-HOY.setHours(0,0,0,0);
-
-// Meses dinámicos — se calculan en renderGantt según los datos filtrados
+const HOY = new Date(); HOY.setHours(0,0,0,0);
 const MESES_LABELS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Set','Oct','Nov','Dic'];
-let GANTT_MESES = [];
-let GANTT_START = new Date(2026, 0, 1);
-let GANTT_END   = new Date(2026, 11, 31);
-let GANTT_DAYS  = 365;
+let GANTT_MESES = [], GANTT_START = new Date(2026,0,1), GANTT_END = new Date(2026,11,31), GANTT_DAYS = 365;
+const COL_PROGRAMA = '#1D245C', COL_CAMPANA = '#DC2626', COL_DEMO = '#B45309';
+const ED_COLORS = ['#1D245C','#0891B2','#7C3AED','#10B981','#F59E0B'];
+const CAMP_COLORS = ['#DC2626','#F43F5E','#8B5CF6','#06B6D4','#84CC16'];
+const TAB_IDS = ['timeline','avance','ejecucion'];
 
-function calcGanttRange(filas) {
-  // Encontrar min y max fecha de todas las filas visibles
-  var minD = null, maxD = null;
-  filas.forEach(function(r) {
-    var dates = [
-      parseFecha(r['Inicio_Campana']),
-      parseFecha(r['Inicio_Programa']),
-      parseFecha(r['Fin_Programa'])
-    ];
-    dates.forEach(function(d) {
-      if (!d) return;
-      if (!minD || d < minD) minD = d;
-      if (!maxD || d > maxD) maxD = d;
-    });
-  });
-  if (!minD) minD = new Date(2026, 0, 1);
-  if (!maxD) maxD = new Date(2026, 11, 31);
-
-  // Empezar al inicio del mes mínimo, terminar al fin del mes máximo
-  GANTT_START = new Date(minD.getFullYear(), minD.getMonth(), 1);
-  GANTT_END   = new Date(maxD.getFullYear(), maxD.getMonth() + 1, 0); // último día del mes max
-  GANTT_DAYS  = Math.round((GANTT_END - GANTT_START) / 86400000) + 1;
-
-  // Generar lista de meses entre start y end
-  GANTT_MESES = [];
-  var cur = new Date(GANTT_START);
-  while (cur <= GANTT_END) {
-    GANTT_MESES.push({ mes: cur.getMonth(), anio: cur.getFullYear(), label: MESES_LABELS[cur.getMonth()] });
-    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
-  }
+// ── Fetch ──────────────────────────────────────────────────
+function csvUrl(tab){ return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tab); }
+async function fetchTab(tab){
+  try{
+    const res=await fetch(csvUrl(tab)); if(!res.ok)return[];
+    const text=await res.text(); if(!text||text.trim().length===0)return[];
+    const {data}=Papa.parse(text,{header:true,dynamicTyping:false,skipEmptyLines:true});
+    return Array.isArray(data)?data:[];
+  }catch(e){return[];}
 }
-
-// ══════════════════════════════════════════════════════════
-//  FETCH
-// ══════════════════════════════════════════════════════════
-function csvUrl(tab) {
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
-}
-
-async function fetchTab(tab) {
-  try {
-    const res = await fetch(csvUrl(tab));
-    if (!res.ok) return [];
-    const text = await res.text();
-    if (!text || text.trim().length === 0) return [];
-    const { data } = Papa.parse(text, { header: true, dynamicTyping: false, skipEmptyLines: true });
-    return Array.isArray(data) ? data : [];
-  } catch(e) { return []; }
-}
-
-async function refreshAll() {
-  if (isLoading) return;
-  isLoading = true;
-  const btn = document.getElementById('btnRefresh');
-  btn.classList.add('spin');
-  btn.textContent = '↻ Actualizando…';
-  setStatus('Actualizando…');
-
-  const results = await Promise.all(TABS_DB.map(t => fetchTab(t)));
-  TABS_DB.forEach((t, i) => { DB[t] = results[i]; });
-
+async function refreshAll(){
+  if(isLoading)return; isLoading=true;
+  const btn=document.getElementById('btnRefresh');
+  btn.classList.add('spin'); btn.textContent='↻ Actualizando…'; setStatus('Actualizando…');
+  const results=await Promise.all(TABS_DB.map(t=>fetchTab(t)));
+  TABS_DB.forEach((t,i)=>{DB[t]=results[i];});
   renderAll();
-
-  const total = results.reduce((s,r) => s+r.length, 0);
-  setStatus(total === 0 ? 'Conectado — hojas vacías' : 'Actualizado ' + HOY.toLocaleTimeString('es-PE'), 'ok');
-  isLoading = false;
-  btn.classList.remove('spin');
-  btn.textContent = '↻ Actualizar';
+  const total=results.reduce((s,r)=>s+r.length,0);
+  setStatus(total===0?'Conectado — hojas vacías':'Actualizado '+new Date().toLocaleTimeString('es-PE'),'ok');
+  isLoading=false; btn.classList.remove('spin'); btn.textContent='↻ Actualizar';
+}
+function setStatus(msg,type){
+  const el=document.getElementById('syncStatus');
+  el.textContent=msg; el.className='sync-status'+(type?' '+type:'');
 }
 
-function setStatus(msg, type) {
-  const el = document.getElementById('syncStatus');
-  el.textContent = msg;
-  el.className = 'sync-status' + (type ? ' ' + type : '');
+// ── Tabs ───────────────────────────────────────────────────
+function showTab(id){
+  document.querySelectorAll('.rtab').forEach((t,i)=>t.classList.toggle('active',TAB_IDS[i]===id));
+  document.querySelectorAll('.rpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+}
+function showAvTab(id){
+  document.querySelectorAll('.av-stab').forEach(function(b){
+    var txt=b.textContent.toLowerCase();
+    b.classList.toggle('active',
+      (id==='resumen'&&txt.includes('resumen'))||(id==='marketing'&&txt.includes('marketing'))||
+      (id==='comercial'&&txt.includes('comercial'))||(id==='operaciones'&&txt.includes('operaciones')));
+  });
+  document.querySelectorAll('.av-subpanel').forEach(function(p){p.classList.remove('active');});
+  var el=document.getElementById('av-'+id); if(el)el.classList.add('active');
 }
 
-// ══════════════════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════════════════
-const TAB_IDS = ['timeline','avance','checklist','ejecucion'];
-function showTab(id) {
-  document.querySelectorAll('.rtab').forEach((t,i) => t.classList.toggle('active', TAB_IDS[i] === id));
-  document.querySelectorAll('.rpanel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ══════════════════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════════════════
-function parseFecha(raw) {
-  if (!raw) return null;
-  const s = String(raw).trim();
-  // AAAA-MM-DD
-  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
-  // DD/MM/AAAA o DD/MM/AA — SIEMPRE asume DD/MM (formato peruano)
-  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-  if (m) {
-    let d = +m[1], mo = +m[2], y = +m[3];
-    if (y < 100) y += 2000;
-    return new Date(y, mo - 1, d); // día primero, siempre
-  }
+// ── Helpers ────────────────────────────────────────────────
+function parseFecha(raw){
+  if(!raw)return null;
+  const s=String(raw).trim();
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+  m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if(m){let[,d,mo,y]=m.map(Number);if(y<100)y+=2000;return new Date(y,mo-1,d);}
   return null;
 }
-
-const fmtDate = d => d ? d.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
-const numF = n => (n == null || n === '') ? '—' : Number(n).toLocaleString('es-PE');
-
-function statusPill(s) {
-  if (!s) return '';
-  const map = { 'En Proceso':'pill-proceso', 'Pendiente':'pill-pendiente', 'Culminado':'pill-culminado' };
-  return `<span class="pill ${map[s]||''}">${s}</span>`;
+function resolverFechaHito(raw,inicioP){
+  if(!raw&&raw!==0)return null;
+  const s=String(raw).trim();
+  if(/^-?\d+$/.test(s)){const n=Number(s);if(!inicioP)return null;const d=new Date(inicioP);d.setDate(d.getDate()-n);return d;}
+  return parseFecha(s);
 }
+function hitoEstado(fecha){
+  if(!fecha)return 'pending';
+  const d=new Date(fecha);d.setHours(0,0,0,0);
+  const diff=Math.round((d-HOY)/86400000);
+  if(diff<-1)return 'done';
+  if(diff<=7)return diff<0?'overdue':'active';
+  return 'pending';
+}
+function hitoIcon(e){return{done:'✓',active:'⏰',overdue:'⚠',pending:'○'}[e]||'○';}
+const fmtDate=d=>d?d.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}):'—';
+const numF=n=>(n==null||n==='')?'—':Number(n).toLocaleString('es-PE');
+function statusPill(s){
+  if(!s)return'';
+  const map={'En Proceso':'pill-proceso','En proceso':'pill-proceso','Pendiente':'pill-pendiente','Culminado':'pill-culminado'};
+  return'<span class="pill '+(map[s]||'')+'">'+(s)+'</span>';
+}
+function calcGanttRange(filas){
+  var minD=null,maxD=null;
+  filas.forEach(function(r){
+    ['Inicio_Campana','Inicio_campana','Inicio_Programa','Fin_Programa'].forEach(function(k){
+      var d=parseFecha(r[k]);
+      if(!d)return;
+      if(!minD||d<minD)minD=d;
+      if(!maxD||d>maxD)maxD=d;
+    });
+  });
+  if(!minD)minD=new Date(2026,0,1);
+  if(!maxD)maxD=new Date(2026,11,31);
+  GANTT_START=new Date(minD.getFullYear(),minD.getMonth(),1);
+  GANTT_END=new Date(maxD.getFullYear(),maxD.getMonth()+1,0);
+  GANTT_DAYS=Math.round((GANTT_END-GANTT_START)/86400000)+1;
+  GANTT_MESES=[];
+  var cur=new Date(GANTT_START);
+  while(cur<=GANTT_END){GANTT_MESES.push({mes:cur.getMonth(),anio:cur.getFullYear(),label:MESES_LABELS[cur.getMonth()]});cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);}
+}
+function dayOffset(date){if(!date)return null;const d=new Date(date);d.setHours(0,0,0,0);return Math.round((d-GANTT_START)/86400000);}
+function pct(offset){return Math.max(0,Math.min(100,(offset/GANTT_DAYS)*100));}
 
-// ══════════════════════════════════════════════════════════
-//  RENDER ALL
-// ══════════════════════════════════════════════════════════
-function renderAll() {
-  // Label de hoy
-  document.getElementById('todayLabel').textContent =
-    'Hoy: ' + HOY.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-
+// ── renderAll ──────────────────────────────────────────────
+function renderAll(){
   renderGantt();
   renderAvance();
-  renderChecklist();
   renderEjecucion();
 }
 
 // ══════════════════════════════════════════════════════════
 //  TAB 01 — GANTT
 // ══════════════════════════════════════════════════════════
-function toggleTlFilter(f) {
-  if (f === 'todos') {
-    // Todos activo = limpiar selección individual y mostrar todo
-    if (tlFiltros.has('todos')) {
-      tlFiltros = new Set(['Pendiente','Culminado']);
-    } else {
-      tlFiltros = new Set(['todos']);
-    }
-  } else {
-    tlFiltros.delete('todos');
-    if (tlFiltros.has(f)) {
-      tlFiltros.delete(f);
-      if (tlFiltros.size === 0) tlFiltros = new Set(['todos']);
-    } else {
-      tlFiltros.add(f);
-    }
-  }
-  document.querySelectorAll('#tlFilters .filter-btn').forEach(b => {
-    b.classList.toggle('active', tlFiltros.has(b.dataset.status));
-  });
+function toggleTlFilter(f){
+  if(f==='todos'){tlFiltros=tlFiltros.has('todos')?new Set(['Pendiente','En Proceso']):new Set(['todos']);}
+  else{tlFiltros.delete('todos');if(tlFiltros.has(f)){tlFiltros.delete(f);if(tlFiltros.size===0)tlFiltros=new Set(['todos']);}else{tlFiltros.add(f);}}
+  document.querySelectorAll('#tlFilters .filter-btn').forEach(b=>b.classList.toggle('active',tlFiltros.has(b.dataset.status)));
   renderGantt();
 }
 
-function dayOffset(date) {
-  if (!date) return null;
-  const d = new Date(date); d.setHours(0,0,0,0);
-  return Math.round((d - GANTT_START) / 86400000);
-}
-
-function pct(offset) {
-  return Math.max(0, Math.min(100, (offset / GANTT_DAYS) * 100));
-}
-
-// Colores fijos para todos los elementos del Gantt
-const COL_PROGRAMA = '#1D245C';  // navy — barras de programa
-const COL_CAMPANA  = '#DC2626';  // rojo — barras de campaña
-const COL_DEMO     = '#B45309';  // naranja oscuro — puntos de demo
-
-function renderGantt() {
-  const rows = DB['linea_tiempo'] || [];
-
-  // Filtrar por status multi-selección
-  const normalSt = s => String(s||'').trim().toLowerCase()
-    .replace(/[éê]/g,'e').replace(/[óô]/g,'o').replace(/[úû]/g,'u').replace(/[áâ]/g,'a').replace(/[íî]/g,'i');
-  const filtradas = tlFiltros.has('todos') ? rows : rows.filter(r => {
-    const rs = normalSt(r['Status']);
-    return [...tlFiltros].some(f => rs.includes(normalSt(f)));
-  });
-
-  // Calcular rango de meses dinámico ANTES de renderizar el header
+function renderGantt(){
+  const rows=DB['linea_tiempo']||[];
+  const normalSt=s=>String(s||'').trim().toLowerCase().replace(/[éê]/g,'e').replace(/[áâ]/g,'a').replace(/[íî]/g,'i').replace(/[óô]/g,'o').replace(/[úû]/g,'u');
+  const filtradas=tlFiltros.has('todos')?rows:rows.filter(r=>[...tlFiltros].some(f=>normalSt(r['Status']).includes(normalSt(f))));
   calcGanttRange(filtradas);
-  const todayPct = pct(dayOffset(HOY));
-
-  // Cabecera de meses — DESPUÉS de calcGanttRange para usar los meses correctos
-  const hdr = document.getElementById('ganttHeader');
-  hdr.innerHTML = GANTT_MESES.map((m, i) => {
-    const isCur = m.mes === HOY.getMonth() && m.anio === HOY.getFullYear();
-    const showAnio = i === 0 || GANTT_MESES[i-1].anio !== m.anio;
-    const lbl = showAnio ? m.label + '<br><span style="font-size:8px;opacity:.6">' + m.anio + '</span>' : m.label;
-    return '<div class="gantt-month' + (isCur ? ' current' : '') + '">' + lbl + '</div>';
+  const todayPct=pct(dayOffset(HOY));
+  const hdr=document.getElementById('ganttHeader');
+  hdr.innerHTML=GANTT_MESES.map((m,i)=>{
+    const isCur=m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear();
+    const showAnio=i===0||GANTT_MESES[i-1].anio!==m.anio;
+    const lbl=showAnio?m.label+'<br><span style="font-size:8px;opacity:.6">'+m.anio+'</span>':m.label;
+    return'<div class="gantt-month'+(isCur?' current':'')+'">'+ lbl+'</div>';
   }).join('');
-
-  // Agrupar por Nomenclatura pura (solo la sigla, sin edición)
-  // Si Nomenclatura tiene edición concatenada (ej: "TCI 2026-I"), extraemos solo la sigla
-  const getKey = r => {
-    const nom = String(r['Nomenclatura'] || r['Programa'] || '—').trim();
-    // Si contiene año (2026, 2025, 2027...) tomamos solo la parte antes
-    return nom.replace(/\s*20\d\d.*$/, '').trim();
-  };
-  const porProg = {};
-  filtradas.forEach(r => {
-    const key = getKey(r);
-    if (!porProg[key]) porProg[key] = { nombre: r['Programa'] || key, ediciones: [] };
-    porProg[key].ediciones.push(r);
-  });
-
-  const cont = document.getElementById('ganttRows');
-  if (!Object.keys(porProg).length) {
-    cont.innerHTML = '<div class="empty-state" style="margin:16px 0">Sin datos para este filtro</div>';
-    return;
-  }
-
-  cont.innerHTML = '';
-
-  Object.entries(porProg).forEach(([nom, prog]) => {
-
-    // Agrupar turnos por Edicion: varias filas del sheet = varios turnos de la misma edicion
-    const edMap = {};
-    prog.ediciones.forEach(r => {
-      const ed = r['Edicion'] || 'S/E';
-      if (!edMap[ed]) edMap[ed] = { rows: [], turnos: [] };
-      edMap[ed].rows.push(r);
-      if (r['Turno']) edMap[ed].turnos.push(r['Turno']);
-    });
-
-    const ediciones = Object.entries(edMap).map(([ed, d]) => {
-      const r0 = d.rows[0];
-      return {
-        edicion:    ed,
-        turnos:     d.turnos,
-        nTurnos:    d.rows.length,
-        status:     r0['Status'] || '',
-        inicioCamp: parseFecha(r0['Inicio_Campana']),
-        demo1:      parseFecha(r0['Demo1']),
-        demo2:      parseFecha(r0['Demo2']),
-        inicioP:    parseFecha(r0['Inicio_Programa']),
-        finP:       parseFecha(r0['Fin_Programa']),
-      };
-    }).sort((a,b) => (a.inicioP || a.inicioCamp || 0) - (b.inicioP || b.inicioCamp || 0));
-
-    const statuses   = ediciones.map(e => e.status);
-    const progStatus = statuses.every(s => s === 'Culminado') ? 'Culminado'
-                     : statuses.includes('En Proceso') ? 'En Proceso' : 'Pendiente';
-
-    const slotH = 24;
-    const rowH  = Math.max(44, ediciones.length * slotH + 12);
-
-    const row = document.createElement('div');
-    row.className = 'gantt-row';
-    row.style.minHeight = rowH + 'px';
-    row.style.borderBottom = '1px solid var(--border)';
-    row.style.alignItems = 'flex-start';
-
-    // Label: solo nomenclatura
-    const label = document.createElement('div');
-    label.className = 'gantt-label';
-    label.style.paddingTop = '8px';
-    label.innerHTML =
-      '<span class="gl-name" title="' + prog.nombre + '">' + nom + '</span>';
+  const getKey=r=>{const nom=String(r['Nomenclatura']||r['Programa']||'—').trim();return nom.replace(/\s*20\d\d.*$/,'').trim();};
+  const porProg={};
+  filtradas.forEach(r=>{const key=getKey(r);if(!porProg[key])porProg[key]={nombre:r['Programa']||key,ediciones:[]};porProg[key].ediciones.push(r);});
+  const cont=document.getElementById('ganttRows');
+  if(!Object.keys(porProg).length){cont.innerHTML='<div class="empty-state" style="margin:16px 0">Sin datos para este filtro</div>';return;}
+  cont.innerHTML='';
+  Object.entries(porProg).forEach(([nom,prog])=>{
+    const edMap={};
+    prog.ediciones.forEach(r=>{const ed=r['Edicion']||'S/E';if(!edMap[ed])edMap[ed]={rows:[],turnos:[]};edMap[ed].rows.push(r);if(r['Turno'])edMap[ed].turnos.push(r['Turno']);});
+    const ediciones=Object.entries(edMap).map(([ed,d])=>{
+      const r0=d.rows[0];
+      return{edicion:ed,turnos:d.turnos,nTurnos:d.rows.length,status:r0['Status']||'',
+        inicioCamp:parseFecha(r0['Inicio_Campana']||r0['Inicio_campana']),
+        demo1:parseFecha(r0['Demo1']),demo2:parseFecha(r0['Demo2']),
+        inicioP:parseFecha(r0['Inicio_Programa']),finP:parseFecha(r0['Fin_Programa'])};
+    }).sort((a,b)=>(a.inicioP||a.inicioCamp||0)-(b.inicioP||b.inicioCamp||0));
+    const statuses=ediciones.map(e=>e.status);
+    const progStatus=statuses.every(s=>s==='Culminado')?'Culminado':statuses.includes('En Proceso')||statuses.some(s=>s.toLowerCase().includes('proceso'))?'En Proceso':'Pendiente';
+    const slotH=24,rowH=Math.max(44,ediciones.length*slotH+12);
+    const row=document.createElement('div');row.className='gantt-row';row.style.minHeight=rowH+'px';row.style.alignItems='flex-start';row.style.borderBottom='1px solid var(--border)';
+    const label=document.createElement('div');label.className='gantt-label';label.style.paddingTop='8px';
+    label.innerHTML='<span class="gl-name" title="'+prog.nombre+'">'+nom+'</span>';
     row.appendChild(label);
-
-    // Track
-    const track = document.createElement('div');
-    track.className = 'gantt-track';
-    track.style.cssText = 'position:relative;flex-direction:column;align-items:stretch;min-height:' + rowH + 'px';
-
-    track.innerHTML = '<div style="position:absolute;inset:0;display:flex;z-index:0">' +
-      GANTT_MESES.map(function(m) {
-        return '<div style="flex:1;border-right:1px solid var(--border);' +
-          (m.mes === HOY.getMonth() && m.anio === HOY.getFullYear() ? 'background:rgba(239,68,68,.06)' : '') +
-          '"></div>';
-      }).join('') + '</div>';
-
-    const todayLine = document.createElement('div');
-    todayLine.className = 'today-line';
-    todayLine.style.left = todayPct + '%';
-    track.appendChild(todayLine);
-
-    ediciones.forEach(function(ed, idx) {
-      const colProg = COL_PROGRAMA;
-      const colCamp = COL_CAMPANA;
-      const topBase = 9 + idx * slotH;
-      const barTop  = topBase + Math.floor(slotH / 2) - 6;
-      const dotTop  = topBase + Math.floor(slotH / 2);
-
-      var campStart = ed.inicioCamp ? pct(dayOffset(ed.inicioCamp)) : null;
-      var campEnd   = ed.inicioP    ? pct(dayOffset(ed.inicioP))    : campStart;
-      var campW     = (campStart != null && campEnd != null) ? Math.max(0.2, campEnd - campStart) : 0;
-      var progStart = ed.inicioP ? pct(dayOffset(ed.inicioP)) : null;
-      var progEnd   = ed.finP    ? pct(dayOffset(ed.finP))    : progStart;
-      var progW     = (progStart != null && progEnd != null) ? Math.max(0.2, progEnd - progStart) : 0;
-      var d1Pct     = ed.demo1 ? pct(dayOffset(ed.demo1)) : null;
-      var d2Pct     = ed.demo2 ? pct(dayOffset(ed.demo2)) : null;
-
-      // Duración en meses: solo mostrar 3, 4 o 5
-      var durMeses = '';
-      if (ed.inicioP && ed.finP) {
-        var mRaw = (ed.finP.getFullYear() - ed.inicioP.getFullYear()) * 12
-                 + (ed.finP.getMonth() - ed.inicioP.getMonth());
-        // Redondear al más cercano entre 3, 4, 5
-        var mRedondeado = mRaw <= 3.5 ? 3 : mRaw <= 4.5 ? 4 : 5;
-        durMeses = mRedondeado + ' meses';
-      }
-
-      // Label inline: solo duración en blanco centrada en la barra del programa
-      if (progStart != null && progW > 5 && durMeses) {
-        var lbl = document.createElement('div');
-        // Centrar dentro de la barra del programa
-        var lblLeft = progStart + progW / 2;
-        lbl.style.cssText = 'position:absolute;left:' + lblLeft + '%;top:' + barTop + 'px;' +
-          'transform:translateX(-50%);display:flex;align-items:center;justify-content:center;' +
-          'z-index:6;pointer-events:none;height:12px;';
-        lbl.innerHTML = '<span style="font-size:8px;font-weight:700;color:#fff;white-space:nowrap;' +
-          'text-shadow:0 1px 2px rgba(0,0,0,.4)">' + durMeses + '</span>';
-        track.appendChild(lbl);
-      }
-
-      // Helper para crear tooltip flotante
-      function addTooltip(el, html) {
-        el.style.cursor = 'pointer';
-        el.addEventListener('mouseenter', function(e) {
-          var tt = document.getElementById('gantt-tooltip');
-          if (!tt) { tt = document.createElement('div'); tt.id = 'gantt-tooltip';
-            tt.style.cssText = 'position:fixed;z-index:9999;background:#1D245C;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.6;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:260px';
-            document.body.appendChild(tt); }
-          tt.innerHTML = html;
-          tt.style.display = 'block';
-          tt.style.left = (e.clientX + 12) + 'px';
-          tt.style.top  = (e.clientY - 10) + 'px';
-        });
-        el.addEventListener('mousemove', function(e) {
-          var tt = document.getElementById('gantt-tooltip');
-          if (tt) { tt.style.left = (e.clientX + 12) + 'px'; tt.style.top = (e.clientY - 10) + 'px'; }
-        });
-        el.addEventListener('mouseleave', function() {
-          var tt = document.getElementById('gantt-tooltip');
-          if (tt) tt.style.display = 'none';
-        });
-      }
-
-      // Barra campaña
-      if (campStart != null && campW > 0) {
-        var b = document.createElement('div');
-        b.style.cssText = 'position:absolute;left:' + campStart + '%;width:' + campW + '%;top:' + barTop + 'px;height:12px;' +
-          'background:' + colCamp + ';opacity:.85;border-radius:4px;z-index:3';
-        addTooltip(b,
-          '<b>' + ed.edicion + ' — Campaña</b><br>' +
-          'Inicio: ' + fmtDate(ed.inicioCamp) + '<br>' +
-          'Fin campaña: ' + fmtDate(ed.inicioP));
-        track.appendChild(b);
-      }
-
-      // Barra programa
-      if (progStart != null && progW > 0) {
-        var b2 = document.createElement('div');
-        b2.style.cssText = 'position:absolute;left:' + progStart + '%;width:' + progW + '%;top:' + barTop + 'px;height:12px;' +
-          'background:' + colProg + ';border-radius:4px;z-index:3';
-        addTooltip(b2,
-          '<b>' + ed.edicion + ' — Programa</b><br>' +
-          'Inicio: ' + fmtDate(ed.inicioP) + '<br>' +
-          'Fin: ' + fmtDate(ed.finP) + '<br>' +
-          'Duración: ' + durMeses + '<br>' +
-          'Turnos: ' + ed.nTurnos + (ed.turnos.length ? ' (' + ed.turnos.join(', ') + ')' : ''));
-        track.appendChild(b2);
-      }
-
-      // Conector punteado entre fin campaña e inicio programa
-      if (campEnd != null && progStart != null && campEnd < progStart) {
-        var c = document.createElement('div');
-        c.style.cssText = 'position:absolute;left:' + campEnd + '%;width:' + (progStart - campEnd) + '%;' +
-          'top:' + (barTop + 3) + 'px;height:2px;border-top:2px dashed ' + colCamp + '55;z-index:2;pointer-events:none';
-        track.appendChild(c);
-      }
-
-      // Demo 1
-      if (d1Pct != null) {
-        var d = document.createElement('div');
-        d.style.cssText = 'position:absolute;left:' + d1Pct + '%;top:' + dotTop + 'px;' +
-          'width:12px;height:12px;border-radius:50%;background:' + COL_DEMO + ';' +
-          'transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
-        addTooltip(d, '<b>' + ed.edicion + ' — Demo 1</b><br>Fecha: ' + fmtDate(ed.demo1));
-        track.appendChild(d);
-      }
-
-      // Demo 2
-      if (d2Pct != null) {
-        var d2 = document.createElement('div');
-        d2.style.cssText = 'position:absolute;left:' + d2Pct + '%;top:' + dotTop + 'px;' +
-          'width:12px;height:12px;border-radius:50%;background:' + COL_DEMO + ';' +
-          'transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
-        addTooltip(d2, '<b>' + ed.edicion + ' — Demo 2</b><br>Fecha: ' + fmtDate(ed.demo2));
-        track.appendChild(d2);
-      }
+    const track=document.createElement('div');track.className='gantt-track';track.style.cssText='position:relative;flex-direction:column;align-items:stretch;min-height:'+rowH+'px';
+    track.innerHTML='<div style="position:absolute;inset:0;display:flex;z-index:0">'+GANTT_MESES.map(function(m){return'<div style="flex:1;border-right:1px solid var(--border);'+(m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear()?'background:rgba(239,68,68,.06)':'')+'" ></div>';}).join('')+'</div>';
+    const todayLine=document.createElement('div');todayLine.className='today-line';todayLine.style.left=todayPct+'%';track.appendChild(todayLine);
+    ediciones.forEach(function(ed,idx){
+      const colProg=COL_PROGRAMA,colCamp=COL_CAMPANA;
+      const topBase=8+idx*slotH,barTop=topBase+Math.floor(slotH/2)-6,dotTop=topBase+Math.floor(slotH/2);
+      var campStart=ed.inicioCamp?pct(dayOffset(ed.inicioCamp)):null,campEnd=ed.inicioP?pct(dayOffset(ed.inicioP)):campStart;
+      var campW=(campStart!=null&&campEnd!=null)?Math.max(0.2,campEnd-campStart):0;
+      var progStart=ed.inicioP?pct(dayOffset(ed.inicioP)):null,progEnd=ed.finP?pct(dayOffset(ed.finP)):progStart;
+      var progW=(progStart!=null&&progEnd!=null)?Math.max(0.2,progEnd-progStart):0;
+      var d1Pct=ed.demo1?pct(dayOffset(ed.demo1)):null,d2Pct=ed.demo2?pct(dayOffset(ed.demo2)):null;
+      var durMeses='';
+      if(ed.inicioP&&ed.finP){var mRaw=(ed.finP.getFullYear()-ed.inicioP.getFullYear())*12+(ed.finP.getMonth()-ed.inicioP.getMonth());var mR=mRaw<=3.5?3:mRaw<=4.5?4:5;durMeses=mR+' meses';}
+      function addTooltip(el,html){el.style.cursor='pointer';el.addEventListener('mouseenter',function(e){var tt=document.getElementById('gantt-tooltip');if(!tt){tt=document.createElement('div');tt.id='gantt-tooltip';tt.style.cssText='position:fixed;z-index:9999;background:#1D245C;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.6;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:260px';document.body.appendChild(tt);}tt.innerHTML=html;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-10)+'px';});el.addEventListener('mousemove',function(e){var tt=document.getElementById('gantt-tooltip');if(tt){tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-10)+'px';}});el.addEventListener('mouseleave',function(){var tt=document.getElementById('gantt-tooltip');if(tt)tt.style.display='none';});}
+      if(progStart!=null&&progW>5&&durMeses){var lbl=document.createElement('div');lbl.style.cssText='position:absolute;left:calc('+progStart+'% + 4px);top:'+topBase+'px;display:flex;align-items:center;justify-content:center;z-index:6;pointer-events:none;height:12px';lbl.innerHTML='<span style="font-size:8px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.4)">'+durMeses+'</span>';track.appendChild(lbl);}
+      if(campStart!=null&&campW>0){var b=document.createElement('div');b.style.cssText='position:absolute;left:'+campStart+'%;width:'+campW+'%;top:'+barTop+'px;height:12px;background:'+colCamp+';opacity:.85;border-radius:4px;z-index:3';addTooltip(b,'<b>'+ed.edicion+' — Campaña</b><br>Inicio: '+fmtDate(ed.inicioCamp)+'<br>Fin: '+fmtDate(ed.inicioP));track.appendChild(b);}
+      if(progStart!=null&&progW>0){var b2=document.createElement('div');b2.style.cssText='position:absolute;left:'+progStart+'%;width:'+progW+'%;top:'+barTop+'px;height:12px;background:'+colProg+';border-radius:4px;z-index:3';addTooltip(b2,'<b>'+ed.edicion+' — Programa</b><br>Inicio: '+fmtDate(ed.inicioP)+'<br>Fin: '+fmtDate(ed.finP)+'<br>Duración: '+durMeses+'<br>Turnos: '+ed.nTurnos+(ed.turnos.length?' ('+ed.turnos.join(', ')+')':''));track.appendChild(b2);}
+      if(campEnd!=null&&progStart!=null&&campEnd<progStart){var c=document.createElement('div');c.style.cssText='position:absolute;left:'+campEnd+'%;width:'+(progStart-campEnd)+'%;top:'+(barTop+5)+'px;height:2px;border-top:2px dashed '+colCamp+'55;z-index:2;pointer-events:none';track.appendChild(c);}
+      if(d1Pct!=null){var d=document.createElement('div');d.style.cssText='position:absolute;left:'+d1Pct+'%;top:'+dotTop+'px;width:12px;height:12px;border-radius:50%;background:'+COL_DEMO+';transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';addTooltip(d,'<b>'+ed.edicion+' — Demo 1</b><br>Fecha: '+fmtDate(ed.demo1));track.appendChild(d);}
+      if(d2Pct!=null){var d2=document.createElement('div');d2.style.cssText='position:absolute;left:'+d2Pct+'%;top:'+dotTop+'px;width:12px;height:12px;border-radius:50%;background:'+COL_DEMO+';transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';addTooltip(d2,'<b>'+ed.edicion+' — Demo 2</b><br>Fecha: '+fmtDate(ed.demo2));track.appendChild(d2);}
     });
-
-    row.appendChild(track);
-    cont.appendChild(row);
+    row.appendChild(track);cont.appendChild(row);
   });
 }
 
-function renderAvance() {
-  const rows = DB['avance'] || [];
-  const alertasCont = document.getElementById('avanceAlertas');
-  alertasCont.innerHTML = '';
-
-  if (!rows.length) {
-    document.getElementById('avanceCards').innerHTML = '<div class="empty-state">Sin datos en la hoja <b>avance</b></div>';
+// ══════════════════════════════════════════════════════════
+//  TAB 02 — AVANCE (4 sub-pestañas)
+// ══════════════════════════════════════════════════════════
+function renderAvance(){
+  var rows=DB['avance']||[];
+  if(!rows.length){
+    ['resumen','marketing','comercial','operaciones'].forEach(function(id){var el=document.getElementById('av-'+id);if(el)el.innerHTML='<div class="empty-state">Sin datos en la hoja <b>avance</b></div>';});
     return;
   }
+  var normSt=function(s){return String(s||'').trim().toLowerCase().replace(/[éê]/g,'e');};
+  var diasHasta=function(fecha){if(!fecha)return null;return Math.round((fecha-HOY)/86400000);};
+  var urgClass=function(dias){if(dias===null)return'tranquilo';if(dias<0||dias<=7)return'urgente';if(dias<=30)return'proximo';return'tranquilo';};
+  var urgIcon=function(dias){if(dias===null||dias>30)return'🟢';if(dias<=7)return'🔴';return'🟡';};
+  var urgSort=function(dias){if(dias===null)return 999;if(dias<0)return 0;if(dias<=7)return 1;if(dias<=30)return 2;return 3;};
 
-  const normSt = s => String(s||'').trim().toLowerCase()
-    .replace(/[éê]/g,'e').replace(/[áâ]/g,'a').replace(/[íî]/g,'i').replace(/[óô]/g,'o').replace(/[úû]/g,'u');
-
-  // Alertas: programas próximos a iniciar (Dias_Alerta calculado o desde fecha)
-  const hoy = HOY;
-  const proximos = rows
-    .filter(r => !normSt(r['Status']).includes('culminado'))
-    .map(r => {
-      // Si Dias_Alerta está vacío, calcular desde Inicio_Programa
-      let dias = Number(r['Dias_Alerta']);
-      if (isNaN(dias) || dias === 0) {
-        const fi = parseFecha(r['Inicio_Programa']);
-        dias = fi ? Math.round((fi - hoy) / 86400000) : 9999;
-      }
-      return { ...r, _dias: dias };
-    })
-    .filter(r => r._dias >= 0 && r._dias <= 90)
-    .sort((a,b) => a._dias - b._dias);
-
-  proximos.forEach(r => {
-    const tipo = r._dias <= 14 ? 'near' : 'soon';
-    const icono = r._dias <= 14 ? '🔴' : '🟡';
-    alertasCont.innerHTML += `
-      <div class="alert-banner ${tipo}">
-        <span>${icono}</span>
-        <span><b>${r['Programa']} ${r['Edicion']||''}</b> — inicia en <b>${r._dias} días</b> (${fmtDate(parseFecha(r['Inicio_Programa']))})</span>
-      </div>`;
-  });
-
-  // Mostrar todos los programas (En Proceso primero, luego Pendiente, luego Culminado)
-  const orden = { 'en proceso': 0, 'pendiente': 1, 'culminado': 2 };
-  const sorted = [...rows].sort((a,b) => {
-    const sa = normSt(a['Status']); const sb = normSt(b['Status']);
-    const oa = Object.keys(orden).find(k => sa.includes(k));
-    const ob = Object.keys(orden).find(k => sb.includes(k));
-    return (orden[oa]||99) - (orden[ob]||99);
-  });
-
-  const cont = document.getElementById('avanceCards');
-  if (!sorted.length) {
-    cont.innerHTML = '<div class="empty-state">Sin datos en la hoja <b>avance</b></div>';
-    return;
+  function miniTimeline(hitos){
+    var html='<div class="av-mini-timeline">';
+    hitos.forEach(function(h){
+      var d=h.fecha;
+      var diff=d?Math.round((d-HOY)/86400000):null;
+      var estado=!d?'pending':diff<-1?'done':diff<=7?(diff<0?'overdue':'active-h'):'pending';
+      var icon={done:'✓','active-h':'⏰',overdue:'⚠',pending:'○'}[estado]||'○';
+      html+='<div class="av-hito '+estado+'"><div class="av-hdot">'+icon+'</div><div class="av-hlabel">'+h.label+'</div><div class="av-hdate">'+(d?fmtDate(d):'—')+'</div></div>';
+    });
+    html+='</div>';
+    return html;
+  }
+  function alertBox(texto,dias){
+    var cls=urgClass(dias)==='urgente'?'r':urgClass(dias)==='proximo'?'y':'g';
+    return'<div class="av-alert-box '+cls+'">'+urgIcon(dias)+' '+texto+'</div>';
+  }
+  function cardHtml(it,cls,alertas,hitosArr){
+    return'<div class="av-card-header">'+
+      '<div><span class="av-card-name">'+it.nombre+'</span><span class="av-card-ed">'+it.ed+'</span></div>'+
+      '<span class="pill '+(cls==='urgente'?'pill-danger':cls==='proximo'?'pill-warn':'pill-ok')+'">'+(cls==='urgente'?'🔴 Urgente':cls==='proximo'?'🟡 Próximo':'🟢 OK')+'</span>'+
+      '</div>'+alertas+miniTimeline(hitosArr);
   }
 
-  const normSt2 = s => String(s||'').toLowerCase().replace(/[éê]/g,'e');
+  // Enriquecer cada fila con datos del checklist
+  var items=rows.map(function(r){
+    var ckRow=(DB['checklist']||[]).find(function(c){return c['Nomenclatura']===r['Nomenclatura']&&c['Edicion']===r['Edicion'];});
+    var inicioP=parseFecha(r['Inicio_Programa']),finP=parseFecha(r['Fin_Programa']);
+    var inicioCamp=ckRow?parseFecha(ckRow['Inicio_campana']):null;
+    var matListo=ckRow?resolverFechaHito(ckRow['Material_Listo'],inicioP):null;
+    var demo1=ckRow?parseFecha(ckRow['Demo1']):null;
+    var demo2=ckRow?parseFecha(ckRow['Demo2']):null;
+    return{r:r,nombre:r['Programa']||'—',ed:r['Edicion']||'',
+      matEnt:normSt(r['Material_Entregado']||'')==='si',
+      inicioCamp:inicioCamp,matListo:matListo,demo1:demo1,demo2:demo2,
+      inicioP:inicioP,finP:finP};
+  });
 
-  cont.innerHTML = '';
-  sorted.forEach(r => {
-    const stNorm   = normSt2(r['Status']);
-    const enProceso = stNorm.includes('proceso');
-    const pendiente = stNorm.includes('pendiente');
+  // ── MARKETING ─────────────────────────────────────────────
+  var mktEl=document.getElementById('av-marketing');
+  var mktItems=items.filter(function(it){
+    if(it.matEnt)return false;
+    if(!it.inicioCamp)return false;
+    return diasHasta(it.inicioCamp)<=0;
+  }).sort(function(a,b){return urgSort(diasHasta(a.matListo))-urgSort(diasHasta(b.matListo));});
 
-    const sesTotal = Number(r['Sesiones_Total'])     || 0;
-    const sesReal  = Number(r['Sesiones_Realizadas'])|| 0;
-    const sesPct   = sesTotal ? Math.round(sesReal/sesTotal*100) : 0;
-    const inicioP  = parseFecha(r['Inicio_Programa']);
-    const finP     = parseFecha(r['Fin_Programa']);
-    const inicioR  = parseFecha(r['Inicio_Real']);
-    const enFecha  = inicioP && inicioR ? inicioR <= inicioP : null;
-    const alumnos  = Number(r['Alumnos']) || 0;
+  if(!mktItems.length){mktEl.innerHTML='<div class="empty-state" style="margin:20px 0">✅ Marketing al día</div>';}
+  else{mktEl.innerHTML='';mktItems.forEach(function(it){
+    var diasCamp=Math.round((HOY-it.inicioCamp)/86400000);
+    var diasMat=it.matListo?diasHasta(it.matListo):null;
+    var cls=diasCamp>15?'urgente':diasCamp>7?'proximo':'tranquilo';
+    var alerta=diasCamp>15?alertBox('Llevas '+diasCamp+' días — material con retraso',-1):diasMat!==null&&diasMat>=0?alertBox('Faltan '+diasMat+' días para entregar el material',diasMat):alertBox('En plazo',5);
+    var card=document.createElement('div');card.className='av-prog-card '+cls;
+    card.innerHTML=cardHtml(it,cls,alerta,[{label:'Campaña',fecha:it.inicioCamp},{label:'Mat. listo',fecha:it.matListo},{label:'Demo 1',fecha:it.demo1},{label:'Inicio',fecha:it.inicioP}]);
+    mktEl.appendChild(card);
+  });}
 
-    // Calcular días al próximo hito importante
-    let proximoHito = null, diasProximo = null;
-    if (enProceso) {
-      // Para en proceso: días hasta fin del programa
-      if (finP) {
-        const d = Math.round((finP - HOY) / 86400000);
-        if (d >= 0) { proximoHito = 'Fin del programa'; diasProximo = d; }
-      }
-    } else if (pendiente) {
-      // Para pendiente: días hasta inicio de campaña o inicio de programa
-      const campRows = (DB['linea_tiempo']||[]).filter(lt =>
-        lt['Nomenclatura'] === r['Nomenclatura'] && lt['Edicion'] === r['Edicion']
-      );
-      const camp = campRows.length ? parseFecha(campRows[0]['Inicio_Campana'] || campRows[0]['Inicio_campana']) : null;
-      if (camp) {
-        const dc = Math.round((camp - HOY) / 86400000);
-        if (dc >= 0) { proximoHito = 'Inicio de campaña'; diasProximo = dc; }
-        else if (inicioP) {
-          const dp = Math.round((inicioP - HOY) / 86400000);
-          if (dp >= 0) { proximoHito = 'Inicio del programa'; diasProximo = dp; }
-        }
-      } else if (inicioP) {
-        const dp = Math.round((inicioP - HOY) / 86400000);
-        if (dp >= 0) { proximoHito = 'Inicio del programa'; diasProximo = dp; }
-      }
-    }
+  // ── COMERCIAL ─────────────────────────────────────────────
+  var comEl=document.getElementById('av-comercial');
+  var comItems=items.filter(function(it){
+    if(!it.matEnt)return false;
+    if(!it.inicioP)return false;
+    return diasHasta(it.inicioP)>=0;
+  }).sort(function(a,b){return urgSort(diasHasta(a.inicioP))-urgSort(diasHasta(b.inicioP));});
 
-    const col = sesPct >= 75 ? 'var(--success)' : sesPct >= 40 ? 'var(--navy)' : 'var(--warning)';
-    const urgColor = diasProximo != null && diasProximo <= 14 ? 'var(--danger-tx)' :
-                     diasProximo != null && diasProximo <= 30 ? 'var(--warning-tx)' : 'var(--success-tx)';
+  if(!comItems.length){comEl.innerHTML='<div class="empty-state" style="margin:20px 0">✅ Comercial sin campañas activas</div>';}
+  else{comEl.innerHTML='';comItems.forEach(function(it){
+    var dFin=diasHasta(it.inicioP);
+    var d1=it.demo1?diasHasta(it.demo1):null;
+    var d2=it.demo2?diasHasta(it.demo2):null;
+    var cls=urgClass(dFin);
+    var alertas=alertBox('Faltan '+dFin+' días para inicio de clases (fin de ventas)',dFin);
+    if(d1!==null&&d1>=0&&d1<=30)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') — ¡invita leads!',d1);
+    if(d2!==null&&d2>=0&&d2<=30)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+') — ¡invita leads!',d2);
+    var card=document.createElement('div');card.className='av-prog-card '+cls;
+    card.innerHTML=cardHtml(it,cls,alertas,[{label:'Material',fecha:it.matListo},{label:'Demo 1',fecha:it.demo1},{label:'Demo 2',fecha:it.demo2},{label:'Inicio',fecha:it.inicioP}]);
+    comEl.appendChild(card);
+  });}
 
-    const card = document.createElement('div');
-    card.className = 'av-card';
-    // Borde de urgencia para pendientes con poco tiempo
-    if (pendiente && diasProximo != null && diasProximo <= 30)
-      card.style.borderColor = diasProximo <= 14 ? 'var(--danger)' : 'var(--warning)';
+  // ── OPERACIONES ───────────────────────────────────────────
+  var opEl=document.getElementById('av-operaciones');
+  var opItems=items.filter(function(it){
+    if(!it.finP||diasHasta(it.finP)<0)return false;
+    var ref=it.demo1||it.inicioP; if(!ref)return false;
+    return diasHasta(ref)<=45||(it.inicioP&&diasHasta(it.inicioP)>=0);
+  }).sort(function(a,b){
+    var rA=a.demo1||a.inicioP,rB=b.demo1||b.inicioP;
+    return urgSort(diasHasta(rA))-urgSort(diasHasta(rB));
+  });
 
-    card.innerHTML =
-      '<div class="av-header">' +
-        '<div>' +
-          '<div class="av-name">' + (r['Programa']||'—') +
-            ' <span style="font-size:11px;font-weight:400;color:var(--muted)">' + (r['Edicion']||'') + '</span></div>' +
-          '<div class="av-sub">' + fmtDate(inicioP) + ' → ' + fmtDate(finP) + '</div>' +
-        '</div>' +
-        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
-          statusPill(r['Status']) +
-          (enFecha !== null ? '<span class="pill ' + (enFecha ? 'pill-ok' : 'pill-danger') + '">' + (enFecha ? '✓ Inició en fecha' : '⚠ Retraso') + '</span>' : '') +
-        '</div>' +
-      '</div>' +
-      // Próximo hito destacado
-      (proximoHito != null ?
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:10px">' +
-          '<span style="font-size:12px;color:var(--muted)">⏱ ' + proximoHito + '</span>' +
-          '<span style="font-size:14px;font-weight:700;color:' + urgColor + '">' + diasProximo + ' días</span>' +
-        '</div>' : '') +
-      // Barra sesiones (solo para en proceso)
-      (enProceso && sesTotal > 0 ?
-        '<div class="av-prog-wrap">' +
-          '<div class="av-prog-label"><span>Avance de sesiones</span>' +
-            '<span style="font-weight:700;color:' + col + '">' + sesReal + ' / ' + sesTotal + ' (' + sesPct + '%)</span></div>' +
-          '<div class="av-prog-track"><div class="av-prog-fill" style="width:' + sesPct + '%;background:' + col + '"></div></div>' +
-        '</div>' : '') +
-      '<div class="av-stats">' +
-        '<div class="av-stat"><div class="asl">Alumnos</div><div class="asv">' + numF(alumnos) + '</div></div>' +
-        '<div class="av-stat"><div class="asl">Sesiones</div><div class="asv">' + (enProceso ? sesReal + '/' + sesTotal : '—') + '</div></div>' +
-        '<div class="av-stat"><div class="asl">Inicio real</div><div class="asv" style="font-size:11px">' + (fmtDate(inicioR) || '—') + '</div></div>' +
+  if(!opItems.length){opEl.innerHTML='<div class="empty-state" style="margin:20px 0">✅ Operaciones sin programas próximos</div>';}
+  else{opEl.innerHTML='';opItems.forEach(function(it){
+    var d1=it.demo1?diasHasta(it.demo1):null,d2=it.demo2?diasHasta(it.demo2):null;
+    var dIni=it.inicioP?diasHasta(it.inicioP):null,dFin=it.finP?diasHasta(it.finP):null;
+    var proxRef=d1!==null&&d1>=0?d1:dIni!==null&&dIni>=0?dIni:dFin;
+    var cls=urgClass(proxRef);
+    var alertas='';
+    if(d1!==null&&d1>=0&&d1<=45)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') — prepara logística',d1);
+    if(d2!==null&&d2>=0&&d2<=45)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+')',d2);
+    if(dIni!==null&&dIni>=0&&dIni<=30)alertas+=alertBox('Inicio de clases en '+dIni+' días ('+fmtDate(it.inicioP)+')',dIni);
+    if(dFin!==null&&dFin>=0&&dFin<=14)alertas+=alertBox('Fin del programa en '+dFin+' días',dFin);
+    if(!alertas)alertas+=alertBox('Programa en curso — finaliza en '+dFin+' días',dFin);
+    var card=document.createElement('div');card.className='av-prog-card '+cls;
+    card.innerHTML=cardHtml(it,cls,alertas,[{label:'Demo 1',fecha:it.demo1},{label:'Demo 2',fecha:it.demo2},{label:'Inicio',fecha:it.inicioP},{label:'Fin',fecha:it.finP}]);
+    opEl.appendChild(card);
+  });}
+
+  // ── RESUMEN ───────────────────────────────────────────────
+  var resEl=document.getElementById('av-resumen');
+  var activos=items.filter(function(it){return!it.finP||diasHasta(it.finP)>=-7;})
+    .sort(function(a,b){var dA=a.inicioP?diasHasta(a.inicioP):999,dB=b.inicioP?diasHasta(b.inicioP):999;return urgSort(dA)-urgSort(dB);});
+  if(!activos.length){resEl.innerHTML='<div class="empty-state">Sin programas activos</div>';return;}
+  var html='<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)">';
+  activos.forEach(function(it){
+    var dIni=it.inicioP?diasHasta(it.inicioP):null,dFin=it.finP?diasHasta(it.finP):null;
+    var mktAct=!it.matEnt&&it.inicioCamp&&diasHasta(it.inicioCamp)<=0;
+    var comAct=it.matEnt&&dIni!==null&&dIni>=0;
+    var opAct=dFin!==null&&dFin>=0&&(it.demo1||it.inicioP);
+    var chips='';
+    if(mktAct)chips+='<span class="av-chip '+(it.matListo&&diasHasta(it.matListo)<0?'pill-danger':'pill-warn')+'">📣 Mkt</span>';
+    else if(it.matEnt)chips+='<span class="av-chip pill-ok">📣 ✓</span>';
+    if(comAct)chips+='<span class="av-chip '+(dIni!==null&&dIni<=14?'pill-danger':'pill-warn')+'">💼 Com</span>';
+    if(opAct)chips+='<span class="av-chip pill-ok">🎓 Op</span>';
+    var stPill=normSt(it.r['Status']||'').includes('proceso')?'pill-proceso':normSt(it.r['Status']||'').includes('pendiente')?'pill-pendiente':'pill-culminado';
+    html+='<div class="av-res-card">'+
+      '<div class="av-res-name">'+it.nombre+' <span style="color:var(--muted);font-weight:400">'+it.ed+'</span></div>'+
+      '<span class="pill '+stPill+'">'+(it.r['Status']||'')+'</span>'+
+      (dIni!==null?'<span style="font-size:11px;color:var(--muted)">'+(dIni>=0?'Inicia en '+dIni+'d':'En curso')+'</span>':'')+
+      (dFin!==null&&dFin>=0?'<span style="font-size:11px;color:var(--muted)">Fin en '+dFin+'d</span>':'')+
+      '<div class="av-chips">'+chips+'</div></div>';
+  });
+  html+='</div>';
+  resEl.innerHTML=html;
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 03 — EJECUCIÓN
+// ══════════════════════════════════════════════════════════
+function renderEjecucion(){
+  var rows=DB['ejecucion']||[];
+  var cont=document.getElementById('ejCards');
+  if(!rows.length){cont.innerHTML='<div class="empty-state">Sin datos en la hoja <b>ejecucion</b></div>';return;}
+  cont.innerHTML='';
+  rows.forEach(function(r){
+    var cap=Number(r['Capacidad'])||0,alum=Number(r['Alumnos'])||0;
+    var sesT=Number(r['Sesiones_Total'])||0,sesR=Number(r['Sesiones_Realizadas'])||0;
+    var capPct=cap?Math.min(100,Math.round(alum/cap*100)):0;
+    var sesPct=sesT?Math.min(100,Math.round(sesR/sesT*100)):0;
+    var capCol=capPct>=90?'var(--danger)':capPct>=70?'var(--success)':'var(--warning)';
+    var card=document.createElement('div');card.className='ej-card';
+    card.innerHTML='<div class="ej-header"><div><div class="ej-name">'+(r['Programa']||'—')+'</div>'+
+      '<div class="ej-sub">'+(r['Nomenclatura']||'')+' · '+(r['Edicion']||'')+' · '+(r['Turno']||'')+'</div></div>'+statusPill('En Proceso')+'</div>'+
+      '<div class="ej-body">'+
+      '<div class="ej-row"><span class="er-l">Docente</span><span class="er-v">'+(r['Docente']||'—')+'</span></div>'+
+      '<div class="ej-row"><span class="er-l">Sala</span><span class="er-v">'+(r['Sala']||'—')+'</span></div>'+
+      '<div><div class="ej-row"><span class="er-l">Ocupación</span><span class="er-v" style="color:'+capCol+'">'+alum+' / '+cap+' ('+capPct+'%)</span></div>'+
+      '<div class="capacity-bar"><div class="capacity-fill" style="width:'+capPct+'%;background:'+capCol+'"></div></div></div>'+
+      '<div><div class="ej-row"><span class="er-l">Sesiones</span><span class="er-v">'+sesR+' / '+sesT+' ('+sesPct+'%)</span></div>'+
+      '<div class="sesiones-bar"><div class="sesiones-fill" style="width:'+sesPct+'%"></div></div></div>'+
+      '<div class="ej-row"><span class="er-l">Periodo</span><span class="er-v" style="font-size:11px">'+fmtDate(parseFecha(r['Inicio_Programa']))+' → '+fmtDate(parseFecha(r['Fin_Programa']))+'</span></div>'+
       '</div>';
-    cont.appendChild(card);
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-//  TAB 03 — CHECKLIST
-// ══════════════════════════════════════════════════════════
-// Resuelve la fecha de un hito: si es número = días antes de inicioP, si es fecha = fecha directa
-function resolverFechaHito(raw, inicioP) {
-  if (!raw && raw !== 0) return null;
-  const s = String(raw).trim();
-  // Si es número puro: días antes del inicio del programa
-  if (/^-?\d+$/.test(s)) {
-    const n = Number(s);
-    if (!inicioP) return null;
-    const d = new Date(inicioP);
-    d.setDate(d.getDate() - n); // n días ANTES del inicio
-    return d;
-  }
-  // Si es fecha (contiene / o -)
-  return parseFecha(s);
-}
-
-function hitoEstado(fecha) {
-  if (!fecha) return 'pending';
-  const d = new Date(fecha); d.setHours(0,0,0,0);
-  const diff = Math.round((d - HOY) / 86400000);
-  if (diff < -1)  return 'done';
-  if (diff <= 7)  return diff < 0 ? 'overdue' : 'active';
-  return 'pending';
-}
-
-function hitoIcon(estado) {
-  return { done:'✓', active:'⏰', overdue:'⚠', pending:'○' }[estado] || '○';
-}
-
-function renderChecklist() {
-  const rows = DB['checklist'] || [];
-  const cont = document.getElementById('ckCards');
-  if (!rows.length) {
-    cont.innerHTML = '<div class="empty-state">Sin datos en la hoja <b>checklist</b></div>';
-    return;
-  }
-
-  // Ordenar: primero los que tienen hitos vencidos o activos, luego por fecha de inicio
-  const rowsOrd = [...rows].sort((a,b) => {
-    const hitos = ['Inicio_campana','Material_Listo','Demo1','Demo2','Inicio_Programa','Fin_Programa'];
-    var _ipA = parseFecha(a['Inicio_Programa']); var _ipB = parseFecha(b['Inicio_Programa']);
-    const urgA = hitos.some(k => ['overdue','active'].includes(hitoEstado(resolverFechaHito(a[k], _ipA)))) ? 0 : 1;
-    const urgB = hitos.some(k => ['overdue','active'].includes(hitoEstado(resolverFechaHito(b[k], _ipB)))) ? 0 : 1;
-    if (urgA !== urgB) return urgA - urgB;
-    const fa = parseFecha(a['Inicio_Programa'])||new Date(9999,0,1);
-    const fb = parseFecha(b['Inicio_Programa'])||new Date(9999,0,1);
-    return fa - fb;
-  });
-
-  cont.innerHTML = '';
-  rowsOrd.forEach(r => {
-    const hitos = [
-      { label:'Inicio campaña',  key:'Inicio_campana'   },
-      { label:'Material listo',  key:'Material_Listo'    },
-      { label:'Demo 1',          key:'Demo1'             },
-      { label:'Demo 2',          key:'Demo2'             },
-      { label:'Inicio programa', key:'Inicio_Programa'   },
-      { label:'Fin programa',    key:'Fin_Programa'      },
-    ];
-    const diasVentas = Number(r['Comerciales_Activas']) || null;
-
-    var _inicioP = parseFecha(r['Inicio_Programa']);
-    const vencidos = hitos.filter(h => hitoEstado(resolverFechaHito(r[h.key], _inicioP)) === 'overdue').length;
-    const activos  = hitos.filter(h => hitoEstado(resolverFechaHito(r[h.key], _inicioP)) === 'active').length;
-
-    const card = document.createElement('div');
-    card.className = 'ck-card';
-    if (vencidos) card.style.borderColor = 'var(--danger)';
-    else if (activos) card.style.borderColor = 'var(--warning)';
-
-    card.innerHTML =
-      '<div class="ck-header">' +
-        '<div>' +
-          '<div class="ck-name">' + (r['Programa']||'—') +
-            ' <span style="font-size:11px;font-weight:400;color:var(--muted)">' + (r['Edicion']||'') + '</span></div>' +
-          '<div class="ck-sub">' + (r['Nomenclatura']||'') + '</div>' +
-        '</div>' +
-        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">' +
-          (vencidos ? '<span class="pill pill-danger">⚠ ' + vencidos + ' vencido' + (vencidos!==1?'s':'') + '</span>' : '') +
-          (activos  ? '<span class="pill pill-warn">⏰ ' + activos  + ' próximo' + (activos!==1?'s':'')  + '</span>' : '') +
-          (!vencidos && !activos ? '<span class="pill pill-ok">✓ Al día</span>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div class="ck-timeline" style="margin-top:14px">' +
-        hitos.map(function(h, hi) {
-          var inicioP = parseFecha(r['Inicio_Programa']);
-          var fecha = resolverFechaHito(r[h.key], inicioP);
-          var estado = hitoEstado(fecha);
-          return '<div class="ck-hito ' + estado + '">' +
-            '<div class="ck-dot">' + hitoIcon(estado) + '</div>' +
-            '<div class="ck-label">' + h.label + '</div>' +
-            '<div class="ck-date">' + (fecha ? fmtDate(fecha) : '—') + '</div>' +
-          '</div>';
-        }).join('') +
-      '</div>' +
-      // Badge período de ventas
-      (diasVentas ? (
-        '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)">' +
-          '<div style="flex:1;height:3px;background:linear-gradient(90deg,var(--orange),var(--navy));border-radius:2px;opacity:.5"></div>' +
-          '<span style="background:var(--orange-bg);color:var(--orange-tx);font-weight:600;padding:3px 10px;border-radius:5px;white-space:nowrap">🗓 ' + diasVentas + ' días de ventas</span>' +
-          '<div style="flex:1;height:3px;background:linear-gradient(90deg,var(--navy),var(--orange));border-radius:2px;opacity:.5"></div>' +
-        '</div>'
-      ) : '') +
-      '';
-    cont.appendChild(card);
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-//  TAB 04 — EJECUCIÓN
-// ══════════════════════════════════════════════════════════
-function renderEjecucion() {
-  const rows = DB['ejecucion'] || [];
-  const cont = document.getElementById('ejCards');
-  if (!rows.length) { cont.innerHTML = '<div class="empty-state">Sin datos aún</div>'; return; }
-
-  cont.innerHTML = '';
-  rows.forEach(r => {
-    const cap   = Number(r['Capacidad'])          || 0;
-    const alum  = Number(r['Alumnos'])            || 0;
-    const sesT  = Number(r['Sesiones_Total'])     || 0;
-    const sesR  = Number(r['Sesiones_Realizadas'])|| 0;
-    const capPct = cap ? Math.min(100, Math.round(alum/cap*100)) : 0;
-    const sesPct = sesT ? Math.min(100, Math.round(sesR/sesT*100)) : 0;
-    const capCol = capPct >= 90 ? 'var(--danger)' : capPct >= 70 ? 'var(--success)' : 'var(--warning)';
-
-    const card = document.createElement('div');
-    card.className = 'ej-card';
-    card.innerHTML = `
-      <div class="ej-header">
-        <div>
-          <div class="ej-name">${r['Programa']||'—'}</div>
-          <div class="ej-sub">${r['Nomenclatura']||''} · ${r['Edicion']||''} · ${r['Turno']||''}</div>
-        </div>
-        ${statusPill('En Proceso')}
-      </div>
-      <div class="ej-body">
-        <div class="ej-row"><span class="er-l">Docente</span><span class="er-v">${r['Docente']||'—'}</span></div>
-        <div class="ej-row"><span class="er-l">Sala</span><span class="er-v">${r['Sala']||'—'}</span></div>
-        <div>
-          <div class="ej-row">
-            <span class="er-l">Ocupación</span>
-            <span class="er-v" style="color:${capCol}">${alum} / ${cap} alumnos (${capPct}%)</span>
-          </div>
-          <div class="capacity-bar"><div class="capacity-fill" style="width:${capPct}%;background:${capCol}"></div></div>
-        </div>
-        <div>
-          <div class="ej-row">
-            <span class="er-l">Sesiones</span>
-            <span class="er-v">${sesR} / ${sesT} (${sesPct}%)</span>
-          </div>
-          <div class="sesiones-bar"><div class="sesiones-fill" style="width:${sesPct}%"></div></div>
-        </div>
-        <div class="ej-row"><span class="er-l">Periodo</span><span class="er-v" style="font-size:11px">${fmtDate(parseFecha(r['Inicio_Programa']))} → ${fmtDate(parseFecha(r['Fin_Programa']))}</span></div>
-      </div>`;
     cont.appendChild(card);
   });
 }
@@ -1077,9 +751,9 @@ function renderEjecucion() {
 // ══════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded',function(){
   refreshAll();
-  setInterval(refreshAll, AUTO_MS);
+  setInterval(refreshAll,AUTO_MS);
 });
 </script>
 </body>
