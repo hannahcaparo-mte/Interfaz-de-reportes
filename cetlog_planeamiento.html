@@ -134,9 +134,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .gantt-bar{position:absolute;border-radius:5px}
 .gantt-bar.campana{background:var(--orange);opacity:.8}
 .gantt-bar.programa{background:var(--navy);opacity:.85}
-.gantt-dot{position:absolute;width:12px;height:12px;border-radius:50%;top:50%;transform:translate(-50%,-50%);z-index:2;border:2px solid var(--card)}
-.gantt-dot.demo1{background:var(--warning)}
-.gantt-dot.demo2{background:var(--danger)}
+.gantt-dot{position:absolute;width:12px;height:12px;border-radius:50%;top:50%;transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)}
 .today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--danger);z-index:10;opacity:.8}
 .gantt-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;color:var(--muted);align-items:center}
 .gl-item{display:flex;align-items:center;gap:6px}
@@ -288,22 +286,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
           <span id="todayLabel" style="font-size:12px;color:var(--muted);font-weight:400"></span>
         </div>
 
-        <!-- Leyenda -->
-        <div class="gantt-legend">
-          <div class="gl-item"><div class="gl-box" style="background:var(--orange)"></div> Campaña</div>
-          <div class="gl-item"><div class="gl-box" style="background:var(--navy)"></div> Programa</div>
-          <div class="gl-item"><div class="gl-circle" style="background:var(--warning);border-color:var(--card)"></div> Demo 1</div>
-          <div class="gl-item"><div class="gl-circle" style="background:var(--danger);border-color:var(--card)"></div> Demo 2</div>
-          <div class="gl-item"><div style="width:2px;height:14px;background:var(--danger);border-radius:1px"></div> Hoy</div>
-        </div>
 
-        <!-- Filtros de status -->
+
+        <!-- Filtros multi-selección -->
         <div class="filter-bar" id="tlFilters">
           <span style="font-size:11px;font-weight:600;color:var(--muted)">Mostrar:</span>
-          <button class="filter-btn active" data-status="todos" onclick="setTlFilter('todos')">Todos</button>
-          <button class="filter-btn f-proceso" data-status="En Proceso" onclick="setTlFilter('En Proceso')">En proceso</button>
-          <button class="filter-btn f-pendiente" data-status="Pendiente" onclick="setTlFilter('Pendiente')">Pendientes</button>
-          <button class="filter-btn f-culminado" data-status="Culminado" onclick="setTlFilter('Culminado')">Culminados</button>
+          <button class="filter-btn" data-status="todos" onclick="toggleTlFilter('todos')">Todos</button>
+          <button class="filter-btn f-proceso" data-status="En Proceso" onclick="toggleTlFilter('En Proceso')">En proceso</button>
+          <button class="filter-btn f-pendiente active" data-status="Pendiente" onclick="toggleTlFilter('Pendiente')">Pendientes</button>
+          <button class="filter-btn f-culminado active" data-status="Culminado" onclick="toggleTlFilter('Culminado')">Culminados</button>
         </div>
 
         <!-- Gantt -->
@@ -313,11 +304,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         </div>
       </div>
 
-      <!-- Resumen por programa -->
-      <div class="card">
-        <div class="card-title">Turnos por programa</div>
-        <div class="gantt-summary" id="ganttSummary"></div>
-      </div>
+
 
     </div>
 
@@ -366,7 +353,7 @@ const TABS_DB  = ['linea_tiempo','avance','checklist','ejecucion'];
 const AUTO_MS  = 60000;
 
 let DB = {};
-let tlFiltro = 'todos';
+let tlFiltros = new Set(['Pendiente','Culminado']); // multi-selección
 let isLoading = false;
 
 const HOY = new Date();
@@ -483,10 +470,25 @@ function renderAll() {
 // ══════════════════════════════════════════════════════════
 //  TAB 01 — GANTT
 // ══════════════════════════════════════════════════════════
-function setTlFilter(f) {
-  tlFiltro = f;
+function toggleTlFilter(f) {
+  if (f === 'todos') {
+    // Todos activo = limpiar selección individual y mostrar todo
+    if (tlFiltros.has('todos')) {
+      tlFiltros = new Set(['Pendiente','Culminado']);
+    } else {
+      tlFiltros = new Set(['todos']);
+    }
+  } else {
+    tlFiltros.delete('todos');
+    if (tlFiltros.has(f)) {
+      tlFiltros.delete(f);
+      if (tlFiltros.size === 0) tlFiltros = new Set(['todos']);
+    } else {
+      tlFiltros.add(f);
+    }
+  }
   document.querySelectorAll('#tlFilters .filter-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.status === f);
+    b.classList.toggle('active', tlFiltros.has(b.dataset.status));
   });
   renderGantt();
 }
@@ -501,9 +503,10 @@ function pct(offset) {
   return Math.max(0, Math.min(100, (offset / GANTT_DAYS) * 100));
 }
 
-// Colores por edición para diferenciarlas dentro de la misma fila
-const ED_COLORS = ['#1D245C','#0891B2','#7C3AED','#10B981','#F59E0B'];
-const CAMP_COLORS = ['#F68A0A','#F43F5E','#8B5CF6','#06B6D4','#84CC16'];
+// Colores fijos para todos los elementos del Gantt
+const COL_PROGRAMA = '#1D245C';  // navy — barras de programa
+const COL_CAMPANA  = '#DC2626';  // rojo — barras de campaña
+const COL_DEMO     = '#B45309';  // naranja oscuro — puntos de demo
 
 function renderGantt() {
   const rows = DB['linea_tiempo'] || [];
@@ -517,13 +520,12 @@ function renderGantt() {
 
   const todayPct = pct(dayOffset(HOY));
 
-  // Filtrar por status (case-insensitive y sin tildes)
-  const normalizeStatus = s => String(s||'').trim().toLowerCase()
-    .replace('é','e').replace('ó','o').replace('ú','u').replace('á','a').replace('í','i');
-  const filtradas = tlFiltro === 'todos' ? rows : rows.filter(r => {
-    const rs = normalizeStatus(r['Status']);
-    const tf = normalizeStatus(tlFiltro);
-    return rs === tf || rs.includes(tf) || tf.includes(rs);
+  // Filtrar por status multi-selección
+  const normalSt = s => String(s||'').trim().toLowerCase()
+    .replace(/[éê]/g,'e').replace(/[óô]/g,'o').replace(/[úû]/g,'u').replace(/[áâ]/g,'a').replace(/[íî]/g,'i');
+  const filtradas = tlFiltros.has('todos') ? rows : rows.filter(r => {
+    const rs = normalSt(r['Status']);
+    return [...tlFiltros].some(f => rs.includes(normalSt(f)));
   });
 
   // Agrupar por Nomenclatura pura (solo la sigla, sin edición)
@@ -587,14 +589,12 @@ function renderGantt() {
     row.style.minHeight = rowH + 'px';
     row.style.alignItems = 'flex-start';
 
-    // Label
+    // Label: solo nomenclatura
     const label = document.createElement('div');
     label.className = 'gantt-label';
     label.style.paddingTop = '12px';
     label.innerHTML =
-      '<span class="gl-name" title="' + prog.nombre + '">' + nom + '</span>' +
-      '<span style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">' + prog.nombre + '</span>' +
-      statusPill(progStatus);
+      '<span class="gl-name" title="' + prog.nombre + '">' + nom + '</span>';
     row.appendChild(label);
 
     // Track
@@ -615,8 +615,8 @@ function renderGantt() {
     track.appendChild(todayLine);
 
     ediciones.forEach(function(ed, idx) {
-      const colProg = ED_COLORS[idx % ED_COLORS.length];
-      const colCamp = CAMP_COLORS[idx % CAMP_COLORS.length];
+      const colProg = COL_PROGRAMA;
+      const colCamp = COL_CAMPANA;
       const topBase = 9 + idx * slotH;
       const barTop  = topBase + Math.floor(slotH / 2) - 4;
       const dotTop  = topBase + Math.floor(slotH / 2);
@@ -638,24 +638,51 @@ function renderGantt() {
         if (m > 0) durMeses = m + ' meses';
       }
 
-      // Label inline sobre la barra del programa
-      if (progStart != null) {
+      // Label inline: solo duración en blanco centrada en la barra del programa
+      if (progStart != null && progW > 5 && durMeses) {
         var lbl = document.createElement('div');
-        lbl.style.cssText = 'position:absolute;left:calc(' + progStart + '% + 4px);top:' + topBase + 'px;' +
-          'display:flex;align-items:center;gap:4px;z-index:6;pointer-events:none;height:' + (slotH-2) + 'px';
-        lbl.innerHTML =
-          '<span style="font-size:9px;font-weight:800;color:' + colProg + ';white-space:nowrap">' + ed.edicion + '</span>' +
-          (ed.nTurnos > 1 ? '<span style="font-size:8px;font-weight:700;background:' + colProg + ';color:#fff;padding:1px 5px;border-radius:3px">' + ed.nTurnos + ' turnos</span>' : '') +
-          (durMeses ? '<span style="font-size:8px;color:var(--muted);font-weight:600;margin-left:2px">' + durMeses + '</span>' : '');
+        // Centrar dentro de la barra del programa
+        var lblLeft = progStart + progW / 2;
+        lbl.style.cssText = 'position:absolute;left:' + lblLeft + '%;top:' + barTop + 'px;' +
+          'transform:translateX(-50%);display:flex;align-items:center;justify-content:center;' +
+          'z-index:6;pointer-events:none;height:8px;';
+        lbl.innerHTML = '<span style="font-size:8px;font-weight:700;color:#fff;white-space:nowrap;' +
+          'text-shadow:0 1px 2px rgba(0,0,0,.4)">' + durMeses + '</span>';
         track.appendChild(lbl);
+      }
+
+      // Helper para crear tooltip flotante
+      function addTooltip(el, html) {
+        el.style.cursor = 'pointer';
+        el.addEventListener('mouseenter', function(e) {
+          var tt = document.getElementById('gantt-tooltip');
+          if (!tt) { tt = document.createElement('div'); tt.id = 'gantt-tooltip';
+            tt.style.cssText = 'position:fixed;z-index:9999;background:#1D245C;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.6;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:260px';
+            document.body.appendChild(tt); }
+          tt.innerHTML = html;
+          tt.style.display = 'block';
+          tt.style.left = (e.clientX + 12) + 'px';
+          tt.style.top  = (e.clientY - 10) + 'px';
+        });
+        el.addEventListener('mousemove', function(e) {
+          var tt = document.getElementById('gantt-tooltip');
+          if (tt) { tt.style.left = (e.clientX + 12) + 'px'; tt.style.top = (e.clientY - 10) + 'px'; }
+        });
+        el.addEventListener('mouseleave', function() {
+          var tt = document.getElementById('gantt-tooltip');
+          if (tt) tt.style.display = 'none';
+        });
       }
 
       // Barra campaña
       if (campStart != null && campW > 0) {
         var b = document.createElement('div');
         b.style.cssText = 'position:absolute;left:' + campStart + '%;width:' + campW + '%;top:' + barTop + 'px;height:8px;' +
-          'background:' + colCamp + ';opacity:.8;border-radius:4px;z-index:3';
-        b.title = ed.edicion + ' · ' + ed.nTurnos + ' turno(s) — Campaña: ' + fmtDate(ed.inicioCamp) + ' a ' + fmtDate(ed.inicioP);
+          'background:' + colCamp + ';opacity:.85;border-radius:4px;z-index:3';
+        addTooltip(b,
+          '<b>' + ed.edicion + ' — Campaña</b><br>' +
+          'Inicio: ' + fmtDate(ed.inicioCamp) + '<br>' +
+          'Fin campaña: ' + fmtDate(ed.inicioP));
         track.appendChild(b);
       }
 
@@ -664,7 +691,12 @@ function renderGantt() {
         var b2 = document.createElement('div');
         b2.style.cssText = 'position:absolute;left:' + progStart + '%;width:' + progW + '%;top:' + barTop + 'px;height:8px;' +
           'background:' + colProg + ';border-radius:4px;z-index:3';
-        b2.title = ed.edicion + ' · ' + ed.nTurnos + ' turno(s) — Programa: ' + fmtDate(ed.inicioP) + ' a ' + fmtDate(ed.finP);
+        addTooltip(b2,
+          '<b>' + ed.edicion + ' — Programa</b><br>' +
+          'Inicio: ' + fmtDate(ed.inicioP) + '<br>' +
+          'Fin: ' + fmtDate(ed.finP) + '<br>' +
+          'Duración: ' + durMeses + '<br>' +
+          'Turnos: ' + ed.nTurnos + (ed.turnos.length ? ' (' + ed.turnos.join(', ') + ')' : ''));
         track.appendChild(b2);
       }
 
@@ -672,27 +704,27 @@ function renderGantt() {
       if (campEnd != null && progStart != null && campEnd < progStart) {
         var c = document.createElement('div');
         c.style.cssText = 'position:absolute;left:' + campEnd + '%;width:' + (progStart - campEnd) + '%;' +
-          'top:' + (barTop + 3) + 'px;height:2px;border-top:2px dashed ' + colCamp + '55;z-index:2';
+          'top:' + (barTop + 3) + 'px;height:2px;border-top:2px dashed ' + colCamp + '55;z-index:2;pointer-events:none';
         track.appendChild(c);
       }
 
       // Demo 1
       if (d1Pct != null) {
         var d = document.createElement('div');
-        d.className = 'gantt-dot demo1';
         d.style.cssText = 'position:absolute;left:' + d1Pct + '%;top:' + dotTop + 'px;' +
-          'width:10px;height:10px;transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
-        d.title = ed.edicion + ' Demo 1: ' + fmtDate(ed.demo1);
+          'width:12px;height:12px;border-radius:50%;background:' + COL_DEMO + ';' +
+          'transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
+        addTooltip(d, '<b>' + ed.edicion + ' — Demo 1</b><br>Fecha: ' + fmtDate(ed.demo1));
         track.appendChild(d);
       }
 
       // Demo 2
       if (d2Pct != null) {
         var d2 = document.createElement('div');
-        d2.className = 'gantt-dot demo2';
         d2.style.cssText = 'position:absolute;left:' + d2Pct + '%;top:' + dotTop + 'px;' +
-          'width:10px;height:10px;transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
-        d2.title = ed.edicion + ' Demo 2: ' + fmtDate(ed.demo2);
+          'width:12px;height:12px;border-radius:50%;background:' + COL_DEMO + ';' +
+          'transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
+        addTooltip(d2, '<b>' + ed.edicion + ' — Demo 2</b><br>Fecha: ' + fmtDate(ed.demo2));
         track.appendChild(d2);
       }
     });
