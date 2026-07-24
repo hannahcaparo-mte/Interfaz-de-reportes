@@ -856,9 +856,10 @@ function renderAvance() {
     return;
   }
 
+  const normSt2 = s => String(s||'').toLowerCase().replace(/[éê]/g,'e');
+
   cont.innerHTML = '';
   sorted.forEach(r => {
-    const normSt2  = s => String(s||'').toLowerCase().replace(/[éê]/g,'e');
     const stNorm   = normSt2(r['Status']);
     const enProceso = stNorm.includes('proceso');
     const pendiente = stNorm.includes('pendiente');
@@ -885,7 +886,7 @@ function renderAvance() {
       const campRows = (DB['linea_tiempo']||[]).filter(lt =>
         lt['Nomenclatura'] === r['Nomenclatura'] && lt['Edicion'] === r['Edicion']
       );
-      const camp = campRows.length ? parseFecha(campRows[0]['Inicio_Campana']) : null;
+      const camp = campRows.length ? parseFecha(campRows[0]['Inicio_Campana'] || campRows[0]['Inicio_campana']) : null;
       if (camp) {
         const dc = Math.round((camp - HOY) / 86400000);
         if (dc >= 0) { proximoHito = 'Inicio de campaña'; diasProximo = dc; }
@@ -946,6 +947,22 @@ function renderAvance() {
 // ══════════════════════════════════════════════════════════
 //  TAB 03 — CHECKLIST
 // ══════════════════════════════════════════════════════════
+// Resuelve la fecha de un hito: si es número = días antes de inicioP, si es fecha = fecha directa
+function resolverFechaHito(raw, inicioP) {
+  if (!raw && raw !== 0) return null;
+  const s = String(raw).trim();
+  // Si es número puro: días antes del inicio del programa
+  if (/^-?\d+$/.test(s)) {
+    const n = Number(s);
+    if (!inicioP) return null;
+    const d = new Date(inicioP);
+    d.setDate(d.getDate() - n); // n días ANTES del inicio
+    return d;
+  }
+  // Si es fecha (contiene / o -)
+  return parseFecha(s);
+}
+
 function hitoEstado(fecha) {
   if (!fecha) return 'pending';
   const d = new Date(fecha); d.setHours(0,0,0,0);
@@ -969,9 +986,10 @@ function renderChecklist() {
 
   // Ordenar: primero los que tienen hitos vencidos o activos, luego por fecha de inicio
   const rowsOrd = [...rows].sort((a,b) => {
-    const hitos = ['Inicio_Campana','Material_Listo','Comerciales_Activas','Demo1','Demo2','Inicio_Programa','Fin_Programa'];
-    const urgA = hitos.some(k => ['overdue','active'].includes(hitoEstado(parseFecha(a[k])))) ? 0 : 1;
-    const urgB = hitos.some(k => ['overdue','active'].includes(hitoEstado(parseFecha(b[k])))) ? 0 : 1;
+    const hitos = ['Inicio_campana','Material_Listo','Demo1','Demo2','Inicio_Programa','Fin_Programa'];
+    var _ipA = parseFecha(a['Inicio_Programa']); var _ipB = parseFecha(b['Inicio_Programa']);
+    const urgA = hitos.some(k => ['overdue','active'].includes(hitoEstado(resolverFechaHito(a[k], _ipA)))) ? 0 : 1;
+    const urgB = hitos.some(k => ['overdue','active'].includes(hitoEstado(resolverFechaHito(b[k], _ipB)))) ? 0 : 1;
     if (urgA !== urgB) return urgA - urgB;
     const fa = parseFecha(a['Inicio_Programa'])||new Date(9999,0,1);
     const fb = parseFecha(b['Inicio_Programa'])||new Date(9999,0,1);
@@ -981,17 +999,18 @@ function renderChecklist() {
   cont.innerHTML = '';
   rowsOrd.forEach(r => {
     const hitos = [
-      { label:'Inicio campaña',     key:'Inicio_Campana'       },
-      { label:'Material listo',     key:'Material_Listo'        },
-      { label:'Comerciales activas',key:'Comerciales_Activas'   },
-      { label:'Demo 1',             key:'Demo1'                 },
-      { label:'Demo 2',             key:'Demo2'                 },
-      { label:'Inicio programa',    key:'Inicio_Programa'       },
-      { label:'Fin programa',       key:'Fin_Programa'          },
+      { label:'Inicio campaña',  key:'Inicio_campana'   },
+      { label:'Material listo',  key:'Material_Listo'    },
+      { label:'Demo 1',          key:'Demo1'             },
+      { label:'Demo 2',          key:'Demo2'             },
+      { label:'Inicio programa', key:'Inicio_Programa'   },
+      { label:'Fin programa',    key:'Fin_Programa'      },
     ];
+    const diasVentas = Number(r['Comerciales_Activas']) || null;
 
-    const vencidos = hitos.filter(h => hitoEstado(parseFecha(r[h.key])) === 'overdue').length;
-    const activos  = hitos.filter(h => hitoEstado(parseFecha(r[h.key])) === 'active').length;
+    var _inicioP = parseFecha(r['Inicio_Programa']);
+    const vencidos = hitos.filter(h => hitoEstado(resolverFechaHito(r[h.key], _inicioP)) === 'overdue').length;
+    const activos  = hitos.filter(h => hitoEstado(resolverFechaHito(r[h.key], _inicioP)) === 'active').length;
 
     const card = document.createElement('div');
     card.className = 'ck-card';
@@ -1013,7 +1032,8 @@ function renderChecklist() {
       '</div>' +
       '<div class="ck-timeline" style="margin-top:14px">' +
         hitos.map(function(h, hi) {
-          var fecha = parseFecha(r[h.key]);
+          var inicioP = parseFecha(r['Inicio_Programa']);
+          var fecha = resolverFechaHito(r[h.key], inicioP);
           var estado = hitoEstado(fecha);
           return '<div class="ck-hito ' + estado + '">' +
             '<div class="ck-dot">' + hitoIcon(estado) + '</div>' +
@@ -1021,7 +1041,16 @@ function renderChecklist() {
             '<div class="ck-date">' + (fecha ? fmtDate(fecha) : '—') + '</div>' +
           '</div>';
         }).join('') +
-      '</div>';
+      '</div>' +
+      // Badge período de ventas
+      (diasVentas ? (
+        '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)">' +
+          '<div style="flex:1;height:3px;background:linear-gradient(90deg,var(--orange),var(--navy));border-radius:2px;opacity:.5"></div>' +
+          '<span style="background:var(--orange-bg);color:var(--orange-tx);font-weight:600;padding:3px 10px;border-radius:5px;white-space:nowrap">🗓 ' + diasVentas + ' días de ventas</span>' +
+          '<div style="flex:1;height:3px;background:linear-gradient(90deg,var(--navy),var(--orange));border-radius:2px;opacity:.5"></div>' +
+        '</div>'
+      ) : '') +
+      '';
     cont.appendChild(card);
   });
 }
