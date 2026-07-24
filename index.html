@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interfaz de reportes</title>
+<title>CETLOG Intelligence Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="cetlog_shared.css">
 <style>
@@ -69,7 +69,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-mark">CT</div>
-      <div class="logo-text"><strong>CETLOG</strong><span></span></div>
+      <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-section-label">Principal</div>
@@ -96,6 +96,10 @@
         <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
         Estratégico<span class="nav-badge">6</span>
       </a>
+      <a class="nav-item" href="cetlog_planeamiento.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v2H1V2zm0 4h9v2H1V6zm0 4h11v2H1v-2zm0 4h7v2H1v-2z"/></svg>
+        Planeamiento<span class="nav-badge">4</span>
+      </a>
     </div>
     <div class="sidebar-bottom">
       <div class="user-pill">
@@ -108,8 +112,8 @@
   <div class="main">
     <header class="topbar">
       <div class="topbar-title">
-        <h1>Página principal</h1>
-        
+        <h1>CETLOG Intelligence Hub</h1>
+        <p>Centro de Inteligencia de Negocio</p>
       </div>
       <div class="topbar-actions">
         <div class="period-selector">
@@ -130,24 +134,68 @@
     <div class="content">
 
       <div class="hero">
-               <h2>Visión completa del negocio</h2>
-        <p>Plataforma centralizada para el análisis comercial, financiero, académico y estratégico.</p>
+        <div class="hero-label">CETLOG · Sistema de Inteligencia de Negocio</div>
+        <h2>Visión completa del negocio,<br>en un solo lugar.</h2>
+        <p>Plataforma centralizada para el análisis comercial, financiero, académico y estratégico de la organización. Desde la captación de leads hasta la certificación y reingreso.</p>
         <div class="hero-chips">
-          <div class="hero-chip orange">● META</div>
-          <div class="hero-chip orange">● KOMMO</div>
-          <div class="hero-chip orange">● Q10</div>
-          <div class="hero-chip orange">● NPS</div>
-          <div class="hero-chip orange">● SISTEMAS INTERNOS</div>
+          <div class="hero-chip orange">● Conectado a META</div>
+          <div class="hero-chip">Kommo CRM</div>
+          <div class="hero-chip">Q10</div>
+          <div class="hero-chip">Sistema Interno</div>
+          <div class="hero-chip">22 reportes activos</div>
         </div>
       </div>
 
-      
+      <div class="section-header">
+        <h3>Resumen del negocio</h3>
+        <p>Indicadores principales — pendiente de conexión a datos</p>
+      </div>
+      <div class="kpi-strip">
+        <a class="kpi-card" href="cetlog_comercial.html">
+          <div class="kpi-icon" style="background:#EEF2FF;">📣</div>
+          <h4>Leads</h4>
+          <p>Captación y seguimiento comercial</p>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--navy);" data-w="70"></div></div>
+        </a>
+        <a class="kpi-card" href="cetlog_comercial.html">
+          <div class="kpi-icon" style="background:#FEF3DC;">🎯</div>
+          <h4>Matrículas</h4>
+          <p>Conversión de interesados</p>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--orange);" data-w="55"></div></div>
+        </a>
+        <a class="kpi-card" href="cetlog_cobranza.html">
+          <div class="kpi-icon" style="background:#D1FAE5;">💳</div>
+          <h4>Cobranza</h4>
+          <p>Pagos, deuda y recuperación</p>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--success);" data-w="62"></div></div>
+        </a>
+        <a class="kpi-card" href="cetlog_academico.html">
+          <div class="kpi-icon" style="background:#FEE2E2;">📊</div>
+          <h4>Retención</h4>
+          <p>Permanencia de alumnos</p>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--danger);" data-w="40"></div></div>
+        </a>
+        <a class="kpi-card" href="cetlog_estrategico.html">
+          <div class="kpi-icon" style="background:#EDE9FE;">📈</div>
+          <h4>Rentabilidad</h4>
+          <p>Evaluación financiera</p>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="background:#7C3AED;" data-w="80"></div></div>
+        </a>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#FEF3C7;">🔔</div>
+          <h4>Alertas</h4>
+          <p>Eventos que requieren atención</p>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="background:var(--warning);" data-w="30"></div></div>
+        </div>
+      </div>
+
       <div class="section-header" style="margin-top:36px;">
-        <h3>Flujo del negocio</h3>
-        <p>COMERCIAL · COBRANZA · ACADÉMICO</p>
+        <h3>Mapa del negocio</h3>
+        <p>Flujo completo desde captación hasta reingreso</p>
       </div>
       <div class="flow-section">
-                <div class="flow-track">
+        <div class="flow-label">FLUJO COMERCIAL · COBRANZA · ACADÉMICO</div>
+        <div class="flow-track">
           <div class="flow-node"><div class="flow-step"><div class="flow-bubble highlight" data-tip="META Ads"><span>📣</span></div><div class="flow-label-text">Campañas META</div></div></div>
           <div class="flow-connector"></div>
           <div class="flow-node"><div class="flow-step"><div class="flow-bubble" data-tip="Kommo CRM"><span>👤</span></div><div class="flow-label-text">Lead</div></div></div>
@@ -174,20 +222,20 @@
 
       <div class="section-header" style="margin-top:36px;">
         <h3>Bloques de análisis</h3>
-        <p>Cuatro dimensiones del negocio</p>
+        <p>Cuatro dimensiones del negocio — haz clic para entrar al detalle</p>
       </div>
       <div class="blocks-grid">
 
         <a class="block-card" href="cetlog_comercial.html">
           <div class="block-header"><div class="block-icon" style="background:#EEF2FF;">📣</div><div class="block-count">6 reportes</div></div>
-          <div class="block-body"><h4>Comercial</h4><p>Analiza desde el ingreso de leads por campañas hasta la primera cuota de los entrenados.  </p></div>
+          <div class="block-body"><h4>Comercial</h4><p>Analiza campañas, leads, seguimiento comercial, demos y matrículas.</p></div>
           <div class="block-reports"><span class="report-tag">Campañas</span><span class="report-tag">Leads</span><span class="report-tag">Embudo</span><span class="report-tag">Demos</span><span class="report-tag">Conversión</span><span class="report-tag">ROAS</span></div>
           <button class="block-btn">Ingresar →</button>
         </a>
 
         <a class="block-card" href="cetlog_cobranza.html">
           <div class="block-header"><div class="block-icon" style="background:#D1FAE5;">💳</div><div class="block-count">5 reportes</div></div>
-          <div class="block-body"><h4>Cobranza</h4><p>Analiza a partir de la segunda cuota de los entrenados y a los desertores y deudores. </p></div>
+          <div class="block-body"><h4>Cobranza</h4><p>Analiza matrículas, cuotas, deuda, recuperación y deserción financiera.</p></div>
           <div class="block-reports"><span class="report-tag">Matrículas</span><span class="report-tag">Primera Cuota</span><span class="report-tag">Deudores</span><span class="report-tag">Recuperación</span><span class="report-tag">Pérdidas</span></div>
           <button class="block-btn">Ingresar →</button>
         </a>
@@ -201,12 +249,60 @@
 
         <a class="block-card" href="cetlog_estrategico.html">
           <div class="block-header"><div class="block-icon" style="background:#EDE9FE;">📈</div><div class="block-count">6 reportes</div></div>
-          <div class="block-body"><h4>Estratégico</h4><p>Transforma la información operativa en decisiones de negocio y la información acumulada en proyecciones. </p></div>
+          <div class="block-body"><h4>Estratégico</h4><p>Transforma la información operativa en decisiones de negocio.</p></div>
           <div class="block-reports"><span class="report-tag">Rentabilidad</span><span class="report-tag">ROI</span><span class="report-tag">Cohortes</span><span class="report-tag">Riesgo Retiro</span><span class="report-tag">Riesgo Mora</span><span class="report-tag">Perfiles</span></div>
           <button class="block-btn">Ingresar →</button>
         </a>
 
-              
+      </div>
+
+      <div class="section-header" style="margin-top:36px;">
+        <h3>Centro de alertas</h3>
+        <p>Eventos que requieren atención — pendiente de datos reales</p>
+      </div>
+      <div class="alerts-grid">
+        <div class="alert-card">
+          <div class="alert-dot" style="background:var(--danger);"></div>
+          <div class="alert-body">
+            <div class="alert-type" style="color:var(--danger);">Riesgo</div>
+            <h5>Deudores sin seguimiento</h5>
+            <p>Alumnos con deuda activa sin contacto registrado en los últimos días.</p>
+            <div class="alert-meta"><span class="alert-badge" style="background:var(--danger-light);color:var(--danger);">Cobranza</span><span>· Acción requerida</span></div>
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-dot" style="background:var(--warning);"></div>
+          <div class="alert-body">
+            <div class="alert-type" style="color:var(--warning);">Seguimiento</div>
+            <h5>Leads sin contactar</h5>
+            <p>Leads nuevos asignados a comerciales sin primera llamada registrada.</p>
+            <div class="alert-meta"><span class="alert-badge" style="background:var(--warning-light);color:var(--warning);">Comercial</span><span>· Revisión pendiente</span></div>
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-dot" style="background:var(--success);"></div>
+          <div class="alert-body">
+            <div class="alert-type" style="color:var(--success);">Oportunidad</div>
+            <h5>Certificados sin oferta de reingreso</h5>
+            <p>Alumnos certificados recientemente a quienes no se les ha ofrecido un nuevo programa.</p>
+            <div class="alert-meta"><span class="alert-badge" style="background:var(--success-light);color:var(--success);">Académico</span><span>· Oportunidad comercial</span></div>
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-dot" style="background:#7C3AED;"></div>
+          <div class="alert-body">
+            <div class="alert-type" style="color:#7C3AED;">Tendencia</div>
+            <h5>Baja asistencia en programa activo</h5>
+            <p>Un programa activo muestra tendencia a la baja en asistencia en las últimas sesiones.</p>
+            <div class="alert-meta"><span class="alert-badge" style="background:#EDE9FE;color:#7C3AED;">Académico</span><span>· Monitoreo activo</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:40px;"></div>
+    </div>
+  </div>
+</div>
 
 <script>
   window.addEventListener('load', () => {
