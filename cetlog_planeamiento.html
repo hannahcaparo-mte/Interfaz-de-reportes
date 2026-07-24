@@ -1012,18 +1012,16 @@ function renderChecklist() {
         '</div>' +
       '</div>' +
       '<div class="ck-timeline" style="margin-top:14px">' +
-        hitos.map(function(h) {
-          const fecha = parseFecha(r[h.key]);
-          const estado = hitoEstado(fecha);
-          const prevEstado = i > 0 ? hitoEstado(parseFecha(r[hitos[i-1].key])) : 'done';
-          return `
-            <div class="ck-hito ${estado}">
-              <div class="ck-dot">${hitoIcon(estado)}</div>
-              <div class="ck-label">${h.label}</div>
-              <div class="ck-date">${fecha ? fmtDate(fecha) : '—'}</div>
-            </div>`;
-        }).join('')}
-      </div>';
+        hitos.map(function(h, hi) {
+          var fecha = parseFecha(r[h.key]);
+          var estado = hitoEstado(fecha);
+          return '<div class="ck-hito ' + estado + '">' +
+            '<div class="ck-dot">' + hitoIcon(estado) + '</div>' +
+            '<div class="ck-label">' + h.label + '</div>' +
+            '<div class="ck-date">' + (fecha ? fmtDate(fecha) : '—') + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
     cont.appendChild(card);
   });
 }
