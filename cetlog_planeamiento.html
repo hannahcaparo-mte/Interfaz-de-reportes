@@ -429,6 +429,10 @@ async function refreshAll() {
   const results = await Promise.all(TABS_DB.map(t => fetchTab(t)));
   TABS_DB.forEach((t, i) => { DB[t] = results[i]; });
 
+  // DEBUG temporal
+  console.log('[CETLOG] avance:', (DB['avance']||[]).length, 'filas', JSON.stringify((DB['avance']||[])[0]));
+  console.log('[CETLOG] checklist:', (DB['checklist']||[]).length, 'filas', JSON.stringify((DB['checklist']||[])[0]));
+
   renderAll();
 
   const total = results.reduce((s,r) => s+r.length, 0);
