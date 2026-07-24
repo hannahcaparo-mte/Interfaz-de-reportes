@@ -122,7 +122,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .gantt-header{display:flex;margin-left:200px;border-bottom:1px solid var(--border);margin-bottom:0}
 .gantt-month{flex:1;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:6px 2px;border-right:1px solid var(--border);min-width:60px}
 .gantt-month.current{color:var(--navy);background:var(--navy-dim);font-weight:800}
-.gantt-row{display:flex;align-items:center;border-bottom:1px solid var(--border);min-height:42px;position:relative}
+.gantt-row{display:flex;align-items:stretch;border-bottom:1px solid var(--border);min-height:52px;position:relative}
 .gantt-row:hover{background:var(--bg)}
 .gantt-label{width:200px;flex-shrink:0;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
 .gantt-label .gl-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -131,7 +131,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .gantt-col{flex:1;height:100%;border-right:1px solid var(--border);min-width:60px;position:relative}
 .gantt-col.today-col{background:var(--danger-bg)}
 /* Barras del gantt — posicionadas absolutas sobre el track */
-.gantt-bar{position:absolute;height:10px;border-radius:5px;top:50%;transform:translateY(-50%)}
+.gantt-bar{position:absolute;border-radius:5px}
 .gantt-bar.campana{background:var(--orange);opacity:.8}
 .gantt-bar.programa{background:var(--navy);opacity:.85}
 .gantt-dot{position:absolute;width:12px;height:12px;border-radius:50%;top:50%;transform:translate(-50%,-50%);z-index:2;border:2px solid var(--card)}
@@ -501,6 +501,10 @@ function pct(offset) {
   return Math.max(0, Math.min(100, (offset / GANTT_DAYS) * 100));
 }
 
+// Colores por edición para diferenciarlas dentro de la misma fila
+const ED_COLORS = ['#1D245C','#0891B2','#7C3AED','#10B981','#F59E0B'];
+const CAMP_COLORS = ['#F68A0A','#F43F5E','#8B5CF6','#06B6D4','#84CC16'];
+
 function renderGantt() {
   const rows = DB['linea_tiempo'] || [];
 
@@ -511,61 +515,177 @@ function renderGantt() {
     return `<div class="gantt-month${isCur ? ' current' : ''}">${m.label}</div>`;
   }).join('');
 
+  const todayPct = pct(dayOffset(HOY));
+
+  // Filtrar primero por status
   const filtradas = tlFiltro === 'todos' ? rows : rows.filter(r => r['Status'] === tlFiltro);
 
+  // Agrupar por Nomenclatura (un programa = una fila)
+  const porProg = {};
+  filtradas.forEach(r => {
+    const key = r['Nomenclatura'] || r['Programa'] || '—';
+    if (!porProg[key]) porProg[key] = { nombre: r['Programa'] || key, ediciones: [] };
+    porProg[key].ediciones.push(r);
+  });
+
   const cont = document.getElementById('ganttRows');
-  if (!filtradas.length) {
+  if (!Object.keys(porProg).length) {
     cont.innerHTML = '<div class="empty-state" style="margin:16px 0">Sin datos para este filtro</div>';
     renderGanttSummary(rows);
     return;
   }
 
-  // Calcular posición de la línea de hoy
-  const todayOff = dayOffset(HOY);
-  const todayPct = pct(todayOff);
-
   cont.innerHTML = '';
-  filtradas.forEach(r => {
-    const inicioCamp = parseFecha(r['Inicio_Campana']);
-    const demo1     = parseFecha(r['Demo1']);
-    const demo2     = parseFecha(r['Demo2']);
-    const inicioP   = parseFecha(r['Inicio_Programa']);
-    const finP      = parseFecha(r['Fin_Programa']);
 
-    // Calcular % de posición en la barra
-    const campStart = inicioCamp ? pct(dayOffset(inicioCamp)) : null;
-    const campEnd   = inicioP   ? pct(dayOffset(inicioP))    : campStart;
-    const campW     = campStart != null && campEnd != null ? Math.max(0.5, campEnd - campStart) : 0;
+  Object.entries(porProg).forEach(([nom, prog]) => {
 
-    const progStart = inicioP ? pct(dayOffset(inicioP)) : null;
-    const progEnd   = finP    ? pct(dayOffset(finP))    : progStart;
-    const progW     = progStart != null && progEnd != null ? Math.max(0.5, progEnd - progStart) : 0;
+    // Agrupar turnos por Edicion: varias filas del sheet = varios turnos de la misma edicion
+    const edMap = {};
+    prog.ediciones.forEach(r => {
+      const ed = r['Edicion'] || 'S/E';
+      if (!edMap[ed]) edMap[ed] = { rows: [], turnos: [] };
+      edMap[ed].rows.push(r);
+      if (r['Turno']) edMap[ed].turnos.push(r['Turno']);
+    });
 
-    const d1Pct = demo1 ? pct(dayOffset(demo1)) : null;
-    const d2Pct = demo2 ? pct(dayOffset(demo2)) : null;
+    const ediciones = Object.entries(edMap).map(([ed, d]) => {
+      const r0 = d.rows[0];
+      return {
+        edicion:    ed,
+        turnos:     d.turnos,
+        nTurnos:    d.rows.length,
+        status:     r0['Status'] || '',
+        inicioCamp: parseFecha(r0['Inicio_Campana']),
+        demo1:      parseFecha(r0['Demo1']),
+        demo2:      parseFecha(r0['Demo2']),
+        inicioP:    parseFecha(r0['Inicio_Programa']),
+        finP:       parseFecha(r0['Fin_Programa']),
+      };
+    }).sort((a,b) => (a.inicioP || a.inicioCamp || 0) - (b.inicioP || b.inicioCamp || 0));
 
-    const nom = r['Nomenclatura'] || r['Programa'] || '—';
-    const ed  = r['Edicion'] || '';
-    const tur = r['Turnos'] || '';
+    const statuses   = ediciones.map(e => e.status);
+    const progStatus = statuses.every(s => s === 'Culminado') ? 'Culminado'
+                     : statuses.includes('En Proceso') ? 'En Proceso' : 'Pendiente';
+
+    const slotH = 30;
+    const rowH  = Math.max(60, ediciones.length * slotH + 18);
 
     const row = document.createElement('div');
     row.className = 'gantt-row';
-    row.innerHTML = `
-      <div class="gantt-label">
-        <span class="gl-name" title="${r['Programa']||''}">${nom} ${ed}</span>
-        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
-          ${statusPill(r['Status'])}
-          ${tur ? `<span style="font-size:9px;color:var(--muted)">${tur}</span>` : ''}
-        </div>
-      </div>
-      <div class="gantt-track" style="position:relative">
-        ${GANTT_MESES.map(m => `<div class="gantt-col${m.mes === HOY.getMonth() && AÑO === HOY.getFullYear() ? ' today-col' : ''}"></div>`).join('')}
-        ${campStart != null ? `<div class="gantt-bar campana" style="left:${campStart}%;width:${campW}%" title="Campaña: ${fmtDate(inicioCamp)} → ${fmtDate(inicioP)}"></div>` : ''}
-        ${progStart != null ? `<div class="gantt-bar programa" style="left:${progStart}%;width:${progW}%" title="Programa: ${fmtDate(inicioP)} → ${fmtDate(finP)}"></div>` : ''}
-        ${d1Pct != null ? `<div class="gantt-dot demo1" style="left:${d1Pct}%" title="Demo 1: ${fmtDate(demo1)}"></div>` : ''}
-        ${d2Pct != null ? `<div class="gantt-dot demo2" style="left:${d2Pct}%" title="Demo 2: ${fmtDate(demo2)}"></div>` : ''}
-        <div class="today-line" style="left:${todayPct}%" title="Hoy"></div>
-      </div>`;
+    row.style.minHeight = rowH + 'px';
+    row.style.alignItems = 'flex-start';
+
+    // Label
+    const label = document.createElement('div');
+    label.className = 'gantt-label';
+    label.style.paddingTop = '12px';
+    label.innerHTML =
+      '<span class="gl-name" title="' + prog.nombre + '">' + nom + '</span>' +
+      '<span style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">' + prog.nombre + '</span>' +
+      statusPill(progStatus);
+    row.appendChild(label);
+
+    // Track
+    const track = document.createElement('div');
+    track.className = 'gantt-track';
+    track.style.cssText = 'position:relative;flex-direction:column;align-items:stretch;min-height:' + rowH + 'px';
+
+    track.innerHTML = '<div style="position:absolute;inset:0;display:flex;z-index:0">' +
+      GANTT_MESES.map(function(m) {
+        return '<div style="flex:1;border-right:1px solid var(--border);' +
+          (m.mes === HOY.getMonth() && AÑO === HOY.getFullYear() ? 'background:rgba(239,68,68,.06)' : '') +
+          '"></div>';
+      }).join('') + '</div>';
+
+    const todayLine = document.createElement('div');
+    todayLine.className = 'today-line';
+    todayLine.style.left = todayPct + '%';
+    track.appendChild(todayLine);
+
+    ediciones.forEach(function(ed, idx) {
+      const colProg = ED_COLORS[idx % ED_COLORS.length];
+      const colCamp = CAMP_COLORS[idx % CAMP_COLORS.length];
+      const topBase = 9 + idx * slotH;
+      const barTop  = topBase + Math.floor(slotH / 2) - 4;
+      const dotTop  = topBase + Math.floor(slotH / 2);
+
+      var campStart = ed.inicioCamp ? pct(dayOffset(ed.inicioCamp)) : null;
+      var campEnd   = ed.inicioP    ? pct(dayOffset(ed.inicioP))    : campStart;
+      var campW     = (campStart != null && campEnd != null) ? Math.max(0.2, campEnd - campStart) : 0;
+      var progStart = ed.inicioP ? pct(dayOffset(ed.inicioP)) : null;
+      var progEnd   = ed.finP    ? pct(dayOffset(ed.finP))    : progStart;
+      var progW     = (progStart != null && progEnd != null) ? Math.max(0.2, progEnd - progStart) : 0;
+      var d1Pct     = ed.demo1 ? pct(dayOffset(ed.demo1)) : null;
+      var d2Pct     = ed.demo2 ? pct(dayOffset(ed.demo2)) : null;
+
+      // Duración en meses
+      var durMeses = '';
+      if (ed.inicioP && ed.finP) {
+        var m = (ed.finP.getFullYear() - ed.inicioP.getFullYear()) * 12
+              + (ed.finP.getMonth() - ed.inicioP.getMonth());
+        if (m > 0) durMeses = m + ' meses';
+      }
+
+      // Label inline sobre la barra del programa
+      if (progStart != null) {
+        var lbl = document.createElement('div');
+        lbl.style.cssText = 'position:absolute;left:calc(' + progStart + '% + 4px);top:' + topBase + 'px;' +
+          'display:flex;align-items:center;gap:4px;z-index:6;pointer-events:none;height:' + (slotH-2) + 'px';
+        lbl.innerHTML =
+          '<span style="font-size:9px;font-weight:800;color:' + colProg + ';white-space:nowrap">' + ed.edicion + '</span>' +
+          (ed.nTurnos > 1 ? '<span style="font-size:8px;font-weight:700;background:' + colProg + ';color:#fff;padding:1px 5px;border-radius:3px">' + ed.nTurnos + ' turnos</span>' : '') +
+          (durMeses ? '<span style="font-size:8px;color:var(--muted);font-weight:600;margin-left:2px">' + durMeses + '</span>' : '');
+        track.appendChild(lbl);
+      }
+
+      // Barra campaña
+      if (campStart != null && campW > 0) {
+        var b = document.createElement('div');
+        b.style.cssText = 'position:absolute;left:' + campStart + '%;width:' + campW + '%;top:' + barTop + 'px;height:8px;' +
+          'background:' + colCamp + ';opacity:.8;border-radius:4px;z-index:3';
+        b.title = ed.edicion + ' · ' + ed.nTurnos + ' turno(s) — Campaña: ' + fmtDate(ed.inicioCamp) + ' a ' + fmtDate(ed.inicioP);
+        track.appendChild(b);
+      }
+
+      // Barra programa
+      if (progStart != null && progW > 0) {
+        var b2 = document.createElement('div');
+        b2.style.cssText = 'position:absolute;left:' + progStart + '%;width:' + progW + '%;top:' + barTop + 'px;height:8px;' +
+          'background:' + colProg + ';border-radius:4px;z-index:3';
+        b2.title = ed.edicion + ' · ' + ed.nTurnos + ' turno(s) — Programa: ' + fmtDate(ed.inicioP) + ' a ' + fmtDate(ed.finP);
+        track.appendChild(b2);
+      }
+
+      // Conector punteado entre fin campaña e inicio programa
+      if (campEnd != null && progStart != null && campEnd < progStart) {
+        var c = document.createElement('div');
+        c.style.cssText = 'position:absolute;left:' + campEnd + '%;width:' + (progStart - campEnd) + '%;' +
+          'top:' + (barTop + 3) + 'px;height:2px;border-top:2px dashed ' + colCamp + '55;z-index:2';
+        track.appendChild(c);
+      }
+
+      // Demo 1
+      if (d1Pct != null) {
+        var d = document.createElement('div');
+        d.className = 'gantt-dot demo1';
+        d.style.cssText = 'position:absolute;left:' + d1Pct + '%;top:' + dotTop + 'px;' +
+          'width:10px;height:10px;transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
+        d.title = ed.edicion + ' Demo 1: ' + fmtDate(ed.demo1);
+        track.appendChild(d);
+      }
+
+      // Demo 2
+      if (d2Pct != null) {
+        var d2 = document.createElement('div');
+        d2.className = 'gantt-dot demo2';
+        d2.style.cssText = 'position:absolute;left:' + d2Pct + '%;top:' + dotTop + 'px;' +
+          'width:10px;height:10px;transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
+        d2.title = ed.edicion + ' Demo 2: ' + fmtDate(ed.demo2);
+        track.appendChild(d2);
+      }
+    });
+
+    row.appendChild(track);
     cont.appendChild(row);
   });
 
