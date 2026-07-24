@@ -251,11 +251,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .av-bar-fill{height:100%;border-radius:6px;transition:width .5s ease;min-width:4px}
 .av-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px;line-height:1.3}
 .av-bar-caption{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
-.av-bar-track-row{display:flex;align-items:center;gap:7px}
-.av-bar-track-row .av-bar-track{flex:1}
+.av-bar-caption-note{text-transform:none;font-weight:400;letter-spacing:0;opacity:.75}
+.av-bar-track-row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.av-bar-track-row.has-marks{margin-bottom:34px}
+.av-bar-track-row .av-bar-track-outer{flex:1;position:relative}
 .av-bar-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);background:var(--card);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:transparent}
 .av-bar-dot.done{background:var(--success-bg);border-color:var(--success);color:var(--success-tx)}
-.av-bar-mark{position:absolute;top:-3px;width:2px;height:16px;background:var(--muted);opacity:.6;z-index:2}
+.av-bar-tick-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;border:2px solid var(--orange-tx);background:var(--card);z-index:3;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:transparent;cursor:help}
+.av-bar-tick-dot.done{background:var(--success-bg);border-color:var(--success);color:var(--success-tx)}
+.av-bar-tick-label{position:absolute;top:16px;transform:translateX(-50%);font-size:9px;color:var(--muted);text-align:center;line-height:1.25;white-space:nowrap;z-index:3}
 </style>
 </head>
 <body>
@@ -642,14 +646,20 @@ function boxHtml(texto,cls){
   return'<div class="av-alert-box '+c+'">'+urgIconCls(cls)+' '+texto+'</div>';
 }
 function barTrackHtml(pct,color,marks){
-  var m=(marks||[]).map(function(p){return p==null?'':'<div class="av-bar-mark" style="left:'+Math.max(0,Math.min(100,p))+'%"></div>';}).join('');
-  return'<div class="av-bar-track"><div class="av-bar-fill" style="width:'+pct+'%;background:'+color+'"></div>'+m+'</div>';
+  var ticks=(marks||[]).filter(function(x){return x&&x.pct!=null;}).map(function(x){
+    var p=Math.max(2,Math.min(98,x.pct));
+    var pasado=x.fecha&&x.fecha<=HOY;
+    return'<div class="av-bar-tick-dot'+(pasado?' done':'')+'" style="left:'+p+'%" title="'+x.label+' — '+fmtDate(x.fecha)+'">'+(pasado?'✓':'')+'</div>'+
+          '<div class="av-bar-tick-label" style="left:'+p+'%">'+x.label+'<br>'+fmtDate(x.fecha)+'</div>';
+  }).join('');
+  return'<div class="av-bar-track-outer"><div class="av-bar-track"><div class="av-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+ticks+'</div>';
 }
-// Fila completa: círculo de inicio (✓ si ya se alcanzó esa fecha) — barra — círculo de fin (✓ si ya se alcanzó)
+// Fila completa: círculo de inicio (✓ si ya se alcanzó esa fecha) — barra (con marcas de demo tipo círculo) — círculo de fin
 function barRowHtml(pct,color,marks,inicioAlcanzado,finAlcanzado){
   var dotL='<div class="av-bar-dot'+(inicioAlcanzado?' done':'')+'">'+(inicioAlcanzado?'✓':'')+'</div>';
   var dotR='<div class="av-bar-dot'+(finAlcanzado?' done':'')+'">'+(finAlcanzado?'✓':'')+'</div>';
-  return'<div class="av-bar-track-row">'+dotL+barTrackHtml(pct,color,marks)+dotR+'</div>';
+  var tieneMarcas=(marks||[]).some(function(x){return x&&x.pct!=null;});
+  return'<div class="av-bar-track-row'+(tieneMarcas?' has-marks':'')+'">'+dotL+barTrackHtml(pct,color,marks)+dotR+'</div>';
 }
 
 function buildItems(rows){
@@ -721,8 +731,8 @@ function renderAvanceTabs(){
     var diasCamp=diasHasta(it.inicioCamp);
     var cls=urgClass(it._ref);
     var texto=(diasCamp>0)
-      ?'La campaña inicia en '+diasCamp+' días ('+fmtDate(it.inicioCamp)+') '
-      :'Faltan '+diasMat+' días para entregar el material listo';
+      ?'La campaña inicia en '+diasCamp+' días ('+fmtDate(it.inicioCamp)+') — prepara el material'
+      :'Faltan '+diasMat+' días para tener el material listo y entregarlo a Comercial';
     var total=Math.max(1,Math.round((it.matDeadline-it.inicioCamp)/86400000));
     var transcurrido=Math.round((HOY-it.inicioCamp)/86400000);
     var pctBar=Math.max(0,Math.min(100,Math.round(transcurrido/total*100)));
@@ -757,21 +767,21 @@ function renderAvanceTabs(){
     var d2=it.demo2?diasHasta(it.demo2):null;
     var cls=urgClassRange(dFin,10,20); // rojo ≤10d, naranja ≤20d del cierre de venta
     var barColor=cls==='urgente'?'var(--danger)':cls==='proximo'?'var(--warning)':'var(--success)';
-    var alertas=boxHtml('Faltan '+dFin+' días para cerrar ventas',cls);
-    if(d1!==null&&d1>=0&&d1<=30)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') ',d1);
-    if(d2!==null&&d2>=0&&d2<=30)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+') ',d2);
+    var alertas=boxHtml('Faltan '+dFin+' días para el inicio de clases (cierre de venta)',cls);
+    if(d1!==null&&d1>=0&&d1<=30)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') — ¡invita leads!',d1);
+    if(d2!==null&&d2>=0&&d2<=30)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+') — ¡invita leads!',d2);
     var total=Math.max(1,Math.round((it.inicioP-it.matDeadline)/86400000));
     var transcurrido=Math.round((HOY-it.matDeadline)/86400000);
     var pctBar=Math.max(0,Math.min(100,Math.round(transcurrido/total*100)));
-    var m1=it.demo1?((it.demo1-it.matDeadline)/(it.inicioP-it.matDeadline))*100:null;
-    var m2=it.demo2?((it.demo2-it.matDeadline)/(it.inicioP-it.matDeadline))*100:null;
+    var m1=it.demo1?{pct:((it.demo1-it.matDeadline)/(it.inicioP-it.matDeadline))*100,label:'Demo 1',fecha:it.demo1}:null;
+    var m2=it.demo2?{pct:((it.demo2-it.matDeadline)/(it.inicioP-it.matDeadline))*100,label:'Demo 2',fecha:it.demo2}:null;
     var card=document.createElement('div');card.className='av-prog-card '+cls;
     card.innerHTML='<div class="av-card-header">'+
         '<div><span class="av-card-name" title="'+(it.programaFull||it.nombre)+'">'+it.nombre+'</span><span class="av-card-ed">'+it.ed+'</span></div>'+
         '<span class="pill '+(cls==='urgente'?'pill-danger':cls==='proximo'?'pill-warn':'pill-ok')+'">'+(cls==='urgente'?'🔴 Urgente':cls==='proximo'?'🟡 Próximo':'🟢 OK')+'</span>'+
       '</div>'+alertas+
       '<div class="av-bar-wrap">'+
-        '<div class="av-bar-caption">Progreso del periodo de venta</div>'+
+        '<div class="av-bar-caption">Progreso del periodo de venta<span class="av-bar-caption-note"> · los círculos ⚪ muestran las fechas de demo</span></div>'+
         barRowHtml(pctBar,barColor,[m1,m2],diasHasta(it.matDeadline)<0,dFin<0)+
         '<div class="av-bar-labels"><span>Material listo<br>'+fmtDate(it.matDeadline)+'</span><span style="text-align:right">Inicio clases<br>'+fmtDate(it.inicioP)+'</span></div>'+
       '</div>';
@@ -810,28 +820,32 @@ function renderAvanceTabs(){
     var cls=urgClass(it._ref);
     var barColor=cls==='urgente'?'var(--danger)':cls==='proximo'?'var(--warning)':'var(--success)';
     var alertas='';
-    if(d1!==null&&d1>=0&&d1<=45)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') ',d1);
+    if(d1!==null&&d1>=0&&d1<=45)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') — prepara logística',d1);
     if(d2!==null&&d2>=0&&d2<=45)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+')',d2);
     if(dIni!==null&&dIni>=0&&dIni<=30)alertas+=alertBox('Inicio de clases en '+dIni+' días ('+fmtDate(it.inicioP)+')',dIni);
     if(dFin!==null&&dFin>=0&&dFin<=14)alertas+=alertBox('Fin del programa en '+dFin+' días',dFin);
     if(!alertas)alertas+=alertBox('Programa en curso — finaliza en '+dFin+' días',dFin);
     var pctBar=0,m1=null,m2=null;
-    if(it.inicioP&&it.finP){
-      var total=Math.max(1,Math.round((it.finP-it.inicioP)/86400000));
-      var transcurrido=Math.round((HOY-it.inicioP)/86400000);
+    var baseStart=it.demo1||it.inicioP; // el recorrido arranca en la Demo 1 (o en inicio de clases si no hay demo1)
+    if(baseStart&&it.finP){
+      var total=Math.max(1,Math.round((it.finP-baseStart)/86400000));
+      var transcurrido=Math.round((HOY-baseStart)/86400000);
       pctBar=Math.max(0,Math.min(100,Math.round(transcurrido/total*100)));
-      if(it.demo1)m1=((it.demo1-it.inicioP)/(it.finP-it.inicioP))*100;
-      if(it.demo2)m2=((it.demo2-it.inicioP)/(it.finP-it.inicioP))*100;
+      // Demo 2 como marca intermedia
+      if(it.demo2)m1={pct:((it.demo2-baseStart)/(it.finP-baseStart))*100,label:'Demo 2',fecha:it.demo2};
+      // Inicio de clases como marca intermedia (solo si el arranque fue la Demo 1, si no ya es el borde izquierdo)
+      if(it.inicioP&&baseStart!==it.inicioP)m2={pct:((it.inicioP-baseStart)/(it.finP-baseStart))*100,label:'Inicio clases',fecha:it.inicioP};
     }
+    var etiquetaInicio=it.demo1?'Demo 1':'Inicio clases';
     var card=document.createElement('div');card.className='av-prog-card '+cls;
     card.innerHTML='<div class="av-card-header">'+
         '<div><span class="av-card-name" title="'+(it.programaFull||it.nombre)+'">'+it.nombre+'</span><span class="av-card-ed">'+it.ed+'</span></div>'+
         '<span class="pill '+(cls==='urgente'?'pill-danger':cls==='proximo'?'pill-warn':'pill-ok')+'">'+(cls==='urgente'?'🔴 Urgente':cls==='proximo'?'🟡 Próximo':'🟢 OK')+'</span>'+
       '</div>'+alertas+
       '<div class="av-bar-wrap">'+
-        '<div class="av-bar-caption">Progreso del periodo de clases</div>'+
-        barRowHtml(pctBar,barColor,[m1,m2],dIni!==null&&dIni<=0,dFin!==null&&dFin<0)+
-        '<div class="av-bar-labels"><span>Inicio clases<br>'+fmtDate(it.inicioP)+'</span><span style="text-align:right">Fin de clases<br>'+fmtDate(it.finP)+'</span></div>'+
+        '<div class="av-bar-caption">Progreso operativo<span class="av-bar-caption-note"> · los círculos ⚪ muestran demos e inicio de clases</span></div>'+
+        barRowHtml(pctBar,barColor,[m1,m2],baseStart&&baseStart<=HOY,dFin!==null&&dFin<0)+
+        '<div class="av-bar-labels"><span>'+etiquetaInicio+'<br>'+fmtDate(baseStart)+'</span><span style="text-align:right">Fin de clases<br>'+fmtDate(it.finP)+'</span></div>'+
       '</div>';
     opEl.appendChild(card);
   });}
