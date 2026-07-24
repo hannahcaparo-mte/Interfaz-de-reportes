@@ -121,12 +121,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
 /* ══ GANTT ═══════════════════════════════════════════════ */
 .gantt-wrap{overflow-x:auto;padding-bottom:8px}
-.gantt-header{display:flex;margin-left:200px;border-bottom:1px solid var(--border);margin-bottom:0}
+.gantt-header{display:flex;margin-left:130px;border-bottom:1px solid var(--border);margin-bottom:0}
 .gantt-month{flex:1;text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 4px;border-right:1px solid var(--border);min-width:92px}
 .gantt-month.current{color:var(--navy);background:var(--navy-dim);font-weight:800}
 .gantt-row{display:flex;align-items:stretch;border-bottom:1px solid var(--border);min-height:52px;position:relative}
 .gantt-row:hover{background:var(--bg)}
-.gantt-label{width:200px;flex-shrink:0;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.gantt-label{width:130px;flex-shrink:0;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
 .gantt-label .gl-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gantt-label .gl-sub{font-size:10px;color:var(--muted)}
 .gantt-track{flex:1;position:relative;height:42px;display:flex;align-items:center}
@@ -493,7 +493,7 @@ function statusPill(s){
   return'<span class="pill '+(map[s]||'')+'">'+(s)+'</span>';
 }
 function dayOffset(date){if(!date)return null;const d=new Date(date);d.setHours(0,0,0,0);return Math.round((d-GANTT_START)/86400000);}
-const PX_DIA=3.3; // ancho en px de un día en la línea de tiempo (controla el ancho de cada mes)
+const PX_DIA=2.3; // ancho en px de un día en la línea de tiempo (controla el ancho de cada mes)
 function pxOf(date){return dayOffset(date)*PX_DIA;}
 
 // ── renderAll ──────────────────────────────────────────────
@@ -721,8 +721,8 @@ function renderAvanceTabs(){
     var diasCamp=diasHasta(it.inicioCamp);
     var cls=urgClass(it._ref);
     var texto=(diasCamp>0)
-      ?'La campaña inicia en '+diasCamp+' días ('+fmtDate(it.inicioCamp)+') — prepara el material'
-      :'Faltan '+diasMat+' días para tener el material listo y entregarlo a Comercial';
+      ?'La campaña inicia en '+diasCamp+' días ('+fmtDate(it.inicioCamp)+') '
+      :'Faltan '+diasMat+' días para entregar el material listo';
     var total=Math.max(1,Math.round((it.matDeadline-it.inicioCamp)/86400000));
     var transcurrido=Math.round((HOY-it.inicioCamp)/86400000);
     var pctBar=Math.max(0,Math.min(100,Math.round(transcurrido/total*100)));
@@ -757,9 +757,9 @@ function renderAvanceTabs(){
     var d2=it.demo2?diasHasta(it.demo2):null;
     var cls=urgClassRange(dFin,10,20); // rojo ≤10d, naranja ≤20d del cierre de venta
     var barColor=cls==='urgente'?'var(--danger)':cls==='proximo'?'var(--warning)':'var(--success)';
-    var alertas=boxHtml('Faltan '+dFin+' días para el inicio de clases (cierre de venta)',cls);
-    if(d1!==null&&d1>=0&&d1<=30)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') — ¡invita leads!',d1);
-    if(d2!==null&&d2>=0&&d2<=30)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+') — ¡invita leads!',d2);
+    var alertas=boxHtml('Faltan '+dFin+' días para cerrar ventas',cls);
+    if(d1!==null&&d1>=0&&d1<=30)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') ',d1);
+    if(d2!==null&&d2>=0&&d2<=30)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+') ',d2);
     var total=Math.max(1,Math.round((it.inicioP-it.matDeadline)/86400000));
     var transcurrido=Math.round((HOY-it.matDeadline)/86400000);
     var pctBar=Math.max(0,Math.min(100,Math.round(transcurrido/total*100)));
@@ -810,7 +810,7 @@ function renderAvanceTabs(){
     var cls=urgClass(it._ref);
     var barColor=cls==='urgente'?'var(--danger)':cls==='proximo'?'var(--warning)':'var(--success)';
     var alertas='';
-    if(d1!==null&&d1>=0&&d1<=45)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') — prepara logística',d1);
+    if(d1!==null&&d1>=0&&d1<=45)alertas+=alertBox('Demo 1 en '+d1+' días ('+fmtDate(it.demo1)+') ',d1);
     if(d2!==null&&d2>=0&&d2<=45)alertas+=alertBox('Demo 2 en '+d2+' días ('+fmtDate(it.demo2)+')',d2);
     if(dIni!==null&&dIni>=0&&dIni<=30)alertas+=alertBox('Inicio de clases en '+dIni+' días ('+fmtDate(it.inicioP)+')',dIni);
     if(dFin!==null&&dFin>=0&&dFin<=14)alertas+=alertBox('Fin del programa en '+dFin+' días',dFin);
