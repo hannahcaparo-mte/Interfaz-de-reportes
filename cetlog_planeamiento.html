@@ -122,7 +122,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 /* ══ GANTT ═══════════════════════════════════════════════ */
 .gantt-wrap{overflow-x:auto;padding-bottom:8px}
 .gantt-header{display:flex;margin-left:200px;border-bottom:1px solid var(--border);margin-bottom:0}
-.gantt-month{flex:1;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:6px 2px;border-right:1px solid var(--border);min-width:60px}
+.gantt-month{flex:1;text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 4px;border-right:1px solid var(--border);min-width:92px}
 .gantt-month.current{color:var(--navy);background:var(--navy-dim);font-weight:800}
 .gantt-row{display:flex;align-items:stretch;border-bottom:1px solid var(--border);min-height:52px;position:relative}
 .gantt-row:hover{background:var(--bg)}
@@ -130,7 +130,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .gantt-label .gl-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gantt-label .gl-sub{font-size:10px;color:var(--muted)}
 .gantt-track{flex:1;position:relative;height:42px;display:flex;align-items:center}
-.gantt-col{flex:1;height:100%;border-right:1px solid var(--border);min-width:60px;position:relative}
+.gantt-col{flex:1;height:100%;border-right:1px solid var(--border);min-width:92px;position:relative}
 .gantt-col.today-col{background:var(--danger-bg)}
 /* Barras del gantt — posicionadas absolutas sobre el track */
 .gantt-bar{position:absolute;border-radius:5px}
@@ -241,6 +241,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .av-res-name{font-size:12px;font-weight:600;color:var(--text);flex:1;min-width:160px}
 .av-chips{display:flex;gap:5px;flex-wrap:wrap}
 .av-chip{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;white-space:nowrap}
+
+/* ══ MARKETING — mensaje + barra de progreso ═══════════════ */
+.av-mkt-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.av-mkt-msg{flex:1;min-width:220px}
+.av-mkt-msg .av-alert-box{margin-bottom:0}
+.av-mkt-bar-wrap{flex:1.2;min-width:220px}
+.av-mkt-track{height:10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);overflow:hidden}
+.av-mkt-fill{height:100%;border-radius:6px;transition:width .5s ease}
+.av-mkt-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px;line-height:1.3}
 </style>
 </head>
 <body>
@@ -554,7 +563,7 @@ function renderGantt(){
     label.innerHTML='<span class="gl-name" title="'+prog.nombre+'">'+nom+'</span>';
     row.appendChild(label);
     const track=document.createElement('div');track.className='gantt-track';track.style.cssText='position:relative;flex-direction:column;align-items:stretch;min-height:'+rowH+'px';
-    track.innerHTML='<div style="position:absolute;inset:0;display:flex;z-index:0">'+GANTT_MESES.map(function(m){return'<div style="flex:1;border-right:1px solid var(--border);'+(m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear()?'background:rgba(239,68,68,.06)':'')+'" ></div>';}).join('')+'</div>';
+    track.innerHTML='<div style="position:absolute;inset:0;display:flex;z-index:0">'+GANTT_MESES.map(function(m){return'<div style="flex:1;min-width:92px;border-right:1px solid var(--border);'+(m.mes===HOY.getMonth()&&m.anio===HOY.getFullYear()?'background:rgba(239,68,68,.06)':'')+'" ></div>';}).join('')+'</div>';
     const todayLine=document.createElement('div');todayLine.className='today-line';todayLine.style.left=todayPct+'%';track.appendChild(todayLine);
     ediciones.forEach(function(ed,idx){
       const colProg=COL_PROGRAMA,colVenta=COL_VENTA,colMat=COL_MATERIAL;
@@ -645,18 +654,38 @@ function renderAvanceTabs(){
     if(normSt(it.status)==='culminado')return false;
     if(!it.inicioCamp||!it.matDeadline)return false;
     return diasHasta(it.matDeadline)>=0;
-  }).sort(function(a,b){return urgSort(diasHasta(a.matDeadline))-urgSort(diasHasta(b.matDeadline));});
+  }).map(function(it){
+    var diasCamp=diasHasta(it.inicioCamp);
+    // Mientras la campaña no arranca, lo urgente es esa fecha de inicio;
+    // una vez arrancada, lo urgente pasa a ser la entrega del material.
+    it._ref=(diasCamp>0)?diasCamp:diasHasta(it.matDeadline);
+    return it;
+  }).sort(function(a,b){return urgSort(a._ref)-urgSort(b._ref)||a._ref-b._ref;});
 
   if(!mktItems.length){mktEl.innerHTML='<div class="empty-state" style="margin:20px 0">✅ Marketing al día — nada pendiente de material</div>';}
   else{mktEl.innerHTML='';mktItems.forEach(function(it){
     var diasMat=diasHasta(it.matDeadline);
-    var diasCamp=it.inicioCamp?diasHasta(it.inicioCamp):null;
-    var cls=urgClass(diasMat);
-    var alerta=(diasCamp!==null&&diasCamp>0)
-      ?alertBox('La campaña inicia en '+diasCamp+' días ('+fmtDate(it.inicioCamp)+') — prepara el material',diasCamp)
-      :alertBox('Faltan '+diasMat+' días para tener el material listo y entregarlo a Comercial',diasMat);
+    var diasCamp=diasHasta(it.inicioCamp);
+    var cls=urgClass(it._ref);
+    var texto=(diasCamp>0)
+      ?'La campaña inicia en '+diasCamp+' días ('+fmtDate(it.inicioCamp)+') — prepara el material'
+      :'Faltan '+diasMat+' días para tener el material listo y entregarlo a Comercial';
+    var total=Math.max(1,Math.round((it.matDeadline-it.inicioCamp)/86400000));
+    var transcurrido=Math.round((HOY-it.inicioCamp)/86400000);
+    var pctBar=Math.max(0,Math.min(100,Math.round(transcurrido/total*100)));
+    var barColor=cls==='urgente'?'var(--danger)':cls==='proximo'?'var(--warning)':'var(--success)';
     var card=document.createElement('div');card.className='av-prog-card '+cls;
-    card.innerHTML=cardHtml(it,cls,alerta,[{label:'Inicio campaña',fecha:it.inicioCamp},{label:'Material listo',fecha:it.matDeadline},{label:'Demo 1',fecha:it.demo1},{label:'Inicio clases',fecha:it.inicioP}]);
+    card.innerHTML='<div class="av-card-header">'+
+        '<div><span class="av-card-name">'+it.nombre+'</span><span class="av-card-ed">'+it.ed+'</span></div>'+
+        '<span class="pill '+(cls==='urgente'?'pill-danger':cls==='proximo'?'pill-warn':'pill-ok')+'">'+(cls==='urgente'?'🔴 Urgente':cls==='proximo'?'🟡 Próximo':'🟢 OK')+'</span>'+
+      '</div>'+
+      '<div class="av-mkt-row">'+
+        '<div class="av-mkt-msg">'+alertBox(texto,it._ref)+'</div>'+
+        '<div class="av-mkt-bar-wrap">'+
+          '<div class="av-mkt-track"><div class="av-mkt-fill" style="width:'+pctBar+'%;background:'+barColor+'"></div></div>'+
+          '<div class="av-mkt-labels"><span>Inicio campaña<br>'+fmtDate(it.inicioCamp)+'</span><span style="text-align:right">Material listo<br>'+fmtDate(it.matDeadline)+'</span></div>'+
+        '</div>'+
+      '</div>';
     mktEl.appendChild(card);
   });}
 
