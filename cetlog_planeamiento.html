@@ -292,9 +292,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         <div class="filter-bar" id="tlFilters">
           <span style="font-size:11px;font-weight:600;color:var(--muted)">Mostrar:</span>
           <button class="filter-btn" data-status="todos" onclick="toggleTlFilter('todos')">Todos</button>
-          <button class="filter-btn f-proceso" data-status="En Proceso" onclick="toggleTlFilter('En Proceso')">En proceso</button>
+          <button class="filter-btn f-proceso active" data-status="En Proceso" onclick="toggleTlFilter('En Proceso')">En proceso</button>
           <button class="filter-btn f-pendiente active" data-status="Pendiente" onclick="toggleTlFilter('Pendiente')">Pendientes</button>
-          <button class="filter-btn f-culminado active" data-status="Culminado" onclick="toggleTlFilter('Culminado')">Culminados</button>
+          <button class="filter-btn f-culminado" data-status="Culminado" onclick="toggleTlFilter('Culminado')">Culminados</button>
         </div>
 
         <!-- Gantt -->
@@ -353,23 +353,50 @@ const TABS_DB  = ['linea_tiempo','avance','checklist','ejecucion'];
 const AUTO_MS  = 60000;
 
 let DB = {};
-let tlFiltros = new Set(['Pendiente','Culminado']); // multi-selección
+let tlFiltros = new Set(['Pendiente','En Proceso']); // multi-selección
 let isLoading = false;
 
 const HOY = new Date();
 HOY.setHours(0,0,0,0);
 
-// Meses del año que mostramos en el Gantt
-const GANTT_MESES = [
-  {mes:0,label:'Ene'},{mes:1,label:'Feb'},{mes:2,label:'Mar'},
-  {mes:3,label:'Abr'},{mes:4,label:'May'},{mes:5,label:'Jun'},
-  {mes:6,label:'Jul'},{mes:7,label:'Ago'},{mes:8,label:'Set'},
-  {mes:9,label:'Oct'},{mes:10,label:'Nov'},{mes:11,label:'Dic'}
-];
-const AÑO = 2026;
-const GANTT_START = new Date(AÑO, 0, 1); // 1 ene 2026
-const GANTT_END   = new Date(AÑO, 11, 31); // 31 dic 2026
-const GANTT_DAYS  = Math.round((GANTT_END - GANTT_START) / 86400000) + 1;
+// Meses dinámicos — se calculan en renderGantt según los datos filtrados
+const MESES_LABELS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Set','Oct','Nov','Dic'];
+let GANTT_MESES = [];
+let GANTT_START = new Date(2026, 0, 1);
+let GANTT_END   = new Date(2026, 11, 31);
+let GANTT_DAYS  = 365;
+
+function calcGanttRange(filas) {
+  // Encontrar min y max fecha de todas las filas visibles
+  var minD = null, maxD = null;
+  filas.forEach(function(r) {
+    var dates = [
+      parseFecha(r['Inicio_Campana']),
+      parseFecha(r['Inicio_Programa']),
+      parseFecha(r['Fin_Programa'])
+    ];
+    dates.forEach(function(d) {
+      if (!d) return;
+      if (!minD || d < minD) minD = d;
+      if (!maxD || d > maxD) maxD = d;
+    });
+  });
+  if (!minD) minD = new Date(2026, 0, 1);
+  if (!maxD) maxD = new Date(2026, 11, 31);
+
+  // Empezar al inicio del mes mínimo, terminar al fin del mes máximo
+  GANTT_START = new Date(minD.getFullYear(), minD.getMonth(), 1);
+  GANTT_END   = new Date(maxD.getFullYear(), maxD.getMonth() + 1, 0); // último día del mes max
+  GANTT_DAYS  = Math.round((GANTT_END - GANTT_START) / 86400000) + 1;
+
+  // Generar lista de meses entre start y end
+  GANTT_MESES = [];
+  var cur = new Date(GANTT_START);
+  while (cur <= GANTT_END) {
+    GANTT_MESES.push({ mes: cur.getMonth(), anio: cur.getFullYear(), label: MESES_LABELS[cur.getMonth()] });
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+}
 
 // ══════════════════════════════════════════════════════════
 //  FETCH
@@ -513,12 +540,13 @@ function renderGantt() {
 
   // Cabecera de meses
   const hdr = document.getElementById('ganttHeader');
-  hdr.innerHTML = GANTT_MESES.map(m => {
-    const isCur = m.mes === HOY.getMonth() && AÑO === HOY.getFullYear();
-    return `<div class="gantt-month${isCur ? ' current' : ''}">${m.label}</div>`;
+  hdr.innerHTML = GANTT_MESES.map((m, i) => {
+    const isCur = m.mes === HOY.getMonth() && m.anio === HOY.getFullYear();
+    // Mostrar año cuando cambia respecto al mes anterior
+    const showAnio = i === 0 || GANTT_MESES[i-1].anio !== m.anio;
+    const lbl = showAnio ? m.label + '<br><span style="font-size:8px;opacity:.6">' + m.anio + '</span>' : m.label;
+    return '<div class="gantt-month' + (isCur ? ' current' : '') + '">' + lbl + '</div>';
   }).join('');
-
-  const todayPct = pct(dayOffset(HOY));
 
   // Filtrar por status multi-selección
   const normalSt = s => String(s||'').trim().toLowerCase()
@@ -527,6 +555,10 @@ function renderGantt() {
     const rs = normalSt(r['Status']);
     return [...tlFiltros].some(f => rs.includes(normalSt(f)));
   });
+
+  // Calcular rango de meses dinámico según los datos filtrados
+  calcGanttRange(filtradas);
+  const todayPct = pct(dayOffset(HOY));
 
   // Agrupar por Nomenclatura pura (solo la sigla, sin edición)
   // Si Nomenclatura tiene edición concatenada (ej: "TCI 2026-I"), extraemos solo la sigla
@@ -581,18 +613,19 @@ function renderGantt() {
     const progStatus = statuses.every(s => s === 'Culminado') ? 'Culminado'
                      : statuses.includes('En Proceso') ? 'En Proceso' : 'Pendiente';
 
-    const slotH = 30;
-    const rowH  = Math.max(60, ediciones.length * slotH + 18);
+    const slotH = 24;
+    const rowH  = Math.max(44, ediciones.length * slotH + 12);
 
     const row = document.createElement('div');
     row.className = 'gantt-row';
     row.style.minHeight = rowH + 'px';
+    row.style.borderBottom = '1px solid var(--border)';
     row.style.alignItems = 'flex-start';
 
     // Label: solo nomenclatura
     const label = document.createElement('div');
     label.className = 'gantt-label';
-    label.style.paddingTop = '12px';
+    label.style.paddingTop = '8px';
     label.innerHTML =
       '<span class="gl-name" title="' + prog.nombre + '">' + nom + '</span>';
     row.appendChild(label);
@@ -605,7 +638,7 @@ function renderGantt() {
     track.innerHTML = '<div style="position:absolute;inset:0;display:flex;z-index:0">' +
       GANTT_MESES.map(function(m) {
         return '<div style="flex:1;border-right:1px solid var(--border);' +
-          (m.mes === HOY.getMonth() && AÑO === HOY.getFullYear() ? 'background:rgba(239,68,68,.06)' : '') +
+          (m.mes === HOY.getMonth() && m.anio === HOY.getFullYear() ? 'background:rgba(239,68,68,.06)' : '') +
           '"></div>';
       }).join('') + '</div>';
 
@@ -618,7 +651,7 @@ function renderGantt() {
       const colProg = COL_PROGRAMA;
       const colCamp = COL_CAMPANA;
       const topBase = 9 + idx * slotH;
-      const barTop  = topBase + Math.floor(slotH / 2) - 4;
+      const barTop  = topBase + Math.floor(slotH / 2) - 6;
       const dotTop  = topBase + Math.floor(slotH / 2);
 
       var campStart = ed.inicioCamp ? pct(dayOffset(ed.inicioCamp)) : null;
@@ -645,7 +678,7 @@ function renderGantt() {
         var lblLeft = progStart + progW / 2;
         lbl.style.cssText = 'position:absolute;left:' + lblLeft + '%;top:' + barTop + 'px;' +
           'transform:translateX(-50%);display:flex;align-items:center;justify-content:center;' +
-          'z-index:6;pointer-events:none;height:8px;';
+          'z-index:6;pointer-events:none;height:12px;';
         lbl.innerHTML = '<span style="font-size:8px;font-weight:700;color:#fff;white-space:nowrap;' +
           'text-shadow:0 1px 2px rgba(0,0,0,.4)">' + durMeses + '</span>';
         track.appendChild(lbl);
@@ -677,7 +710,7 @@ function renderGantt() {
       // Barra campaña
       if (campStart != null && campW > 0) {
         var b = document.createElement('div');
-        b.style.cssText = 'position:absolute;left:' + campStart + '%;width:' + campW + '%;top:' + barTop + 'px;height:8px;' +
+        b.style.cssText = 'position:absolute;left:' + campStart + '%;width:' + campW + '%;top:' + barTop + 'px;height:12px;' +
           'background:' + colCamp + ';opacity:.85;border-radius:4px;z-index:3';
         addTooltip(b,
           '<b>' + ed.edicion + ' — Campaña</b><br>' +
@@ -689,7 +722,7 @@ function renderGantt() {
       // Barra programa
       if (progStart != null && progW > 0) {
         var b2 = document.createElement('div');
-        b2.style.cssText = 'position:absolute;left:' + progStart + '%;width:' + progW + '%;top:' + barTop + 'px;height:8px;' +
+        b2.style.cssText = 'position:absolute;left:' + progStart + '%;width:' + progW + '%;top:' + barTop + 'px;height:12px;' +
           'background:' + colProg + ';border-radius:4px;z-index:3';
         addTooltip(b2,
           '<b>' + ed.edicion + ' — Programa</b><br>' +
