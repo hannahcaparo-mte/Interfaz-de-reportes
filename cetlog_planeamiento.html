@@ -251,6 +251,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .av-bar-fill{height:100%;border-radius:6px;transition:width .5s ease;min-width:4px}
 .av-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px;line-height:1.3}
 .av-bar-caption{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+.av-bar-track-row{display:flex;align-items:center;gap:7px}
+.av-bar-track-row .av-bar-track{flex:1}
+.av-bar-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);background:var(--card);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:transparent}
+.av-bar-dot.done{background:var(--success-bg);border-color:var(--success);color:var(--success-tx)}
 .av-bar-mark{position:absolute;top:-3px;width:2px;height:16px;background:var(--muted);opacity:.6;z-index:2}
 </style>
 </head>
@@ -606,14 +610,12 @@ function renderGantt(){
         track.appendChild(b2);
       }
       if(campEndPx!=null&&progStartPx!=null&&campEndPx<progStartPx){var c=document.createElement('div');c.style.cssText='position:absolute;left:'+campEndPx+'px;width:'+(progStartPx-campEndPx)+'px;top:'+(barTop+5)+'px;height:2px;border-top:2px dashed '+colVenta+'55;z-index:2;pointer-events:none';track.appendChild(c);}
-      // Puntos de Demo: check si ya pas\u00f3, vac\u00edo si a\u00fan no
+      // Puntos de Demo — círculo simple con el color de la leyenda
       function demoDot(px,fecha,label){
         if(px==null||!fecha)return;
-        var pasado=fecha<=HOY;
         var d=document.createElement('div');
-        d.style.cssText='position:absolute;left:'+px+'px;top:'+dotTop+'px;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);z-index:4;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;line-height:1;'+(pasado?'background:var(--success-bg);border:2px solid var(--success);color:var(--success-tx)':'background:var(--card);border:2px solid '+COL_DEMO+';color:'+COL_DEMO);
-        d.textContent=pasado?'\u2713':'';
-        addTooltip(d,'<b>'+ed.edicion+' \u2014 '+label+'</b><br>Fecha: '+fmtDate(fecha));
+        d.style.cssText='position:absolute;left:'+px+'px;top:'+dotTop+'px;width:12px;height:12px;border-radius:50%;background:'+COL_DEMO+';transform:translate(-50%,-50%);z-index:4;border:2px solid var(--card)';
+        addTooltip(d,'<b>'+ed.edicion+' — '+label+'</b><br>Fecha: '+fmtDate(fecha));
         track.appendChild(d);
       }
       demoDot(ed.demo1?pxOf(ed.demo1):null,ed.demo1,'Demo 1');
@@ -642,6 +644,12 @@ function boxHtml(texto,cls){
 function barTrackHtml(pct,color,marks){
   var m=(marks||[]).map(function(p){return p==null?'':'<div class="av-bar-mark" style="left:'+Math.max(0,Math.min(100,p))+'%"></div>';}).join('');
   return'<div class="av-bar-track"><div class="av-bar-fill" style="width:'+pct+'%;background:'+color+'"></div>'+m+'</div>';
+}
+// Fila completa: círculo de inicio (✓ si ya se alcanzó esa fecha) — barra — círculo de fin (✓ si ya se alcanzó)
+function barRowHtml(pct,color,marks,inicioAlcanzado,finAlcanzado){
+  var dotL='<div class="av-bar-dot'+(inicioAlcanzado?' done':'')+'">'+(inicioAlcanzado?'✓':'')+'</div>';
+  var dotR='<div class="av-bar-dot'+(finAlcanzado?' done':'')+'">'+(finAlcanzado?'✓':'')+'</div>';
+  return'<div class="av-bar-track-row">'+dotL+barTrackHtml(pct,color,marks)+dotR+'</div>';
 }
 
 function buildItems(rows){
@@ -728,7 +736,7 @@ function renderAvanceTabs(){
         '<div class="av-bar-msg">'+alertBox(texto,it._ref)+'</div>'+
         '<div class="av-bar-wrap">'+
           '<div class="av-bar-caption">Progreso del plazo de material</div>'+
-          '<div class="av-bar-track"><div class="av-bar-fill" style="width:'+pctBar+'%;background:'+barColor+'"></div></div>'+
+          barRowHtml(pctBar,barColor,[],diasCamp<=0,diasMat<0)+
           '<div class="av-bar-labels"><span>Inicio campaña<br>'+fmtDate(it.inicioCamp)+'</span><span style="text-align:right">Material listo<br>'+fmtDate(it.matDeadline)+'</span></div>'+
         '</div>'+
       '</div>';
@@ -764,7 +772,7 @@ function renderAvanceTabs(){
       '</div>'+alertas+
       '<div class="av-bar-wrap">'+
         '<div class="av-bar-caption">Progreso del periodo de venta</div>'+
-        barTrackHtml(pctBar,barColor,[m1,m2])+
+        barRowHtml(pctBar,barColor,[m1,m2],diasHasta(it.matDeadline)<0,dFin<0)+
         '<div class="av-bar-labels"><span>Material listo<br>'+fmtDate(it.matDeadline)+'</span><span style="text-align:right">Inicio clases<br>'+fmtDate(it.inicioP)+'</span></div>'+
       '</div>';
     comEl.appendChild(card);
@@ -822,7 +830,7 @@ function renderAvanceTabs(){
       '</div>'+alertas+
       '<div class="av-bar-wrap">'+
         '<div class="av-bar-caption">Progreso del periodo de clases</div>'+
-        barTrackHtml(pctBar,barColor,[m1,m2])+
+        barRowHtml(pctBar,barColor,[m1,m2],dIni!==null&&dIni<=0,dFin!==null&&dFin<0)+
         '<div class="av-bar-labels"><span>Inicio clases<br>'+fmtDate(it.inicioP)+'</span><span style="text-align:right">Fin de clases<br>'+fmtDate(it.finP)+'</span></div>'+
       '</div>';
     opEl.appendChild(card);
