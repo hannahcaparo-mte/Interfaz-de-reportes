@@ -100,6 +100,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .rtab:hover{border-color:var(--navy);color:var(--navy)}
 .rtab.active{background:var(--navy);border-color:var(--navy);color:#fff}
 .rtab .tn{font-size:9px;opacity:.6}
+.rtab .tab-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:none;flex-shrink:0}
+.rtab.active .tab-dot{display:inline-block;background:var(--orange)}
 .rtab .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;display:none}
 .rtab.active .dot{display:block;background:#6EE7B7}
 
@@ -331,13 +333,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
     <!-- TABS -->
     <div class="report-tabs">
-      <div class="rtab active" onclick="showTab('campanas')"><span class="dot"></span><span class="tn">01</span> Campañas activas</div>
-      <div class="rtab" onclick="showTab('contenido')"><span class="dot"></span><span class="tn">02</span> Contenido</div>
-      <div class="rtab" onclick="showTab('embudo')"><span class="dot"></span><span class="tn">03</span> Embudo comercial</div>
-      <div class="rtab" onclick="showTab('performance')"><span class="dot"></span><span class="tn">04</span> Performance</div>
-      <div class="rtab" onclick="showTab('demos')"><span class="dot"></span><span class="tn">05</span> Demos</div>
-      <div class="rtab" onclick="showTab('roas')"><span class="dot"></span><span class="tn">06</span> ROAS y velocidad</div>
-      <div class="rtab" onclick="showTab('historico')"><span class="dot"></span><span class="tn">07</span> Histórico</div>
+      <div class="rtab active" onclick="showTab('campanas')"><span class="tab-dot"></span><span class="dot"></span><span class="tn">01</span> Campañas activas</div>
+      <div class="rtab" onclick="showTab('contenido')"><span class="tab-dot"></span><span class="dot"></span><span class="tn">02</span> Contenido</div>
+      <div class="rtab" onclick="showTab('embudo')"><span class="tab-dot"></span><span class="dot"></span><span class="tn">03</span> Embudo comercial</div>
+      <div class="rtab" onclick="showTab('performance')"><span class="tab-dot"></span><span class="dot"></span><span class="tn">04</span> Performance</div>
+      <div class="rtab" onclick="showTab('demos')"><span class="tab-dot"></span><span class="dot"></span><span class="tn">05</span> Demos</div>
+      <div class="rtab" onclick="showTab('roas')"><span class="tab-dot"></span><span class="dot"></span><span class="tn">06</span> ROAS y velocidad</div>
+      <div class="rtab" onclick="showTab('historico')"><span class="tab-dot"></span><span class="dot"></span><span class="tn">07</span> Histórico</div>
     </div>
 
     <!-- ══ TAB 01: CAMPAÑAS ACTIVAS ══════════════════════ -->
