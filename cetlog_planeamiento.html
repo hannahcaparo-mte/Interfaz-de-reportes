@@ -538,16 +538,6 @@ const COL_DEMO     = '#B45309';  // naranja oscuro — puntos de demo
 function renderGantt() {
   const rows = DB['linea_tiempo'] || [];
 
-  // Cabecera de meses
-  const hdr = document.getElementById('ganttHeader');
-  hdr.innerHTML = GANTT_MESES.map((m, i) => {
-    const isCur = m.mes === HOY.getMonth() && m.anio === HOY.getFullYear();
-    // Mostrar año cuando cambia respecto al mes anterior
-    const showAnio = i === 0 || GANTT_MESES[i-1].anio !== m.anio;
-    const lbl = showAnio ? m.label + '<br><span style="font-size:8px;opacity:.6">' + m.anio + '</span>' : m.label;
-    return '<div class="gantt-month' + (isCur ? ' current' : '') + '">' + lbl + '</div>';
-  }).join('');
-
   // Filtrar por status multi-selección
   const normalSt = s => String(s||'').trim().toLowerCase()
     .replace(/[éê]/g,'e').replace(/[óô]/g,'o').replace(/[úû]/g,'u').replace(/[áâ]/g,'a').replace(/[íî]/g,'i');
@@ -556,9 +546,18 @@ function renderGantt() {
     return [...tlFiltros].some(f => rs.includes(normalSt(f)));
   });
 
-  // Calcular rango de meses dinámico según los datos filtrados
+  // Calcular rango de meses dinámico ANTES de renderizar el header
   calcGanttRange(filtradas);
   const todayPct = pct(dayOffset(HOY));
+
+  // Cabecera de meses — DESPUÉS de calcGanttRange para usar los meses correctos
+  const hdr = document.getElementById('ganttHeader');
+  hdr.innerHTML = GANTT_MESES.map((m, i) => {
+    const isCur = m.mes === HOY.getMonth() && m.anio === HOY.getFullYear();
+    const showAnio = i === 0 || GANTT_MESES[i-1].anio !== m.anio;
+    const lbl = showAnio ? m.label + '<br><span style="font-size:8px;opacity:.6">' + m.anio + '</span>' : m.label;
+    return '<div class="gantt-month' + (isCur ? ' current' : '') + '">' + lbl + '</div>';
+  }).join('');
 
   // Agrupar por Nomenclatura pura (solo la sigla, sin edición)
   // Si Nomenclatura tiene edición concatenada (ej: "TCI 2026-I"), extraemos solo la sigla
