@@ -224,27 +224,27 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
   </div>
   <div class="sidebar-section">
     <div class="sidebar-section-label">Bloques</div>
-    <a class="nav-item" href="cetlog_comercial.html">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
-      Comercial<span class="nav-badge">7</span>
-    </a>
-    <a class="nav-item" href="cetlog_cobranza.html">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
-      Cobranza<span class="nav-badge">5</span>
-    </a>
-    <a class="nav-item" href="cetlog_academico.html">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
-      Académico<span class="nav-badge">5</span>
-    </a>
-    <a class="nav-item" href="cetlog_estrategico.html">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
-      Estratégico<span class="nav-badge">6</span>
-    </a>
-    <a class="nav-item active" href="cetlog_planeamiento.html">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v2H1V2zm0 4h9v2H1V6zm0 4h11v2H1v-2zm0 4h7v2H1v-2z"/></svg>
-      Planeamiento<span class="nav-badge">4</span>
-    </a>
-  </div>
+      <a class="nav-item" href="cetlog_planeamiento.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v2H1V2zm0 4h9v2H1V6zm0 4h11v2H1v-2zm0 4h7v2H1v-2z"/></svg>
+        Planeamiento<span class="nav-badge">4</span>
+      </a>
+      <a class="nav-item" href="cetlog_comercial.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
+        Comercial<span class="nav-badge">7</span>
+      </a>
+      <a class="nav-item" href="cetlog_cobranza.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
+        Cobranza<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_academico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
+        Académico<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_estrategico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+        Estratégico<span class="nav-badge">6</span>
+      </a>
+    </div>
   <div class="sidebar-bottom">
     <div class="user-pill">
       <div class="avatar">GE</div>
@@ -663,12 +663,14 @@ function renderGantt() {
       var d1Pct     = ed.demo1 ? pct(dayOffset(ed.demo1)) : null;
       var d2Pct     = ed.demo2 ? pct(dayOffset(ed.demo2)) : null;
 
-      // Duración en meses
+      // Duración en meses: solo mostrar 3, 4 o 5
       var durMeses = '';
       if (ed.inicioP && ed.finP) {
-        var m = (ed.finP.getFullYear() - ed.inicioP.getFullYear()) * 12
-              + (ed.finP.getMonth() - ed.inicioP.getMonth());
-        if (m > 0) durMeses = m + ' meses';
+        var mRaw = (ed.finP.getFullYear() - ed.inicioP.getFullYear()) * 12
+                 + (ed.finP.getMonth() - ed.inicioP.getMonth());
+        // Redondear al más cercano entre 3, 4, 5
+        var mRedondeado = mRaw <= 3.5 ? 3 : mRaw <= 4.5 ? 4 : 5;
+        durMeses = mRedondeado + ' meses';
       }
 
       // Label inline: solo duración en blanco centrada en la barra del programa
@@ -803,10 +805,27 @@ function renderAvance() {
   const alertasCont = document.getElementById('avanceAlertas');
   alertasCont.innerHTML = '';
 
-  // Alertas de programas que arrancan pronto (basado en Dias_Alerta)
+  if (!rows.length) {
+    document.getElementById('avanceCards').innerHTML = '<div class="empty-state">Sin datos en la hoja <b>avance</b></div>';
+    return;
+  }
+
+  const normSt = s => String(s||'').trim().toLowerCase()
+    .replace(/[éê]/g,'e').replace(/[áâ]/g,'a').replace(/[íî]/g,'i').replace(/[óô]/g,'o').replace(/[úû]/g,'u');
+
+  // Alertas: programas próximos a iniciar (Dias_Alerta calculado o desde fecha)
+  const hoy = HOY;
   const proximos = rows
-    .filter(r => !String(r['Status']||'').toLowerCase().includes('culminado'))
-    .map(r => ({ ...r, _dias: Number(r['Dias_Alerta']) || 9999 }))
+    .filter(r => !normSt(r['Status']).includes('culminado'))
+    .map(r => {
+      // Si Dias_Alerta está vacío, calcular desde Inicio_Programa
+      let dias = Number(r['Dias_Alerta']);
+      if (isNaN(dias) || dias === 0) {
+        const fi = parseFecha(r['Inicio_Programa']);
+        dias = fi ? Math.round((fi - hoy) / 86400000) : 9999;
+      }
+      return { ...r, _dias: dias };
+    })
     .filter(r => r._dias >= 0 && r._dias <= 90)
     .sort((a,b) => a._dias - b._dias);
 
@@ -820,57 +839,104 @@ function renderAvance() {
       </div>`;
   });
 
-  const enProceso = rows.filter(r => String(r['Status']||'').toLowerCase().replace('é','e').includes('proceso'));
-  const cont = document.getElementById('avanceCards');
+  // Mostrar todos los programas (En Proceso primero, luego Pendiente, luego Culminado)
+  const orden = { 'en proceso': 0, 'pendiente': 1, 'culminado': 2 };
+  const sorted = [...rows].sort((a,b) => {
+    const sa = normSt(a['Status']); const sb = normSt(b['Status']);
+    const oa = Object.keys(orden).find(k => sa.includes(k));
+    const ob = Object.keys(orden).find(k => sb.includes(k));
+    return (orden[oa]||99) - (orden[ob]||99);
+  });
 
-  if (!enProceso.length) {
-    cont.innerHTML = '<div class="empty-state">No hay programas en proceso aún</div>';
+  const cont = document.getElementById('avanceCards');
+  if (!sorted.length) {
+    cont.innerHTML = '<div class="empty-state">Sin datos en la hoja <b>avance</b></div>';
     return;
   }
 
   cont.innerHTML = '';
-  enProceso.forEach(r => {
+  sorted.forEach(r => {
+    const normSt2  = s => String(s||'').toLowerCase().replace(/[éê]/g,'e');
+    const stNorm   = normSt2(r['Status']);
+    const enProceso = stNorm.includes('proceso');
+    const pendiente = stNorm.includes('pendiente');
+
     const sesTotal = Number(r['Sesiones_Total'])     || 0;
     const sesReal  = Number(r['Sesiones_Realizadas'])|| 0;
     const sesPct   = sesTotal ? Math.round(sesReal/sesTotal*100) : 0;
-    const sesFill  = sesTotal ? `barColor(${sesPct/100})` : 'var(--muted)';
+    const inicioP  = parseFecha(r['Inicio_Programa']);
+    const finP     = parseFecha(r['Fin_Programa']);
+    const inicioR  = parseFecha(r['Inicio_Real']);
+    const enFecha  = inicioP && inicioR ? inicioR <= inicioP : null;
+    const alumnos  = Number(r['Alumnos']) || 0;
 
-    const inicioP   = parseFecha(r['Inicio_Programa']);
-    const inicioR   = parseFecha(r['Inicio_Real']);
-    const enFecha   = inicioP && inicioR ? inicioR <= inicioP : null;
-
-    const alumnos = Number(r['Alumnos']) || 0;
-    const dias    = Number(r['Dias_Alerta']);
+    // Calcular días al próximo hito importante
+    let proximoHito = null, diasProximo = null;
+    if (enProceso) {
+      // Para en proceso: días hasta fin del programa
+      if (finP) {
+        const d = Math.round((finP - HOY) / 86400000);
+        if (d >= 0) { proximoHito = 'Fin del programa'; diasProximo = d; }
+      }
+    } else if (pendiente) {
+      // Para pendiente: días hasta inicio de campaña o inicio de programa
+      const campRows = (DB['linea_tiempo']||[]).filter(lt =>
+        lt['Nomenclatura'] === r['Nomenclatura'] && lt['Edicion'] === r['Edicion']
+      );
+      const camp = campRows.length ? parseFecha(campRows[0]['Inicio_Campana']) : null;
+      if (camp) {
+        const dc = Math.round((camp - HOY) / 86400000);
+        if (dc >= 0) { proximoHito = 'Inicio de campaña'; diasProximo = dc; }
+        else if (inicioP) {
+          const dp = Math.round((inicioP - HOY) / 86400000);
+          if (dp >= 0) { proximoHito = 'Inicio del programa'; diasProximo = dp; }
+        }
+      } else if (inicioP) {
+        const dp = Math.round((inicioP - HOY) / 86400000);
+        if (dp >= 0) { proximoHito = 'Inicio del programa'; diasProximo = dp; }
+      }
+    }
 
     const col = sesPct >= 75 ? 'var(--success)' : sesPct >= 40 ? 'var(--navy)' : 'var(--warning)';
+    const urgColor = diasProximo != null && diasProximo <= 14 ? 'var(--danger-tx)' :
+                     diasProximo != null && diasProximo <= 30 ? 'var(--warning-tx)' : 'var(--success-tx)';
 
     const card = document.createElement('div');
     card.className = 'av-card';
-    card.innerHTML = `
-      <div class="av-header">
-        <div>
-          <div class="av-name">${r['Programa']||'—'} <span style="font-size:11px;font-weight:400;color:var(--muted)">${r['Edicion']||''}</span></div>
-          <div class="av-sub">${fmtDate(parseFecha(r['Inicio_Programa']))} → ${fmtDate(parseFecha(r['Fin_Programa']))}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-          ${statusPill(r['Status'])}
-          ${enFecha !== null ? `<span class="pill ${enFecha ? 'pill-ok' : 'pill-danger'}">${enFecha ? '✓ Inició en fecha' : '⚠ Retraso'}</span>` : ''}
-        </div>
-      </div>
-      <div class="av-prog-wrap">
-        <div class="av-prog-label">
-          <span>Avance de sesiones</span>
-          <span style="font-weight:700;color:${col}">${sesReal} / ${sesTotal} (${sesPct}%)</span>
-        </div>
-        <div class="av-prog-track">
-          <div class="av-prog-fill" style="width:${sesPct}%;background:${col}"></div>
-        </div>
-      </div>
-      <div class="av-stats">
-        <div class="av-stat"><div class="asl">Alumnos</div><div class="asv">${numF(alumnos)}</div></div>
-        <div class="av-stat"><div class="asl">Sesiones</div><div class="asv">${sesReal}/${sesTotal}</div></div>
-        <div class="av-stat"><div class="asl">Inicio real</div><div class="asv" style="font-size:12px">${fmtDate(inicioR) || '—'}</div></div>
-      </div>`;
+    // Borde de urgencia para pendientes con poco tiempo
+    if (pendiente && diasProximo != null && diasProximo <= 30)
+      card.style.borderColor = diasProximo <= 14 ? 'var(--danger)' : 'var(--warning)';
+
+    card.innerHTML =
+      '<div class="av-header">' +
+        '<div>' +
+          '<div class="av-name">' + (r['Programa']||'—') +
+            ' <span style="font-size:11px;font-weight:400;color:var(--muted)">' + (r['Edicion']||'') + '</span></div>' +
+          '<div class="av-sub">' + fmtDate(inicioP) + ' → ' + fmtDate(finP) + '</div>' +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
+          statusPill(r['Status']) +
+          (enFecha !== null ? '<span class="pill ' + (enFecha ? 'pill-ok' : 'pill-danger') + '">' + (enFecha ? '✓ Inició en fecha' : '⚠ Retraso') + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      // Próximo hito destacado
+      (proximoHito != null ?
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:10px">' +
+          '<span style="font-size:12px;color:var(--muted)">⏱ ' + proximoHito + '</span>' +
+          '<span style="font-size:14px;font-weight:700;color:' + urgColor + '">' + diasProximo + ' días</span>' +
+        '</div>' : '') +
+      // Barra sesiones (solo para en proceso)
+      (enProceso && sesTotal > 0 ?
+        '<div class="av-prog-wrap">' +
+          '<div class="av-prog-label"><span>Avance de sesiones</span>' +
+            '<span style="font-weight:700;color:' + col + '">' + sesReal + ' / ' + sesTotal + ' (' + sesPct + '%)</span></div>' +
+          '<div class="av-prog-track"><div class="av-prog-fill" style="width:' + sesPct + '%;background:' + col + '"></div></div>' +
+        '</div>' : '') +
+      '<div class="av-stats">' +
+        '<div class="av-stat"><div class="asl">Alumnos</div><div class="asv">' + numF(alumnos) + '</div></div>' +
+        '<div class="av-stat"><div class="asl">Sesiones</div><div class="asv">' + (enProceso ? sesReal + '/' + sesTotal : '—') + '</div></div>' +
+        '<div class="av-stat"><div class="asl">Inicio real</div><div class="asv" style="font-size:11px">' + (fmtDate(inicioR) || '—') + '</div></div>' +
+      '</div>';
     cont.appendChild(card);
   });
 }
@@ -894,44 +960,57 @@ function hitoIcon(estado) {
 function renderChecklist() {
   const rows = DB['checklist'] || [];
   const cont = document.getElementById('ckCards');
-  if (!rows.length) { cont.innerHTML = '<div class="empty-state">Sin datos aún</div>'; return; }
+  if (!rows.length) {
+    cont.innerHTML = '<div class="empty-state">Sin datos en la hoja <b>checklist</b></div>';
+    return;
+  }
+
+  // Ordenar: primero los que tienen hitos vencidos o activos, luego por fecha de inicio
+  const rowsOrd = [...rows].sort((a,b) => {
+    const hitos = ['Inicio_Campana','Material_Listo','Comerciales_Activas','Demo1','Demo2','Inicio_Programa','Fin_Programa'];
+    const urgA = hitos.some(k => ['overdue','active'].includes(hitoEstado(parseFecha(a[k])))) ? 0 : 1;
+    const urgB = hitos.some(k => ['overdue','active'].includes(hitoEstado(parseFecha(b[k])))) ? 0 : 1;
+    if (urgA !== urgB) return urgA - urgB;
+    const fa = parseFecha(a['Inicio_Programa'])||new Date(9999,0,1);
+    const fb = parseFecha(b['Inicio_Programa'])||new Date(9999,0,1);
+    return fa - fb;
+  });
 
   cont.innerHTML = '';
-  rows.forEach(r => {
+  rowsOrd.forEach(r => {
     const hitos = [
-      { label:'Inicio campaña',    key:'Inicio_Campana',        sub:'Marketing activa' },
-      { label:'Material listo',    key:'Material_Listo',         sub:'Mkt: flyers/brochures' },
-      { label:'Comerciales activas',key:'Comerciales_Activas',  sub:'Inicio de ventas' },
-      { label:'Demo 1',            key:'Demo1',                  sub:'7-14 días antes' },
-      { label:'Demo 2',            key:'Demo2',                  sub:'Última demo' },
-      { label:'Inicio programa',   key:'Inicio_Programa',        sub:'Día 0' },
-      { label:'Fin programa',      key:'Fin_Programa',           sub:'Cierre' },
+      { label:'Inicio campaña',     key:'Inicio_Campana'       },
+      { label:'Material listo',     key:'Material_Listo'        },
+      { label:'Comerciales activas',key:'Comerciales_Activas'   },
+      { label:'Demo 1',             key:'Demo1'                 },
+      { label:'Demo 2',             key:'Demo2'                 },
+      { label:'Inicio programa',    key:'Inicio_Programa'       },
+      { label:'Fin programa',       key:'Fin_Programa'          },
     ];
 
-    // Contar hitos pendientes/vencidos
     const vencidos = hitos.filter(h => hitoEstado(parseFecha(r[h.key])) === 'overdue').length;
     const activos  = hitos.filter(h => hitoEstado(parseFecha(r[h.key])) === 'active').length;
 
     const card = document.createElement('div');
     card.className = 'ck-card';
-    card.innerHTML = `
-      <div class="ck-header">
-        <div>
-          <div class="ck-name">${r['Programa']||'—'} <span style="font-size:11px;font-weight:400;color:var(--muted)">${r['Edicion']||''}</span></div>
-          <div class="ck-sub">${r['Nomenclatura']||''}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
-          ${vencidos ? `<span class="pill pill-danger">⚠ ${vencidos} vencido${vencidos!==1?'s':''}</span>` : ''}
-          ${activos  ? `<span class="pill pill-warn">⏰ ${activos} próximo${activos!==1?'s':''}</span>`    : ''}
-          ${!vencidos && !activos ? `<span class="pill pill-ok">✓ Al día</span>` : ''}
-        </div>
-      </div>
-      <div class="ck-resps">
-        ${r['Resp_Marketing']  ? `<div class="ck-resp">📣 Marketing: <b>${r['Resp_Marketing']}</b></div>` : ''}
-        ${r['Resp_Comercial']  ? `<div class="ck-resp">💼 Comercial: <b>${r['Resp_Comercial']}</b></div>` : ''}
-      </div>
-      <div class="ck-timeline" style="margin-top:14px">
-        ${hitos.map((h, i) => {
+    if (vencidos) card.style.borderColor = 'var(--danger)';
+    else if (activos) card.style.borderColor = 'var(--warning)';
+
+    card.innerHTML =
+      '<div class="ck-header">' +
+        '<div>' +
+          '<div class="ck-name">' + (r['Programa']||'—') +
+            ' <span style="font-size:11px;font-weight:400;color:var(--muted)">' + (r['Edicion']||'') + '</span></div>' +
+          '<div class="ck-sub">' + (r['Nomenclatura']||'') + '</div>' +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">' +
+          (vencidos ? '<span class="pill pill-danger">⚠ ' + vencidos + ' vencido' + (vencidos!==1?'s':'') + '</span>' : '') +
+          (activos  ? '<span class="pill pill-warn">⏰ ' + activos  + ' próximo' + (activos!==1?'s':'')  + '</span>' : '') +
+          (!vencidos && !activos ? '<span class="pill pill-ok">✓ Al día</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="ck-timeline" style="margin-top:14px">' +
+        hitos.map(function(h) {
           const fecha = parseFecha(r[h.key]);
           const estado = hitoEstado(fecha);
           const prevEstado = i > 0 ? hitoEstado(parseFecha(r[hitos[i-1].key])) : 'done';
