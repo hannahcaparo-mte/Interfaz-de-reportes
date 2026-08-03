@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finanzas · CETLOG Intelligence Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cetlog_shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+/* ══ TOKENS ══════════════════════════════════════════════ */
+:root{
+  --navy:#1D245C;--navy-mid:#252D7A;
+  --orange:#F68A0A;--orange-bg:#FEF3DC;--orange-tx:#B45309;
+  --success:#10B981;--success-bg:#D1FAE5;--success-tx:#065F46;
+  --warning:#F59E0B;--warning-bg:#FEF3C7;--warning-tx:#92400E;
+  --danger:#EF4444;--danger-bg:#FEE2E2;--danger-tx:#991B1B;
+  --purple:#7C3AED;--purple-bg:#EDE9FE;--purple-tx:#5B21B6;
+  --teal:#0891B2;--teal-bg:#E0F2FE;--teal-tx:#0C4A6E;
+  --green-dark:#065F46;
+  --bg:#F8FAFC;--card:#FFFFFF;--border:#E5E7EB;
+  --text:#111827;--muted:#64748B;--subtle:#9CA3AF;
+  --radius:10px;--shadow:0 1px 4px rgba(29,36,92,.06);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0F1117;--card:#1A1D27;--border:#2D3148;
+    --text:#F1F1F8;--muted:#8B8FAE;--subtle:#555870;
+    --success-bg:#0A2D1F;--success-tx:#34D399;
+    --warning-bg:#2D1F07;--warning-tx:#FBBF24;
+    --danger-bg:#2D0A0A;--danger-tx:#F87171;
+    --orange-bg:#2D1A00;--orange-tx:#FBA826;
+    --purple-bg:#1E1040;--purple-tx:#A78BFA;
+    --teal-bg:#0C2D3A;--teal-tx:#67E8F9;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ══ LAYOUT ══════════════════════════════════════════════ */
+.layout{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:fixed;left:0;top:0;z-index:100}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid #ffffff14;display:flex;align-items:center;gap:10px}
+.logo-mark{width:34px;height:34px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0}
+.logo-text strong{display:block;color:#fff;font-size:13px;font-weight:700}
+.logo-text span{color:#ffffff60;font-size:10px}
+.sidebar-section{padding:16px 12px 8px}
+.sidebar-section-label{font-size:9px;font-weight:600;color:#ffffff38;text-transform:uppercase;letter-spacing:.1em;padding:0 8px;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;cursor:pointer;color:#ffffffa0;font-size:13px;font-weight:500;transition:all .15s;text-decoration:none;margin-bottom:1px}
+.nav-item:hover{background:#ffffff12;color:#fff}
+.nav-item.active{background:#ffffff1a;color:#fff}
+.nav-item.active .nav-icon{color:var(--orange)}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
+.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid #ffffff14}
+.user-pill{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer}
+.user-pill:hover{background:#ffffff12}
+.avatar{width:28px;height:28px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.user-info strong{display:block;color:#fff;font-size:12px;font-weight:600}
+.user-info span{color:#ffffff50;font-size:10px}
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{height:60px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0}
+.topbar-crumb{flex:1;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.topbar-crumb a{color:var(--muted);text-decoration:none}.topbar-crumb a:hover{color:var(--navy)}
+.topbar-crumb .cur{color:var(--text);font-weight:600}
+.sync-status{font-size:11px;color:var(--subtle)}.sync-status.ok{color:var(--success-tx)}.sync-status.err{color:var(--danger-tx)}
+.btn-refresh{font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s}
+.btn-refresh:hover{border-color:var(--navy);color:var(--navy)}.btn-refresh.spin{opacity:.6;pointer-events:none}
+.content{flex:1;overflow-y:auto;padding:24px 28px}
+.content::-webkit-scrollbar{width:4px}.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ══ TABS ════════════════════════════════════════════════ */
+.report-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.rtab{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.rtab:hover{border-color:var(--navy);color:var(--navy)}
+.rtab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.rtab .tn{font-size:9px;opacity:.6}
+.rtab .tab-dot{width:6px;height:6px;border-radius:50%;display:none;flex-shrink:0}
+.rtab.active .tab-dot{display:inline-block;background:var(--orange)}
+.rpanel{display:none}.rpanel.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ CARDS / KPIs ════════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.kpi{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;flex:1;min-width:140px}
+.kpi .kl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.kpi .kv{font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.kpi .ks{font-size:11px;color:var(--muted);margin-top:3px}
+.kpi.k-success{border-color:var(--success);background:var(--success-bg)}
+.kpi.k-success .kl,.kpi.k-success .kv{color:var(--success-tx)}
+.kpi.k-danger{border-color:var(--danger);background:var(--danger-bg)}
+.kpi.k-danger .kl,.kpi.k-danger .kv{color:var(--danger-tx)}
+.kpi.k-warning{border-color:var(--warning);background:var(--warning-bg)}
+.kpi.k-warning .kl,.kpi.k-warning .kv{color:var(--warning-tx)}
+.kpi.k-navy{border-color:var(--navy);background:#1D245C0a}
+.kpi.k-navy .kl,.kpi.k-navy .kv{color:var(--navy)}
+
+/* ══ TABLA ═══════════════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:hover td{background:var(--bg)}
+.td-bold{font-weight:600}
+.td-muted{color:var(--muted)}
+.td-right{text-align:right;font-variant-numeric:tabular-nums}
+.td-mono{font-family:monospace;font-size:11px}
+
+/* ══ PILLS ═══════════════════════════════════════════════ */
+.pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap;display:inline-block}
+.pill-ok{background:var(--success-bg);color:var(--success-tx)}
+.pill-warn{background:var(--warning-bg);color:var(--warning-tx)}
+.pill-danger{background:var(--danger-bg);color:var(--danger-tx)}
+.pill-navy{background:#1D245C15;color:var(--navy)}
+.pill-purple{background:var(--purple-bg);color:var(--purple-tx)}
+
+/* ══ FILTROS ═════════════════════════════════════════════ */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.filter-bar label{font-size:11px;font-weight:600;color:var(--muted)}
+.filter-bar select,.filter-bar input{font-size:12px;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+
+/* ══ BARRAS ══════════════════════════════════════════════ */
+.bar-track{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border);margin-top:4px}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* ══ RESUMEN HERO ════════════════════════════════════════ */
+.fin-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid,#252D7A) 100%);border-radius:var(--radius);padding:22px 26px;color:#fff;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.fin-hero-left h2{font-size:18px;font-weight:700;margin-bottom:2px}
+.fin-hero-left p{font-size:12px;opacity:.65}
+.fin-hero-kpis{display:flex;gap:24px;flex-wrap:wrap}
+.fhk{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.fhk .fhl{font-size:10px;opacity:.6;text-transform:uppercase;letter-spacing:.06em}
+.fhk .fhv{font-size:22px;font-weight:700;line-height:1}
+.fhk .fhs{font-size:10px;opacity:.6}
+.fhk-divider{width:1px;background:#ffffff20}
+
+/* ══ CAJA CHICA ESPECÍFICO ═══════════════════════════════ */
+.cc-saldo-box{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.cc-saldo{flex:1;min-width:120px;background:var(--navy);color:#fff;border-radius:var(--radius);padding:16px 18px}
+.cc-saldo .csl{font-size:10px;opacity:.65;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.cc-saldo .csv{font-size:24px;font-weight:700;line-height:1}
+.cc-saldo .css{font-size:10px;opacity:.55;margin-top:3px}
+.cc-saldo.ing{background:var(--success-bg);color:var(--success-tx)}
+.cc-saldo.egr{background:var(--danger-bg);color:var(--danger-tx)}
+.cat-bars{display:flex;flex-direction:column;gap:8px}
+.cat-row{display:flex;align-items:center;gap:10px}
+.cat-lbl{font-size:11px;color:var(--text);font-weight:500;min-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-track{flex:1;height:12px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.cat-fill{height:100%;border-radius:6px;background:var(--navy)}
+.cat-val{font-size:11px;font-weight:600;color:var(--text);min-width:70px;text-align:right}
+.sin-comprobante{background:var(--warning-bg);border:1px solid var(--warning);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--warning-tx);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* ══ EMPTY ═══════════════════════════════════════════════ */
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;border:1px dashed var(--border);border-radius:var(--radius)}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ══ SIDEBAR ═══════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">CT</div>
+    <div class="logo-text"><strong>CETLOG</strong><span>Intelligence Hub</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Principal</div>
+    <a class="nav-item" href="index.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+      Inicio
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Bloques</div>
+    <a class="nav-item" href="cetlog_planeamiento.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v2H1V2zm0 4h9v2H1V6zm0 4h11v2H1v-2zm0 4h7v2H1v-2z"/></svg>
+      Planeamiento<span class="nav-badge">4</span>
+    </a>
+    <a class="nav-item" href="cetlog_comercial.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 0 1 1 1v1H1V3a1 1 0 0 1 1-1zm-1 4h14v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6zm4 3v1h6V9H5z"/></svg>
+      Comercial<span class="nav-badge">7</span>
+    </a>
+    <a class="nav-item" href="cetlog_cobranza.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 8 3zm.5 2v1.5H10v1H8.5V9H10v1H8.5V11h-1v-1H6V9h1.5V7.5H6v-1h1.5V5h1z"/></svg>
+      Cobranza<span class="nav-badge">5</span>
+    </a>
+    <a class="nav-item" href="cetlog_academico.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 3.5-7 3.5-7-3.5L8 1zm0 2.24L3.36 5.5 8 7.76 12.64 5.5 8 3.24zM1.5 7l6.5 3 6.5-3V9L8 12 1.5 9V7zm0 3l6.5 3 6.5-3v2L8 15l-6.5-3v-2z"/></svg>
+      Académico<span class="nav-badge">5</span>
+    </a>
+    <a class="nav-item active" href="cetlog_finanzas.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 3h14v2H1V3zm0 4h14v2H1V7zm0 4h14v2H1v-2zM3 1h2v14H3V1zm8 0h2v14h-2V1z"/></svg>
+      Finanzas<span class="nav-badge">5</span>
+    </a>
+    <a class="nav-item" href="cetlog_estrategico.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+      Estratégico<span class="nav-badge">6</span>
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="avatar">GE</div>
+      <div class="user-info"><strong>Gerencia</strong><span>Administrador</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ═══════════════════════════════════════════════ -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-crumb">
+      <a href="index.html">Inicio</a>
+      <span style="opacity:.4">/</span>
+      <span class="cur">Finanzas</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="sync-status" id="syncStatus">Cargando…</span>
+      <button class="btn-refresh" id="btnRefresh" onclick="refreshAll()">↻ Actualizar</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="report-tabs">
+      <div class="rtab active" onclick="showTab('resumen')"><span class="tab-dot"></span><span class="tn">01</span> Resumen financiero</div>
+      <div class="rtab" onclick="showTab('caja')"><span class="tab-dot"></span><span class="tn">02</span> Caja chica</div>
+      <div class="rtab" onclick="showTab('ingresos')"><span class="tab-dot"></span><span class="tn">03</span> Ingresos</div>
+      <div class="rtab" onclick="showTab('cxp')"><span class="tab-dot"></span><span class="tn">04</span> Cuentas por pagar</div>
+      <div class="rtab" onclick="showTab('cxc')"><span class="tab-dot"></span><span class="tn">05</span> Cuentas por cobrar</div>
+    </div>
+
+    <!-- ══ TAB 01: RESUMEN ════════════════════════════════ -->
+    <div class="rpanel active" id="tab-resumen">
+      <div class="fin-hero">
+        <div class="fin-hero-left">
+          <h2>Resumen financiero</h2>
+          <p id="resumenPeriodo">—</p>
+        </div>
+        <div class="fin-hero-kpis">
+          <div class="fhk"><span class="fhl">Ingresos</span><span class="fhv" id="resHeroIng">—</span><span class="fhs">cobrados</span></div>
+          <div class="fhk-divider"></div>
+          <div class="fhk"><span class="fhl">Egresos</span><span class="fhv" id="resHeroEgr">—</span><span class="fhs">caja chica + CXP</span></div>
+          <div class="fhk-divider"></div>
+          <div class="fhk"><span class="fhl">Saldo neto</span><span class="fhv" id="resHeroSaldo">—</span><span class="fhs">ingresos − egresos</span></div>
+          <div class="fhk-divider"></div>
+          <div class="fhk"><span class="fhl">Por cobrar</span><span class="fhv" id="resHeroCxc">—</span><span class="fhs">pendiente alumnos</span></div>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi k-success"><div class="kl">Total ingresos</div><div class="kv" id="resTotIng">—</div><div class="ks">del período</div></div>
+        <div class="kpi k-danger"><div class="kl">Caja chica gastada</div><div class="kv" id="resTotCaja">—</div><div class="ks">egresos acumulados</div></div>
+        <div class="kpi k-warning"><div class="kl">CXP pendiente</div><div class="kv" id="resTotCxp">—</div><div class="ks">por pagar</div></div>
+        <div class="kpi k-navy"><div class="kl">Mora (CXC)</div><div class="kv" id="resTotMora">—</div><div class="ks">deuda alumnos</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex-wrap:wrap">
+        <div class="card">
+          <div class="card-title">Egresos por categoría <span style="font-size:11px;font-weight:400;color:var(--muted)">caja chica</span></div>
+          <div class="cat-bars" id="resCatBars"><div class="empty-state" style="padding:20px">Sin datos</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Estado de CXP</div>
+          <div id="resCxpEstado"><div class="empty-state" style="padding:20px">Sin datos</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Últimos movimientos de caja chica</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Fecha</th><th>Motivo</th><th>Detalle</th><th>Categoría</th><th>Ingreso</th><th>Egreso</th></tr></thead>
+          <tbody id="resUltMovs"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 02: CAJA CHICA ══════════════════════════════ -->
+    <div class="rpanel" id="tab-caja">
+      <div class="cc-saldo-box">
+        <div class="cc-saldo"><div class="csl">Saldo actual</div><div class="csv" id="ccSaldo">—</div><div class="css">ingresos − egresos</div></div>
+        <div class="cc-saldo ing"><div class="csl">Total ingresos</div><div class="csv" id="ccIng">—</div><div class="css">abonos recibidos</div></div>
+        <div class="cc-saldo egr"><div class="csl">Total egresos</div><div class="csv" id="ccEgr">—</div><div class="css">gastos realizados</div></div>
+        <div class="cc-saldo" style="background:var(--warning-bg);color:var(--warning-tx)"><div class="csl">Sin comprobante</div><div class="csv" id="ccSinComp">—</div><div class="css">items sin factura/boleta</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Egresos por categoría</div>
+        <div class="cat-bars" id="ccCatBars"><div class="empty-state" style="padding:16px">Sin datos</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Movimientos
+          <div class="filter-bar" style="margin:0">
+            <label>Motivo:</label>
+            <select id="ccFilMotivo" onchange="renderCaja()"><option value="">Todos</option></select>
+            <label>Tipo:</label>
+            <select id="ccFilTipo" onchange="renderCaja()">
+              <option value="">Todos</option>
+              <option value="ingreso">Ingreso</option>
+              <option value="egreso">Egreso</option>
+            </select>
+          </div>
+        </div>
+        <div id="ccSinCompAlert" style="display:none" class="sin-comprobante">⚠ Hay movimientos sin comprobante — revisar</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Fecha</th><th>Motivo</th><th>Detalle</th><th>Categoría</th><th>Resp.</th><th>TC</th><th>Comprobante</th><th class="td-right">Ingreso</th><th class="td-right">Egreso</th><th class="td-right">Saldo acum.</th></tr></thead>
+          <tbody id="ccTbody"><tr><td colspan="10" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 03: INGRESOS ════════════════════════════════ -->
+    <div class="rpanel" id="tab-ingresos">
+      <div class="kpi-row">
+        <div class="kpi k-success"><div class="kl">Total cobrado</div><div class="kv" id="ingTotal">—</div><div class="ks">suma de ingresos</div></div>
+        <div class="kpi"><div class="kl">Programas</div><div class="kv" id="ingProgs">—</div><div class="ks">con ingresos</div></div>
+        <div class="kpi"><div class="kl">Ticket promedio</div><div class="kv" id="ingTicket">—</div><div class="ks">por registro</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          Ingresos por programa
+          <div class="filter-bar" style="margin:0">
+            <label>Tipo:</label>
+            <select id="ingFilTipo" onchange="renderIngresos()"><option value="">Todos</option></select>
+          </div>
+        </div>
+        <div class="cat-bars" id="ingPorProg"><div class="empty-state" style="padding:16px">Sin datos</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Detalle de ingresos</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Fecha</th><th>Programa</th><th>Concepto</th><th>Tipo</th><th>Responsable</th><th class="td-right">Monto</th></tr></thead>
+          <tbody id="ingTbody"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 04: CUENTAS POR PAGAR ═════════════════════ -->
+    <div class="rpanel" id="tab-cxp">
+      <div class="kpi-row">
+        <div class="kpi k-danger"><div class="kl">Total por pagar</div><div class="kv" id="cxpTotal">—</div><div class="ks">pendiente</div></div>
+        <div class="kpi k-warning"><div class="kl">Vencidas</div><div class="kv" id="cxpVencidas">—</div><div class="ks">fecha pasada</div></div>
+        <div class="kpi k-success"><div class="kl">Pagadas</div><div class="kv" id="cxpPagadas">—</div><div class="ks">del período</div></div>
+        <div class="kpi"><div class="kl">Proveedores</div><div class="kv" id="cxpProvs">—</div><div class="ks">distintos</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          Cuentas por pagar
+          <div class="filter-bar" style="margin:0">
+            <label>Estado:</label>
+            <select id="cxpFilEstado" onchange="renderCxp()">
+              <option value="">Todos</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="vencida">Vencida</option>
+              <option value="pagada">Pagada</option>
+            </select>
+            <label>Categoría:</label>
+            <select id="cxpFilCat" onchange="renderCxp()"><option value="">Todas</option></select>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Fecha</th><th>Proveedor</th><th>Concepto</th><th>Categoría</th><th>Vencimiento</th><th>Estado</th><th class="td-right">Monto</th></tr></thead>
+          <tbody id="cxpTbody"><tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 05: CUENTAS POR COBRAR ════════════════════ -->
+    <div class="rpanel" id="tab-cxc">
+      <div class="kpi-row">
+        <div class="kpi k-navy"><div class="kl">Total por cobrar</div><div class="kv" id="cxcTotal">—</div><div class="ks">saldo pendiente</div></div>
+        <div class="kpi k-danger"><div class="kl">En mora</div><div class="kv" id="cxcMora">—</div><div class="ks">alumnos vencidos</div></div>
+        <div class="kpi k-success"><div class="kl">Cobrado</div><div class="kv" id="cxcCobrado">—</div><div class="ks">del total facturado</div></div>
+        <div class="kpi"><div class="kl">Alumnos con deuda</div><div class="kv" id="cxcAlumnos">—</div><div class="ks">registros</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Deuda por programa
+        </div>
+        <div class="cat-bars" id="cxcPorProg"><div class="empty-state" style="padding:16px">Sin datos</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Detalle de deudores
+          <div class="filter-bar" style="margin:0">
+            <label>Estado:</label>
+            <select id="cxcFilEstado" onchange="renderCxc()">
+              <option value="">Todos</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="mora">En mora</option>
+              <option value="pagado">Pagado</option>
+            </select>
+            <label>Programa:</label>
+            <select id="cxcFilProg" onchange="renderCxc()"><option value="">Todos</option></select>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Alumno</th><th>Programa</th><th>Edición</th><th>Estado</th><th class="td-right">Total</th><th class="td-right">Pagado</th><th class="td-right">Saldo</th></tr></thead>
+          <tbody id="cxcTbody"><tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div style="height:40px"></div>
+  </div>
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════
+const SHEET_ID = '1ERH7jVpNy7mFux_Sltp8ry9y6lSXk708Ulte9c-droI';
+const TABS_DB  = ['caja_chica','ingresos','cxp','cxc','resumen'];
+const AUTO_MS  = 60000;
+let DB = {};
+
+// ── Fetch ──────────────────────────────────────────────────
+function csvUrl(tab){ return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tab); }
+async function fetchTab(tab){
+  try{
+    const res=await fetch(csvUrl(tab)); if(!res.ok)return[];
+    const text=await res.text(); if(!text||text.trim().length<5)return[];
+    const{data}=Papa.parse(text,{header:true,dynamicTyping:false,skipEmptyLines:true});
+    return Array.isArray(data)?data:[];
+  }catch(e){return[];}
+}
+async function refreshAll(){
+  const btn=document.getElementById('btnRefresh');
+  btn.classList.add('spin'); btn.textContent='↻ Actualizando…';
+  setStatus('Actualizando…');
+  const results=await Promise.all(TABS_DB.map(t=>fetchTab(t)));
+  TABS_DB.forEach((t,i)=>{DB[t]=results[i];});
+  renderAll();
+  const total=results.reduce((s,r)=>s+r.length,0);
+  setStatus(total===0?'Conectado — hojas vacías':'Actualizado '+new Date().toLocaleTimeString('es-PE'),'ok');
+  btn.classList.remove('spin'); btn.textContent='↻ Actualizar';
+}
+function setStatus(msg,type){
+  const el=document.getElementById('syncStatus');
+  el.textContent=msg; el.className='sync-status'+(type?' '+type:'');
+}
+
+// ── Tabs ───────────────────────────────────────────────────
+const TAB_IDS=['resumen','caja','ingresos','cxp','cxc'];
+function showTab(id){
+  document.querySelectorAll('.rtab').forEach((t,i)=>t.classList.toggle('active',TAB_IDS[i]===id));
+  document.querySelectorAll('.rpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Helpers ────────────────────────────────────────────────
+function parseFecha(raw){
+  if(!raw)return null;
+  const s=String(raw).trim();
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+  m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if(m){let[,d,mo,y]=m.map(Number);if(y<100)y+=2000;return new Date(y,mo-1,d);}
+  const dt=new Date(s); return isNaN(dt)?null:dt;
+}
+const fmtDate=d=>d?d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'2-digit'}):'—';
+const parseNum=v=>{if(!v&&v!==0)return 0;const n=parseFloat(String(v).replace(/[^0-9.\-]/g,''));return isNaN(n)?0:n;};
+const money=v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const normSt=s=>String(s||'').trim().toLowerCase().replace(/[éê]/g,'e').replace(/[áâ]/g,'a').replace(/[íî]/g,'i').replace(/[óô]/g,'o');
+
+// ── Colores para barras de categoría ──────────────────────
+const COLORS=['#1D245C','#0891B2','#7C3AED','#10B981','#F59E0B','#EF4444','#F68A0A','#06B6D4'];
+
+function catBarsHtml(items){
+  if(!items.length)return'<div class="empty-state" style="padding:16px">Sin datos</div>';
+  const max=Math.max(...items.map(i=>i.v),1);
+  return items.map((it,i)=>`
+    <div class="cat-row">
+      <span class="cat-lbl" title="${it.k}">${it.k}</span>
+      <div class="cat-track"><div class="cat-fill" style="width:${Math.round(it.v/max*100)}%;background:${COLORS[i%COLORS.length]}"></div></div>
+      <span class="cat-val">${money(it.v)}</span>
+    </div>`).join('');
+}
+
+function pillEstado(s){
+  const n=normSt(s);
+  if(n.includes('pagad')||n.includes('ok'))return`<span class="pill pill-ok">${s}</span>`;
+  if(n.includes('mora')||n.includes('vencid'))return`<span class="pill pill-danger">${s}</span>`;
+  if(n.includes('pendiente'))return`<span class="pill pill-warn">${s}</span>`;
+  return`<span class="pill pill-navy">${s}</span>`;
+}
+
+function setTxt(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+function setHtml(id,v){const el=document.getElementById(id);if(el)el.innerHTML=v;}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER ALL
+// ══════════════════════════════════════════════════════════
+function renderAll(){
+  renderCaja();
+  renderIngresos();
+  renderCxp();
+  renderCxc();
+  renderResumen();
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 02 — CAJA CHICA
+// ══════════════════════════════════════════════════════════
+function renderCaja(){
+  const rows=DB['caja_chica']||[];
+  const filMotivo=document.getElementById('ccFilMotivo')?.value||'';
+  const filTipo=document.getElementById('ccFilTipo')?.value||'';
+
+  // Poblar filtro motivo
+  const motivos=[...new Set(rows.map(r=>r['Motivo']).filter(Boolean))];
+  const selM=document.getElementById('ccFilMotivo');
+  if(selM&&selM.options.length<=1){motivos.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;selM.appendChild(o);});}
+
+  // Calcular saldos globales
+  let totIng=0,totEgr=0,sinComp=0;
+  rows.forEach(r=>{totIng+=parseNum(r['Ingreso']);totEgr+=parseNum(r['Egreso']);if(!r['Factura_Boleta']&&parseNum(r['Egreso'])>0)sinComp++;});
+
+  setTxt('ccSaldo',money(totIng-totEgr));
+  setTxt('ccIng',money(totIng));
+  setTxt('ccEgr',money(totEgr));
+  setTxt('ccSinComp',sinComp+' items');
+
+  const alertEl=document.getElementById('ccSinCompAlert');
+  if(alertEl)alertEl.style.display=sinComp>0?'flex':'none';
+
+  // Egresos por categoría
+  const catMap={};
+  rows.forEach(r=>{const cat=r['Categoria']||r['Categoría']||'Sin categoría';const e=parseNum(r['Egreso']);if(e>0){catMap[cat]=(catMap[cat]||0)+e;}});
+  const catItems=Object.entries(catMap).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  setHtml('ccCatBars',catBarsHtml(catItems));
+
+  // Filtrar y ordenar por fecha
+  let filtered=rows.filter(r=>{
+    if(filMotivo&&r['Motivo']!==filMotivo)return false;
+    if(filTipo==='ingreso'&&!parseNum(r['Ingreso']))return false;
+    if(filTipo==='egreso'&&!parseNum(r['Egreso']))return false;
+    return true;
+  });
+
+  // Calcular saldo acumulado (ordenar por fecha)
+  const withDate=filtered.map(r=>({...r,_fecha:parseFecha(r['Fecha'])}))
+    .sort((a,b)=>(a._fecha||0)-(b._fecha||0));
+
+  let saldoAcum=0;
+  const tbody=document.getElementById('ccTbody');
+  if(!tbody)return;
+  if(!withDate.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr>';return;}
+
+  tbody.innerHTML=withDate.map(r=>{
+    const ing=parseNum(r['Ingreso']),egr=parseNum(r['Egreso']);
+    saldoAcum+=ing-egr;
+    const comp=r['Factura_Boleta']||r['Factura/Boleta']||'';
+    const tc=r['TC']||'';
+    const tcLabel={'1':'Factura','2':'RHE','3':'Boleta','4':'Otros','5':'PM'}[tc]||tc;
+    return`<tr>
+      <td class="td-muted">${fmtDate(r._fecha)}</td>
+      <td class="td-bold">${r['Motivo']||'—'}</td>
+      <td style="max-width:220px;white-space:normal">${r['Detalle']||'—'}</td>
+      <td>${r['Categoria']||r['Categoría']||'—'}</td>
+      <td class="td-muted">${r['Responsable']||'—'}</td>
+      <td><span class="pill pill-navy" style="font-size:9px">${tcLabel||'—'}</span></td>
+      <td class="td-mono" style="color:var(--muted)">${comp||'<span style="color:var(--warning-tx)">⚠ pendiente</span>'}</td>
+      <td class="td-right" style="color:var(--success-tx)">${ing>0?money(ing):'—'}</td>
+      <td class="td-right" style="color:var(--danger-tx)">${egr>0?money(egr):'—'}</td>
+      <td class="td-right td-bold">${money(saldoAcum)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 03 — INGRESOS
+// ══════════════════════════════════════════════════════════
+function renderIngresos(){
+  const rows=DB['ingresos']||[];
+  const filTipo=document.getElementById('ingFilTipo')?.value||'';
+
+  // Poblar filtro tipo
+  const tipos=[...new Set(rows.map(r=>r['Tipo']).filter(Boolean))];
+  const selT=document.getElementById('ingFilTipo');
+  if(selT&&selT.options.length<=1){tipos.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;selT.appendChild(o);});}
+
+  const filtered=rows.filter(r=>!filTipo||normSt(r['Tipo'])===normSt(filTipo));
+  const total=filtered.reduce((s,r)=>s+parseNum(r['Monto']),0);
+  const progs=[...new Set(filtered.map(r=>r['Programa']).filter(Boolean))];
+  const ticket=filtered.length?total/filtered.length:0;
+
+  setTxt('ingTotal',money(total));
+  setTxt('ingProgs',progs.length.toString());
+  setTxt('ingTicket',money(ticket));
+
+  // Por programa
+  const progMap={};
+  filtered.forEach(r=>{const p=r['Programa']||'Sin programa';progMap[p]=(progMap[p]||0)+parseNum(r['Monto']);});
+  const progItems=Object.entries(progMap).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  setHtml('ingPorProg',catBarsHtml(progItems));
+
+  // Tabla
+  const tbody=document.getElementById('ingTbody');
+  if(!tbody)return;
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr>';return;}
+  const sorted=[...filtered].sort((a,b)=>(parseFecha(b['Fecha'])||0)-(parseFecha(a['Fecha'])||0));
+  tbody.innerHTML=sorted.map(r=>`<tr>
+    <td class="td-muted">${fmtDate(parseFecha(r['Fecha']))}</td>
+    <td class="td-bold">${r['Programa']||'—'}</td>
+    <td>${r['Concepto']||'—'}</td>
+    <td><span class="pill pill-navy">${r['Tipo']||'—'}</span></td>
+    <td class="td-muted">${r['Responsable']||'—'}</td>
+    <td class="td-right td-bold" style="color:var(--success-tx)">${money(r['Monto'])}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 04 — CUENTAS POR PAGAR
+// ══════════════════════════════════════════════════════════
+function renderCxp(){
+  const rows=DB['cxp']||[];
+  const filEstado=document.getElementById('cxpFilEstado')?.value||'';
+  const filCat=document.getElementById('cxpFilCat')?.value||'';
+  const HOY=new Date(); HOY.setHours(0,0,0,0);
+
+  // Poblar categorías
+  const cats=[...new Set(rows.map(r=>r['Categoria']||r['Categoría']).filter(Boolean))];
+  const selC=document.getElementById('cxpFilCat');
+  if(selC&&selC.options.length<=1){cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;selC.appendChild(o);});}
+
+  const filtered=rows.filter(r=>{
+    if(filEstado&&!normSt(r['Estado']).includes(normSt(filEstado)))return false;
+    if(filCat&&(r['Categoria']||r['Categoría'])!==filCat)return false;
+    return true;
+  });
+
+  const pendiente=rows.filter(r=>normSt(r['Estado']).includes('pendiente'));
+  const vencidas=rows.filter(r=>{
+    const fv=parseFecha(r['Fecha_Vencimiento']);
+    return fv&&fv<HOY&&!normSt(r['Estado']).includes('pagad');
+  });
+  const pagadas=rows.filter(r=>normSt(r['Estado']).includes('pagad'));
+  const provs=[...new Set(rows.map(r=>r['Proveedor']).filter(Boolean))];
+
+  setTxt('cxpTotal',money(pendiente.reduce((s,r)=>s+parseNum(r['Monto']),0)));
+  setTxt('cxpVencidas',vencidas.length.toString());
+  setTxt('cxpPagadas',money(pagadas.reduce((s,r)=>s+parseNum(r['Monto']),0)));
+  setTxt('cxpProvs',provs.length.toString());
+
+  const tbody=document.getElementById('cxpTbody');
+  if(!tbody)return;
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr>';return;}
+
+  const sorted=[...filtered].sort((a,b)=>{
+    const fvA=parseFecha(a['Fecha_Vencimiento']),fvB=parseFecha(b['Fecha_Vencimiento']);
+    const stA=normSt(a['Estado']),stB=normSt(b['Estado']);
+    const urgA=stA.includes('pagad')?2:fvA&&fvA<HOY?0:1;
+    const urgB=stB.includes('pagad')?2:fvB&&fvB<HOY?0:1;
+    if(urgA!==urgB)return urgA-urgB;
+    return(fvA||0)-(fvB||0);
+  });
+
+  tbody.innerHTML=sorted.map(r=>{
+    const fv=parseFecha(r['Fecha_Vencimiento']);
+    const vencida=fv&&fv<HOY&&!normSt(r['Estado']).includes('pagad');
+    return`<tr${vencida?' style="background:var(--danger-bg)"':''}>
+      <td class="td-muted">${fmtDate(parseFecha(r['Fecha']))}</td>
+      <td class="td-bold">${r['Proveedor']||'—'}</td>
+      <td>${r['Concepto']||'—'}</td>
+      <td>${r['Categoria']||r['Categoría']||'—'}</td>
+      <td class="${vencida?'td-bold':'td-muted'}" style="${vencida?'color:var(--danger-tx)':''}">${fmtDate(fv)}</td>
+      <td>${pillEstado(r['Estado']||'—')}</td>
+      <td class="td-right td-bold">${money(r['Monto'])}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 05 — CUENTAS POR COBRAR
+// ══════════════════════════════════════════════════════════
+function renderCxc(){
+  const rows=DB['cxc']||[];
+  const filEstado=document.getElementById('cxcFilEstado')?.value||'';
+  const filProg=document.getElementById('cxcFilProg')?.value||'';
+
+  // Poblar programas
+  const progs=[...new Set(rows.map(r=>r['Programa']).filter(Boolean))];
+  const selP=document.getElementById('cxcFilProg');
+  if(selP&&selP.options.length<=1){progs.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selP.appendChild(o);});}
+
+  const filtered=rows.filter(r=>{
+    if(filEstado&&!normSt(r['Estado']).includes(normSt(filEstado)))return false;
+    if(filProg&&r['Programa']!==filProg)return false;
+    return true;
+  });
+
+  const totalSaldo=rows.reduce((s,r)=>s+parseNum(r['Saldo']),0);
+  const mora=rows.filter(r=>normSt(r['Estado']).includes('mora'));
+  const cobrado=rows.reduce((s,r)=>s+parseNum(r['Monto_Pagado']),0);
+  const conDeuda=rows.filter(r=>parseNum(r['Saldo'])>0);
+
+  setTxt('cxcTotal',money(totalSaldo));
+  setTxt('cxcMora',mora.length+' alumnos');
+  setTxt('cxcCobrado',money(cobrado));
+  setTxt('cxcAlumnos',conDeuda.length.toString());
+
+  // Por programa
+  const progMap={};
+  rows.forEach(r=>{const p=r['Programa']||'Sin programa';progMap[p]=(progMap[p]||0)+parseNum(r['Saldo']);});
+  const progItems=Object.entries(progMap).filter(([,v])=>v>0).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  setHtml('cxcPorProg',catBarsHtml(progItems));
+
+  const tbody=document.getElementById('cxcTbody');
+  if(!tbody)return;
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr>';return;}
+
+  const sorted=[...filtered].sort((a,b)=>parseNum(b['Saldo'])-parseNum(a['Saldo']));
+  tbody.innerHTML=sorted.map(r=>{
+    const saldo=parseNum(r['Saldo']);
+    const enMora=normSt(r['Estado']).includes('mora');
+    return`<tr>
+      <td class="td-bold">${r['Alumno']||'—'}</td>
+      <td>${r['Programa']||'—'}</td>
+      <td class="td-muted">${r['Edicion']||'—'}</td>
+      <td>${pillEstado(r['Estado']||'—')}</td>
+      <td class="td-right">${money(r['Monto_Total'])}</td>
+      <td class="td-right" style="color:var(--success-tx)">${money(r['Monto_Pagado'])}</td>
+      <td class="td-right td-bold" style="color:${enMora?'var(--danger-tx)':saldo>0?'var(--warning-tx)':'var(--success-tx)'}">${money(saldo)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 01 — RESUMEN (necesita los demás ya calculados)
+// ══════════════════════════════════════════════════════════
+function renderResumen(){
+  const caja=DB['caja_chica']||[];
+  const ing=DB['ingresos']||[];
+  const cxp=DB['cxp']||[];
+  const cxc=DB['cxc']||[];
+
+  const totIng=ing.reduce((s,r)=>s+parseNum(r['Monto']),0);
+  const totEgrCaja=caja.reduce((s,r)=>s+parseNum(r['Egreso']),0);
+  const totCxpPend=cxp.filter(r=>!normSt(r['Estado']).includes('pagad')).reduce((s,r)=>s+parseNum(r['Monto']),0);
+  const totCxc=cxc.reduce((s,r)=>s+parseNum(r['Saldo']),0);
+  const saldoNeto=totIng-(totEgrCaja+totCxpPend);
+
+  setTxt('resHeroIng',money(totIng));
+  setTxt('resHeroEgr',money(totEgrCaja+totCxpPend));
+  setTxt('resHeroSaldo',money(saldoNeto));
+  setTxt('resHeroCxc',money(totCxc));
+  setTxt('resTotIng',money(totIng));
+  setTxt('resTotCaja',money(totEgrCaja));
+  setTxt('resTotCxp',money(totCxpPend));
+  setTxt('resTotMora',money(totCxc));
+
+  // Fecha del período
+  const allDates=[...caja.map(r=>parseFecha(r['Fecha'])),...ing.map(r=>parseFecha(r['Fecha']))].filter(Boolean);
+  if(allDates.length){
+    const minD=new Date(Math.min(...allDates)),maxD=new Date(Math.max(...allDates));
+    setTxt('resumenPeriodo',fmtDate(minD)+' — '+fmtDate(maxD));
+  }
+
+  // Categorías de caja chica
+  const catMap={};
+  caja.forEach(r=>{const c=r['Categoria']||r['Categoría']||'Sin categoría';const e=parseNum(r['Egreso']);if(e>0)catMap[c]=(catMap[c]||0)+e;});
+  const catItems=Object.entries(catMap).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  setHtml('resCatBars',catBarsHtml(catItems));
+
+  // Estado CXP
+  const cxpMap={};
+  cxp.forEach(r=>{const e=r['Estado']||'Sin estado';cxpMap[e]=(cxpMap[e]||0)+1;});
+  const HOY=new Date();HOY.setHours(0,0,0,0);
+  const venc=cxp.filter(r=>{const fv=parseFecha(r['Fecha_Vencimiento']);return fv&&fv<HOY&&!normSt(r['Estado']).includes('pagad');}).length;
+  setHtml('resCxpEstado',`
+    <div class="kpi-row" style="margin:0">
+      <div class="kpi k-warning" style="min-width:0"><div class="kl">Pendientes</div><div class="kv">${cxp.filter(r=>normSt(r['Estado']).includes('pendiente')).length}</div></div>
+      <div class="kpi k-danger" style="min-width:0"><div class="kl">Vencidas</div><div class="kv">${venc}</div></div>
+      <div class="kpi k-success" style="min-width:0"><div class="kl">Pagadas</div><div class="kv">${cxp.filter(r=>normSt(r['Estado']).includes('pagad')).length}</div></div>
+    </div>`);
+
+  // Últimos movimientos
+  const ultimos=[...caja].sort((a,b)=>(parseFecha(b['Fecha'])||0)-(parseFecha(a['Fecha'])||0)).slice(0,8);
+  const tbody=document.getElementById('resUltMovs');
+  if(tbody){
+    if(!ultimos.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr>';return;}
+    tbody.innerHTML=ultimos.map(r=>`<tr>
+      <td class="td-muted">${fmtDate(parseFecha(r['Fecha']))}</td>
+      <td class="td-bold">${r['Motivo']||'—'}</td>
+      <td style="max-width:200px;white-space:normal">${r['Detalle']||'—'}</td>
+      <td>${r['Categoria']||r['Categoría']||'—'}</td>
+      <td class="td-right" style="color:var(--success-tx)">${parseNum(r['Ingreso'])>0?money(r['Ingreso']):'—'}</td>
+      <td class="td-right" style="color:var(--danger-tx)">${parseNum(r['Egreso'])>0?money(r['Egreso']):'—'}</td>
+    </tr>`).join('');
+  }
+}
+
+// ── Init ───────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  refreshAll();
+  setInterval(refreshAll,AUTO_MS);
+});
+</script>
+</body>
+</html>
