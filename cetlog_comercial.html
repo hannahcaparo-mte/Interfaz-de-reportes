@@ -376,7 +376,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
             </div>
             <div style="width:1px;background:#ffffff20;flex-shrink:0"></div>
             <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6">Tiempo restante</div>
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6" id="cDiasRestTitulo">Tiempo restante</div>
               <div style="font-size:22px;font-weight:700;line-height:1" id="cDiasRestNum">—</div>
               <div style="font-size:10px;opacity:.6" id="cDiasRestLbl">días restantes</div>
             </div>
@@ -800,17 +800,24 @@ function renderCampanaDetalle(nombre, rows) {
   setText('cFechas', fmtDate(fi) + ' → ' + fmtDate(ff));
   setText('cDuracionNum', durDias != null ? durDias : '—');
 
-  const drNumEl = document.getElementById('cDiasRestNum');
-  const drLblEl = document.getElementById('cDiasRestLbl');
+  const drNumEl    = document.getElementById('cDiasRestNum');
+  const drLblEl    = document.getElementById('cDiasRestLbl');
+  const drTituloEl = document.getElementById('cDiasRestTitulo');
   if (diasRest != null && drNumEl && drLblEl) {
-    if (diasRest >= 0) {
-      drNumEl.textContent = diasRest;
-      drNumEl.style.color = diasRest < 7 ? '#FCD34D' : '#6EE7B7';
-      drLblEl.textContent = 'días restantes';
+    const yaInicio = diasRest < 0; // diasRest negativo = campaña ya inició
+    if (yaInicio) {
+      // Campaña en curso: mostrar días transcurridos
+      const transcurridos = Math.abs(diasRest);
+      drNumEl.textContent  = transcurridos;
+      drNumEl.style.color  = '#6EE7B7';
+      drLblEl.textContent  = 'días de campaña';
+      if (drTituloEl) drTituloEl.textContent = 'Tiempo transcurrido';
     } else {
-      drNumEl.textContent = Math.abs(diasRest);
-      drNumEl.style.color = '#FCA5A5';
-      drLblEl.textContent = 'días transcurridos';
+      // Campaña aún no inicia: mostrar días para inicio
+      drNumEl.textContent  = diasRest;
+      drNumEl.style.color  = diasRest < 7 ? '#FCD34D' : '#6EE7B7';
+      drLblEl.textContent  = 'días para inicio';
+      if (drTituloEl) drTituloEl.textContent = 'Tiempo restante';
     }
   }
 
