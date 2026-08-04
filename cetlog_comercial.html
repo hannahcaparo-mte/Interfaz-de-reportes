@@ -853,29 +853,39 @@ function renderCampanaDetalle(nombre, rows) {
     const yaInicio  = hoyMs >= fiMs;
     const yaTermino = hoyMs > ffMs;
 
-    // Rango total de la barra: 1 mes antes del inicio hasta 1 mes después del fin
-    const margen   = 30 * 864e5;
-    const rangeIni = fiMs - margen;
-    const rangeFin = ffMs + margen;
-    const total    = rangeFin - rangeIni;
+    // La barra tiene 3 segmentos fijos visuales:
+    // Verde (20%) | Naranja (60%) | Rojo (20%)
+    // Los puntos van exactamente en los bordes: iniPct=20%, finPct=80%
+    const iniPct = 20;
+    const finPct = 80;
 
-    // Función para convertir fecha a % dentro del rango
-    const toPct = ms => Math.max(0, Math.min(100, ((ms - rangeIni) / total) * 100));
+    // HOY se posiciona proporcionalmente DENTRO del segmento correspondiente
+    let hoyPct;
+    if (hoyMs <= fiMs) {
+      // Antes del inicio: dentro del verde (0–20%)
+      // Usamos rango: 1 mes antes del inicio → inicio
+      const margenIni = 30 * 864e5;
+      const rangeStart = fiMs - margenIni;
+      hoyPct = Math.max(0, Math.min(iniPct, ((hoyMs - rangeStart) / (fiMs - rangeStart)) * iniPct));
+    } else if (hoyMs >= ffMs) {
+      // Después del fin: dentro del rojo (80–100%)
+      const margenFin = 30 * 864e5;
+      const rangeEnd = ffMs + margenFin;
+      hoyPct = finPct + Math.max(0, Math.min(100 - finPct, ((hoyMs - ffMs) / (rangeEnd - ffMs)) * (100 - finPct)));
+    } else {
+      // Dentro de campaña: proporción dentro del naranja (20–80%)
+      const progreso = (hoyMs - fiMs) / (ffMs - fiMs);
+      hoyPct = iniPct + progreso * (finPct - iniPct);
+    }
 
-    const iniPct  = toPct(fiMs);   // % donde inicia la campaña
-    const finPct  = toPct(ffMs);   // % donde termina la campaña
-    const hoyPct  = toPct(hoyMs);  // % donde está hoy
-
-    // Segmento verde: 0% → iniPct
+    // Segmentos de color — tamaños fijos
     if (segVerde)   { segVerde.style.width = iniPct + '%'; }
-    // Segmento naranja: iniPct → finPct
     if (segNaranja) { segNaranja.style.left = iniPct + '%'; segNaranja.style.width = (finPct - iniPct) + '%'; }
-    // Segmento rojo: finPct → 100%
     if (segRojo)    { segRojo.style.left = finPct + '%'; segRojo.style.width = (100 - finPct) + '%'; }
-    // Puntos de hito
+    // Puntos exactamente en los bordes del naranja
     if (puntoIni)   puntoIni.style.left = iniPct + '%';
     if (puntoFin)   puntoFin.style.left = finPct + '%';
-    // Línea HOY
+    // Línea HOY en su posición real
     if (barraHoy)   barraHoy.style.left = hoyPct + '%';
 
     // Texto lateral según estado
