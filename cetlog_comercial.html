@@ -352,63 +352,61 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <div id="campanas-content" style="display:none">
 
         <!-- Selector de campaña -->
-        <!-- Título y leyenda -->
-        <div style="margin-bottom:18px">
-          <div style="text-align:center;font-size:18px;font-weight:700;color:var(--navy);letter-spacing:-.3px;margin-bottom:14px">Campañas activas</div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:16px">
-            <div style="display:flex;align-items:center;width:min(480px,100%);gap:0">
-              <div style="flex:2;height:10px;background:#10B981;border-radius:5px 0 0 5px"></div>
-              <div style="width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #F68A0A;flex-shrink:0;z-index:2;box-shadow:0 0 0 2px #F68A0A40;margin:0 -2px"></div>
-              <div style="flex:3;height:10px;background:#F68A0A"></div>
-              <div style="width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #EF4444;flex-shrink:0;z-index:2;box-shadow:0 0 0 2px #EF444440;margin:0 -2px"></div>
-              <div style="flex:2;height:10px;background:#EF4444;border-radius:0 5px 5px 0"></div>
-            </div>
-            <div style="display:flex;width:min(480px,100%);justify-content:space-between;font-size:10px;font-weight:600">
-              <span style="color:#10B981">Sin iniciar</span>
-              <span style="color:#F68A0A">En campaña</span>
-              <span style="color:#EF4444">Finalizada</span>
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap">
-            <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
-            <select id="campSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px"></select>
-          </div>
+        <!-- Selector campaña -->
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+          <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
+          <select id="campSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px"></select>
         </div>
 
         <!-- Header campaña -->
-        <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none;padding:18px 22px">
+        <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none;padding:20px 24px">
 
-          <!-- Fila superior: título + nombre + tiempo transcurrido/restante -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <!-- Fila superior: título + nombre a la izquierda | tiempo a la derecha -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
             <div>
-              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.6;margin-bottom:6px">Campaña activa</div>
-              <div style="font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1" id="cNombre">—</div>
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.55;margin-bottom:6px">Campaña activa</div>
+              <div style="font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1" id="cNombre">—</div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0">
-              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6" id="cDiasRestTitulo">Tiempo restante</div>
-              <div style="font-size:32px;font-weight:700;line-height:1" id="cDiasRestNum">—</div>
-              <div style="font-size:11px;opacity:.65" id="cDiasRestLbl">días</div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0">
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.55" id="cDiasRestTitulo">Tiempo restante</div>
+              <div style="font-size:36px;font-weight:700;line-height:1" id="cDiasRestNum">—</div>
+              <div style="font-size:11px;opacity:.6" id="cDiasRestLbl">días</div>
             </div>
           </div>
 
-          <!-- Barra de tiempo -->
-          <div style="position:relative;margin-bottom:8px">
-            <!-- Fechas extremos -->
-            <div style="display:flex;justify-content:space-between;font-size:10px;opacity:.7;margin-bottom:6px;font-weight:500">
+          <!-- Barra de tiempo integrada -->
+          <div>
+            <!-- Fechas en los extremos -->
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:500;opacity:.75;margin-bottom:8px">
               <span id="cFechaIni">—</span>
+              <span style="font-size:11px;font-weight:600;opacity:.9" id="cDurLbl">—</span>
               <span id="cFechaFin">—</span>
             </div>
-            <!-- Track de la barra -->
-            <div style="position:relative;height:14px;border-radius:7px;overflow:hidden;background:#ffffff18" id="cBarraTrack">
-              <!-- Relleno de progreso -->
-              <div id="cBarraFill" style="position:absolute;left:0;top:0;height:100%;border-radius:7px;background:#ffffff40;transition:width .5s ease"></div>
-              <!-- Línea "Hoy" -->
-              <div id="cBarraHoy" style="position:absolute;top:-3px;bottom:-3px;width:3px;background:#fff;border-radius:2px;box-shadow:0 0 6px rgba(255,255,255,.8);transition:left .5s ease">
-                <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:.04em;opacity:.9">HOY</div>
+
+            <!-- Track con colores verde→naranja→rojo según posición real -->
+            <div style="position:relative;height:16px;border-radius:8px;overflow:visible;background:#ffffff15">
+              <!-- Segmento verde (antes de campaña): desde 0 hasta inicio -->
+              <div id="cSegVerde" style="position:absolute;left:0;top:0;height:100%;background:#10B981;border-radius:8px 0 0 8px;transition:width .5s ease"></div>
+              <!-- Segmento naranja (en campaña): desde inicio hasta fin -->
+              <div id="cSegNaranja" style="position:absolute;top:0;height:100%;background:#F68A0A;transition:left .5s ease,width .5s ease"></div>
+              <!-- Segmento rojo (finalizada): desde fin hasta el final) -->
+              <div id="cSegRojo" style="position:absolute;top:0;height:100%;background:#EF4444;border-radius:0 8px 8px 0;transition:left .5s ease,width .5s ease"></div>
+              <!-- Punto inicio campaña -->
+              <div id="cPuntoIni" style="position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid #F68A0A;box-shadow:0 0 0 3px #F68A0A50;z-index:3;transition:left .5s ease"></div>
+              <!-- Punto fin campaña -->
+              <div id="cPuntoFin" style="position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid #EF4444;box-shadow:0 0 0 3px #EF444450;z-index:3;transition:left .5s ease"></div>
+              <!-- Línea HOY -->
+              <div id="cBarraHoy" style="position:absolute;top:-6px;bottom:-6px;width:3px;background:#fff;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,.9);z-index:4;transition:left .5s ease">
+                <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;color:#fff;white-space:nowrap;letter-spacing:.06em;background:rgba(255,255,255,.2);padding:1px 6px;border-radius:4px">HOY</div>
               </div>
             </div>
-            <!-- Duración debajo -->
-            <div style="text-align:center;margin-top:8px;font-size:11px;opacity:.7" id="cDurLbl">—</div>
+
+            <!-- Labels bajo la barra -->
+            <div style="display:flex;justify-content:space-between;font-size:10px;margin-top:10px;font-weight:600">
+              <span style="color:#10B981;opacity:.9">Sin iniciar</span>
+              <span style="color:#F68A0A;opacity:.9">En campaña</span>
+              <span style="color:#EF4444;opacity:.9">Finalizada</span>
+            </div>
           </div>
 
         </div>
@@ -829,45 +827,62 @@ function renderCampanaDetalle(nombre, rows) {
 
   setText('cNombre', nombre);
 
-  // Fechas extremos
-  const elFIni = document.getElementById('cFechaIni');
-  const elFFin = document.getElementById('cFechaFin');
+  // Fechas extremos y duración
+  const elFIni   = document.getElementById('cFechaIni');
+  const elFFin   = document.getElementById('cFechaFin');
   const elDurLbl = document.getElementById('cDurLbl');
-  if (elFIni) elFIni.textContent = fi ? fmtDate(fi) : '—';
-  if (elFFin) elFFin.textContent = ff ? fmtDate(ff) : '—';
-  if (elDurLbl && durDias != null) elDurLbl.textContent = 'En campaña · ' + durDias + ' días';
+  if (elFIni)   elFIni.textContent  = fi ? fmtDate(fi) : '—';
+  if (elFFin)   elFFin.textContent  = ff ? fmtDate(ff) : '—';
+  if (elDurLbl && durDias != null) elDurLbl.textContent = durDias + ' días de campaña';
 
-  // Barra de tiempo y línea HOY
+  // Elementos de la barra
   const drNumEl    = document.getElementById('cDiasRestNum');
   const drLblEl    = document.getElementById('cDiasRestLbl');
   const drTituloEl = document.getElementById('cDiasRestTitulo');
-  const barraFill  = document.getElementById('cBarraFill');
   const barraHoy   = document.getElementById('cBarraHoy');
+  const segVerde   = document.getElementById('cSegVerde');
+  const segNaranja = document.getElementById('cSegNaranja');
+  const segRojo    = document.getElementById('cSegRojo');
+  const puntoIni   = document.getElementById('cPuntoIni');
+  const puntoFin   = document.getElementById('cPuntoFin');
 
   if (fi && ff && drNumEl) {
-    const hoyMs    = new Date().setHours(0,0,0,0);
-    const fiMs     = new Date(fi).setHours(0,0,0,0);
-    const ffMs     = new Date(ff).setHours(0,0,0,0);
-    const total    = ffMs - fiMs;
-    const yaInicio = hoyMs >= fiMs;
+    const hoyMs     = new Date().setHours(0,0,0,0);
+    const fiMs      = new Date(fi).setHours(0,0,0,0);
+    const ffMs      = new Date(ff).setHours(0,0,0,0);
+    const yaInicio  = hoyMs >= fiMs;
     const yaTermino = hoyMs > ffMs;
 
-    // Posición HOY en la barra
-    const hoyPct = Math.max(0, Math.min(100, ((hoyMs - fiMs) / total) * 100));
-    if (barraHoy) barraHoy.style.left = hoyPct + '%';
+    // Rango total de la barra: 1 mes antes del inicio hasta 1 mes después del fin
+    const margen   = 30 * 864e5;
+    const rangeIni = fiMs - margen;
+    const rangeFin = ffMs + margen;
+    const total    = rangeFin - rangeIni;
 
-    // Color y relleno
-    let fillColor, fillPct;
-    if (yaTermino)      { fillColor = '#FCA5A5'; fillPct = 100; }
-    else if (yaInicio)  { fillColor = '#FBA826'; fillPct = hoyPct; }
-    else                { fillColor = '#6EE7B7'; fillPct = 0; }
-    if (barraFill) { barraFill.style.width = fillPct + '%'; barraFill.style.background = fillColor + '60'; }
+    // Función para convertir fecha a % dentro del rango
+    const toPct = ms => Math.max(0, Math.min(100, ((ms - rangeIni) / total) * 100));
 
-    // Texto lateral
+    const iniPct  = toPct(fiMs);   // % donde inicia la campaña
+    const finPct  = toPct(ffMs);   // % donde termina la campaña
+    const hoyPct  = toPct(hoyMs);  // % donde está hoy
+
+    // Segmento verde: 0% → iniPct
+    if (segVerde)   { segVerde.style.width = iniPct + '%'; }
+    // Segmento naranja: iniPct → finPct
+    if (segNaranja) { segNaranja.style.left = iniPct + '%'; segNaranja.style.width = (finPct - iniPct) + '%'; }
+    // Segmento rojo: finPct → 100%
+    if (segRojo)    { segRojo.style.left = finPct + '%'; segRojo.style.width = (100 - finPct) + '%'; }
+    // Puntos de hito
+    if (puntoIni)   puntoIni.style.left = iniPct + '%';
+    if (puntoFin)   puntoFin.style.left = finPct + '%';
+    // Línea HOY
+    if (barraHoy)   barraHoy.style.left = hoyPct + '%';
+
+    // Texto lateral según estado
     if (yaTermino) {
       const dias = Math.round((hoyMs - ffMs) / 864e5);
       drNumEl.textContent = dias; drNumEl.style.color = '#FCA5A5';
-      drLblEl.textContent = 'días después de campaña';
+      drLblEl.textContent = 'días desde el fin';
       if (drTituloEl) drTituloEl.textContent = 'Tiempo transcurrido';
     } else if (yaInicio) {
       const dias = Math.round((hoyMs - fiMs) / 864e5);
