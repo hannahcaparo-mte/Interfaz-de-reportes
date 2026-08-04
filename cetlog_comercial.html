@@ -538,6 +538,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
         <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
         <select id="perfCampSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px" onchange="renderPerformance()"></select>
+        <!-- Leyenda visual de estados -->
+        <div style="display:flex;align-items:center;gap:6px;margin-left:8px;flex-wrap:wrap">
+          <div style="position:relative;height:10px;width:220px;border-radius:5px;overflow:visible;display:flex;align-items:center">
+            <!-- Segmento verde: antes de campaña -->
+            <div style="flex:2;height:8px;background:#10B981;border-radius:4px 0 0 4px"></div>
+            <!-- Punto inicio campaña -->
+            <div style="width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid #F68A0A;flex-shrink:0;z-index:2;margin:0 -1px"></div>
+            <!-- Segmento naranja: en campaña -->
+            <div style="flex:3;height:8px;background:#F68A0A"></div>
+            <!-- Punto fin campaña -->
+            <div style="width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid #EF4444;flex-shrink:0;z-index:2;margin:0 -1px"></div>
+            <!-- Segmento rojo: después de campaña -->
+            <div style="flex:2;height:8px;background:#EF4444;border-radius:0 4px 4px 0"></div>
+          </div>
+          <div style="display:flex;gap:10px;font-size:10px;color:var(--muted);flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block"></span>Sin iniciar</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#F68A0A;display:inline-block"></span>En campaña</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block"></span>Finalizada</span>
+          </div>
+        </div>
 
       </div>
 
@@ -804,18 +824,28 @@ function renderCampanaDetalle(nombre, rows) {
   const drLblEl    = document.getElementById('cDiasRestLbl');
   const drTituloEl = document.getElementById('cDiasRestTitulo');
   if (diasRest != null && drNumEl && drLblEl) {
-    const yaInicio = diasRest < 0; // diasRest negativo = campaña ya inició
-    if (yaInicio) {
-      // Campaña en curso: mostrar días transcurridos
-      const transcurridos = Math.abs(diasRest);
-      drNumEl.textContent  = transcurridos;
-      drNumEl.style.color  = '#6EE7B7';
+    const hoyMs   = new Date().setHours(0,0,0,0);
+    const yaInicio = fi && new Date(fi).setHours(0,0,0,0) <= hoyMs;
+    const yaTermino = diasRest < 0; // ff ya pasó
+
+    if (yaTermino) {
+      // Campaña terminada: días después del fin
+      drNumEl.textContent  = Math.abs(diasRest);
+      drNumEl.style.color  = '#FCA5A5';
+      drLblEl.textContent  = 'días después de campaña';
+      if (drTituloEl) drTituloEl.textContent = 'Tiempo transcurrido';
+    } else if (yaInicio) {
+      // Campaña en curso (naranja)
+      const diasDesdeInicio = fi ? Math.round((hoyMs - new Date(fi).setHours(0,0,0,0)) / 864e5) : diasRest;
+      drNumEl.textContent  = diasDesdeInicio;
+      drNumEl.style.color  = '#FBA826'; // naranja
       drLblEl.textContent  = 'días de campaña';
       if (drTituloEl) drTituloEl.textContent = 'Tiempo transcurrido';
     } else {
-      // Campaña aún no inicia: mostrar días para inicio
-      drNumEl.textContent  = diasRest;
-      drNumEl.style.color  = diasRest < 7 ? '#FCD34D' : '#6EE7B7';
+      // Aún no inicia (verde)
+      const diasParaInicio = fi ? Math.round((new Date(fi).setHours(0,0,0,0) - hoyMs) / 864e5) : diasRest;
+      drNumEl.textContent  = diasParaInicio;
+      drNumEl.style.color  = '#6EE7B7'; // verde
       drLblEl.textContent  = 'días para inicio';
       if (drTituloEl) drTituloEl.textContent = 'Tiempo restante';
     }
