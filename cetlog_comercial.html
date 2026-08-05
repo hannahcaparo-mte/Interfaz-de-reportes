@@ -924,6 +924,46 @@ function renderCampanaDetalle(nombre, rows) {
       if (drTituloEl) drTituloEl.textContent = 'Tiempo restante';
     }
   }
+
+  // Inscritos por programa (barra dual)
+  const metaTot = campRows.reduce((s,r) => s + (Number(r['Meta inscritos']) || 0), 0);
+  setText('metaTot', numF(metaTot) + ' inscritos');
+  const cont = document.getElementById('progBars');
+  cont.innerHTML = '';
+  campRows.forEach(r => {
+    const prog = r['Programa'] || 'General';
+    const ins  = Number(r['Inscritos']) || 0;
+    const meta = Number(r['Meta inscritos']) || ins;
+    const av   = meta > 0 ? Math.min(1, ins / meta) : 0;
+    const avP  = Math.round(av * 100);
+    const col  = barColor(av);
+    const div = document.createElement('div'); div.className = 'prog-row';
+    div.innerHTML = `
+      <div class="prog-row-hdr">
+        <span class="prog-name">${prog}</span>
+        <span class="prog-nums"><b>${numF(ins)}</b> de ${numF(meta)} <span style="color:${col};font-weight:600">(${avP}%)</span></span>
+      </div>
+      <div class="dual-track">
+        <div class="dual-in" style="width:${avP}%;background:${col}"><span>${ins > 0 && avP > 12 ? ins : ''}</span></div>
+        <div class="dual-pend"><span>${(100-avP) > 15 ? (meta-ins) + ' pendientes' : ''}</span></div>
+      </div>`;
+    cont.appendChild(div);
+  });
+
+  // Tasa de cierre (meta = 3%)
+  const META_CIERRE = 0.03;
+  const cierrePct    = cierre != null ? cierre * 100 : 0;
+  const cierreVsMeta = META_CIERRE > 0 ? Math.min(100, Math.round(cierrePct / (META_CIERRE * 100) * 100)) : 0;
+  const faltaPct     = Math.max(0, META_CIERRE * 100 - cierrePct);
+  const cc = cierrePct >= META_CIERRE * 100 ? 'var(--success)' : cierrePct >= META_CIERRE * 100 * 0.6 ? 'var(--warning)' : 'var(--danger)';
+  setText('tcVal', pctF(cierre));
+  setStyle('tcVal', 'color', cc);
+  setText('tcSub', numF(inscritos) + ' inscritos de ' + numF(leadsMeta) + ' leads · Meta: 3%');
+  setStyle('tcFill', 'width', cierreVsMeta + '%');
+  setStyle('tcFill', 'background', cc);
+  setText('tcFillLbl', cierrePct.toFixed(1) + '%');
+  setText('tcDetail', 'Faltan ' + faltaPct.toFixed(1) + 'pp para la meta del 3%');
+  setText('tcMeta', '3%');
 }
 
 // ── TAB 02: CONTENIDO ─────────────────────────────────────

@@ -160,6 +160,7 @@ tr:hover td{background:var(--bg)}.td-bold{font-weight:600}.td-muted{color:var(--
 .sent-neu{background:var(--warning);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
 .sent-neg{background:var(--danger);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="layout">
@@ -296,50 +297,95 @@ tr:hover td{background:var(--bg)}.td-bold{font-weight:600}.td-muted{color:var(--
 
     <!-- ══ TAB 03: NPS ═══════════════════════════════════════ -->
     <div class="rpanel" id="tab-nps">
-      <div class="kpi-row">
-        <div class="kpi k-success"><div class="kl">NPS promedio</div><div class="kv" id="nNpsProm">—</div><div class="ks">recomendaría CETLOG</div></div>
-        <div class="kpi k-navy"><div class="kl">Promotores</div><div class="kv" id="nPromo">—</div><div class="ks">score 9–10</div></div>
-        <div class="kpi k-warning"><div class="kl">Neutrales</div><div class="kv" id="nNeutral">—</div><div class="ks">score 7–8</div></div>
-        <div class="kpi k-danger"><div class="kl">Detractores</div><div class="kv" id="nDetrac">—</div><div class="ks">score 0–6</div></div>
-        <div class="kpi"><div class="kl">Respuestas</div><div class="kv" id="nTotal">—</div><div class="ks">encuestas recibidas</div></div>
+
+      <!-- Filtros -->
+      <div class="filter-bar" style="margin-bottom:16px">
+        <label>Programa:</label>
+        <select id="nFilProg" onchange="renderNps()"><option value="">Todos</option></select>
+        <label>Turno:</label>
+        <select id="nFilTurno" onchange="renderNps()"><option value="">Todos</option></select>
       </div>
 
-      <!-- Barra NPS promotores/neutrales/detractores -->
-      <div class="card">
-        <div class="card-title">Distribución NPS</div>
-        <div class="sentiment-bar" id="npsBarDist" style="height:28px;border-radius:8px">
-          <div class="sent-pos" id="npsBarPos" style="width:60%">60%</div>
-          <div class="sent-neu" id="npsBarNeu" style="width:25%">25%</div>
-          <div class="sent-neg" id="npsBarNeg" style="width:15%">15%</div>
-        </div>
-      </div>
+      <!-- Fila superior: dona + KPIs -->
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:16px;margin-bottom:16px;align-items:start">
 
-      <!-- Scores por categoría -->
-      <div class="card">
-        <div class="card-title">
-          Scores por categoría
-          <div class="filter-bar" style="margin:0">
-            <label>Programa:</label>
-            <select id="nFilProg" onchange="renderNps()"><option value="">Todos</option></select>
-            <label>Turno:</label>
-            <select id="nFilTurno" onchange="renderNps()"><option value="">Todos</option></select>
+        <!-- Gráfico dona NPS -->
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">Distribución NPS</div>
+          <div style="position:relative;width:180px;height:180px">
+            <canvas id="npsDonaChart" width="180" height="180"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+              <div style="font-size:32px;font-weight:700;color:var(--navy);line-height:1" id="nNpsProm">—</div>
+              <div style="font-size:10px;color:var(--muted);font-weight:600">NPS Global</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;width:100%;font-size:11px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#10B981;display:inline-block"></span>Promotores (9-10)</span>
+              <span style="font-weight:700" id="nPromo">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;display:inline-block"></span>Pasivos (7-8)</span>
+              <span style="font-weight:700" id="nNeutral">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#EF4444;display:inline-block"></span>Detractores (0-6)</span>
+              <span style="font-weight:700" id="nDetrac">—</span>
+            </div>
+            <div style="border-top:1px solid var(--border);padding-top:5px;display:flex;justify-content:space-between">
+              <span style="color:var(--muted)">Total respuestas</span>
+              <span style="font-weight:700" id="nTotal">—</span>
+            </div>
           </div>
         </div>
-        <div class="nps-cats" id="npsCats"><div class="empty-state" style="padding:16px">Sin datos</div></div>
+
+        <!-- Scores por categoría -->
+        <div class="card">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:14px">Scores por categoría</div>
+          <div id="npsCats"><div class="empty-state" style="padding:16px">Sin datos</div></div>
+        </div>
       </div>
 
-      <!-- Análisis de sentimiento de comentarios vía Claude API -->
+      <!-- Gráfico de líneas: evolución por sesión -->
       <div class="card">
         <div class="card-title">
-          Análisis de sentimiento — comentarios
-          <button onclick="analizarSentimiento()" style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:7px;border:1px solid var(--navy);background:var(--navy);color:#fff;cursor:pointer">✦ Analizar con IA</button>
+          Evolución de dimensiones por sesión
+          <span style="font-size:11px;font-weight:400;color:var(--muted)">promedio por fecha de encuesta</span>
         </div>
-        <div id="sentimientoResult">
-          <div class="empty-state">Haz clic en "Analizar con IA" para procesar los comentarios de los entrenados con inteligencia artificial.</div>
+        <div style="position:relative;height:280px">
+          <canvas id="npsLineChart"></canvas>
         </div>
       </div>
 
-      <!-- Comentarios recientes -->
+      <!-- Radar de categorías -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:14px">Radar de dimensiones</div>
+          <div style="position:relative;height:240px">
+            <canvas id="npsRadarChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:14px">Tabla detallada</div>
+          <div class="tbl-wrap"><table id="npsCatTable">
+            <thead><tr><th>Categoría</th><th class="td-right">Promedio</th><th class="td-right">Mín</th><th class="td-right">Máx</th><th>Distribución</th></tr></thead>
+            <tbody id="npsCatTbody"><tr><td colspan="5" style="padding:16px;text-align:center;color:var(--muted)">Sin datos</td></tr></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Análisis IA -->
+      <div class="card">
+        <div class="card-title">
+          ✦ Análisis de sentimiento — IA
+          <button onclick="analizarSentimiento()" style="font-size:11px;font-weight:600;padding:5px 14px;border-radius:7px;border:none;background:linear-gradient(135deg,var(--navy),#3B4DB8);color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(29,36,92,.3)">Analizar comentarios</button>
+        </div>
+        <div id="sentimientoResult">
+          <div class="empty-state">Haz clic en "Analizar comentarios" para que la IA procese y clasifique los comentarios de los entrenados.</div>
+        </div>
+      </div>
+
+      <!-- Comentarios -->
       <div class="card">
         <div class="card-title">Comentarios recientes</div>
         <div class="comment-list" id="comentariosList"><div class="empty-state" style="padding:16px">Sin comentarios</div></div>
@@ -744,6 +790,14 @@ function renderSesiones(){
 // ══════════════════════════════════════════════════════════
 //  TAB 03 — NPS
 // ══════════════════════════════════════════════════════════
+let npsDonaInst=null, npsLineInst=null, npsRadarInst=null;
+
+function destroyCharts(){
+  if(npsDonaInst){npsDonaInst.destroy();npsDonaInst=null;}
+  if(npsLineInst){npsLineInst.destroy();npsLineInst=null;}
+  if(npsRadarInst){npsRadarInst.destroy();npsRadarInst=null;}
+}
+
 function renderNps(){
   const rows=DB['nps']||[];
   const filProg=document.getElementById('nFilProg')?.value||'';
@@ -758,58 +812,166 @@ function renderNps(){
     return true;
   });
 
+  destroyCharts();
+
   if(!filtered.length){
     setHtml('npsCats','<div class="empty-state" style="padding:16px">Sin datos de NPS</div>');
+    ['nNpsProm','nPromo','nNeutral','nDetrac','nTotal'].forEach(id=>setTxt(id,'—'));
     return;
   }
 
   const npsVals=filtered.map(r=>parseNum(r['NPS'])).filter(v=>v>0);
   const npsProm=npsVals.length?(npsVals.reduce((a,b)=>a+b,0)/npsVals.length).toFixed(1):0;
   const promotores=npsVals.filter(v=>v>=9).length;
-  const neutrales=npsVals.filter(v=>v>=7&&v<9).length;
+  const pasivos=npsVals.filter(v=>v>=7&&v<9).length;
   const detractores=npsVals.filter(v=>v<7).length;
   const total=npsVals.length;
 
   setTxt('nNpsProm',npsProm);
-  setTxt('nPromo',promotores);
-  setTxt('nNeutral',neutrales);
-  setTxt('nDetrac',detractores);
+  setTxt('nPromo',promotores+' ('+Math.round(promotores/total*100)+'%)');
+  setTxt('nNeutral',pasivos+' ('+Math.round(pasivos/total*100)+'%)');
+  setTxt('nDetrac',detractores+' ('+Math.round(detractores/total*100)+'%)');
   setTxt('nTotal',filtered.length);
 
-  // Barra distribución
-  const pPct=total?Math.round(promotores/total*100):0;
-  const nPct=total?Math.round(neutrales/total*100):0;
-  const dPct=total?100-pPct-nPct:0;
-  const bPos=document.getElementById('npsBarPos');
-  const bNeu=document.getElementById('npsBarNeu');
-  const bNeg=document.getElementById('npsBarNeg');
-  if(bPos){bPos.style.width=pPct+'%';bPos.textContent=pPct>5?pPct+'%':'';}
-  if(bNeu){bNeu.style.width=nPct+'%';bNeu.textContent=nPct>5?nPct+'%':'';}
-  if(bNeg){bNeg.style.width=dPct+'%';bNeg.textContent=dPct>5?dPct+'%':'';}
+  // ── GRÁFICO DONA ─────────────────────────────────────────
+  const donaCtx=document.getElementById('npsDonaChart')?.getContext('2d');
+  if(donaCtx){
+    npsDonaInst=new Chart(donaCtx,{
+      type:'doughnut',
+      data:{
+        labels:['Promotores (9-10)','Pasivos (7-8)','Detractores (0-6)'],
+        datasets:[{data:[promotores,pasivos,detractores],
+          backgroundColor:['#10B981','#F59E0B','#EF4444'],
+          borderWidth:0,hoverOffset:6}]
+      },
+      options:{
+        cutout:'72%',responsive:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.raw+' ('+Math.round(ctx.raw/total*100)+'%)'}}}
+      }
+    });
+  }
 
-  // Scores por categoría
-  const cats=[
-    {k:'Efectividad',col:'Efectividad'},
-    {k:'Metodología',col:'Metodologia'},
-    {k:'Relevancia',col:'Relevancia'},
-    {k:'Objetivos',col:'Objetivos'},
-    {k:'Infraestructura',col:'Infraestructura'},
-    {k:'Coordinación',col:'Coordinacion'},
-    {k:'NPS',col:'NPS'},
+  // ── CATEGORÍAS ────────────────────────────────────────────
+  const catDefs=[
+    {k:'Efectividad',col:'Efectividad',color:'#1D245C'},
+    {k:'Metodología',col:'Metodologia',color:'#0891B2'},
+    {k:'Relevancia',col:'Relevancia',color:'#7C3AED'},
+    {k:'Objetivos',col:'Objetivos',color:'#10B981'},
+    {k:'Infraestructura',col:'Infraestructura',color:'#F59E0B'},
+    {k:'Coordinación',col:'Coordinacion',color:'#F68A0A'},
+    {k:'NPS',col:'NPS',color:'#EF4444'},
   ];
-  const catsHtml=cats.map(c=>{
-    const vals=filtered.map(r=>parseNum(r[c.col])).filter(v=>v>0);
-    const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):0;
-    const color=npsColor(avg);
-    return`<div class="nps-cat">
-      <div class="ncl">${c.k}</div>
-      <div class="ncv" style="color:${color}">${avg||'—'}</div>
-      <div class="ncb"><div class="ncbf" style="width:${avg*10}%;background:${color}"></div></div>
-    </div>`;
-  }).join('');
-  setHtml('npsCats',catsHtml);
 
-  // Comentarios
+  const catStats=catDefs.map(c=>{
+    const vals=filtered.map(r=>parseNum(r[c.col])).filter(v=>v>0);
+    const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length):0;
+    const mn=vals.length?Math.min(...vals):0;
+    const mx=vals.length?Math.max(...vals):0;
+    return{...c,avg,min:mn,max:mx,vals};
+  });
+
+  // Cards de categorías (barras horizontales)
+  const catsEl=document.getElementById('npsCats');
+  if(catsEl){
+    catsEl.innerHTML=catStats.map(c=>`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:11px;font-weight:600;color:var(--text);min-width:110px">${c.k}</span>
+        <div style="flex:1;height:14px;background:var(--bg);border-radius:7px;overflow:hidden;border:1px solid var(--border)">
+          <div style="width:${c.avg*10}%;height:100%;border-radius:7px;background:${c.color};transition:width .6s ease"></div>
+        </div>
+        <span style="font-size:13px;font-weight:700;color:${npsColor(c.avg)};min-width:32px;text-align:right">${c.avg.toFixed(1)}</span>
+      </div>`).join('');
+  }
+
+  // Tabla detallada
+  const tbody=document.getElementById('npsCatTbody');
+  if(tbody){
+    tbody.innerHTML=catStats.map(c=>{
+      const pPct=c.vals.length?Math.round(c.vals.filter(v=>v>=9).length/c.vals.length*100):0;
+      return`<tr>
+        <td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c.color};margin-right:6px"></span>${c.k}</td>
+        <td class="td-right td-bold" style="color:${npsColor(c.avg)}">${c.avg.toFixed(2)}</td>
+        <td class="td-right td-muted">${c.min.toFixed(1)}</td>
+        <td class="td-right td-muted">${c.max.toFixed(1)}</td>
+        <td><div style="height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border)">
+          <div style="width:${pPct}%;height:100%;background:${c.color}"></div></div>
+          <span style="font-size:9px;color:var(--muted)">${pPct}% perfectos (10)</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── GRÁFICO RADAR ─────────────────────────────────────────
+  const radarCtx=document.getElementById('npsRadarChart')?.getContext('2d');
+  if(radarCtx){
+    const radarCats=catStats.filter(c=>c.col!=='NPS');
+    npsRadarInst=new Chart(radarCtx,{
+      type:'radar',
+      data:{
+        labels:radarCats.map(c=>c.k),
+        datasets:[{
+          label:'Promedio',
+          data:radarCats.map(c=>c.avg),
+          backgroundColor:'rgba(29,36,92,.15)',
+          borderColor:'#1D245C',
+          borderWidth:2,
+          pointBackgroundColor:radarCats.map(c=>c.color),
+          pointRadius:5,pointHoverRadius:7
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:9}},pointLabels:{font:{size:10,weight:'600'}}}},
+        plugins:{legend:{display:false}}
+      }
+    });
+  }
+
+  // ── GRÁFICO LÍNEAS POR SESIÓN ─────────────────────────────
+  // Agrupar por fecha (cada fecha = una sesión)
+  const lineCtx=document.getElementById('npsLineChart')?.getContext('2d');
+  if(lineCtx){
+    const fechasUnicas=[...new Set(filtered.map(r=>r['Fecha']).filter(Boolean))]
+      .sort((a,b)=>(parseFecha(a)||0)-(parseFecha(b)||0));
+
+    const lineCats=catStats.filter(c=>c.col!=='NPS');
+    const lineColors=['#1D245C','#0891B2','#7C3AED','#10B981','#F59E0B','#F68A0A'];
+
+    const datasets=lineCats.map((c,i)=>({
+      label:c.k,
+      data:fechasUnicas.map(f=>{
+        const fr=filtered.filter(r=>r['Fecha']===f);
+        const vals=fr.map(r=>parseNum(r[c.col])).filter(v=>v>0);
+        return vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):null;
+      }),
+      borderColor:lineColors[i%lineColors.length],
+      backgroundColor:'transparent',
+      borderWidth:2,pointRadius:4,pointHoverRadius:6,tension:.3
+    }));
+
+    const labels=fechasUnicas.map((f,i)=>{
+      const d=parseFecha(f);
+      return d?d.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}):'Ses.'+(i+1);
+    });
+
+    npsLineInst=new Chart(lineCtx,{
+      type:'line',
+      data:{labels,datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        scales:{
+          y:{min:0,max:10,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.06)'}},
+          x:{grid:{display:false},ticks:{font:{size:10}}}
+        },
+        plugins:{
+          legend:{position:'bottom',labels:{boxWidth:10,padding:12,font:{size:10}}},
+          tooltip:{mode:'index',intersect:false}
+        },
+        interaction:{mode:'index',intersect:false}
+      }
+    });
+  }
+
+  // ── COMENTARIOS ───────────────────────────────────────────
   const comentarios=filtered
     .filter(r=>r['Comentarios_Instructor']||r['Comentarios_Generales'])
     .sort((a,b)=>(parseFecha(b['Fecha'])||0)-(parseFecha(a['Fecha'])||0))
@@ -831,93 +993,6 @@ function renderNps(){
   }
 }
 
-// ── Análisis de sentimiento con Claude API ─────────────────
-async function analizarSentimiento(){
-  const rows=DB['nps']||[];
-  const comentarios=rows
-    .map(r=>[r['Comentarios_Instructor'],r['Comentarios_Generales']].filter(Boolean).join(' | '))
-    .filter(c=>c.trim().length>2)
-    .slice(0,50); // limitar a 50 para no exceder tokens
-
-  if(!comentarios.length){
-    setHtml('sentimientoResult','<div class="empty-state">No hay comentarios para analizar</div>');
-    return;
-  }
-
-  const el=document.getElementById('sentimientoResult');
-  el.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted)">⏳ Analizando '+comentarios.length+' comentarios con IA…</div>';
-
-  const prompt=`Analiza los siguientes comentarios de entrenados de CETLOG (empresa de capacitación logística) y responde SOLO en JSON sin markdown. El JSON debe tener esta estructura exacta:
-{
-  "resumen": "párrafo corto de 2-3 oraciones sobre el sentimiento general",
-  "positivos": ["frase 1","frase 2","frase 3"],
-  "mejoras": ["frase 1","frase 2","frase 3"],
-  "temas": [{"tema":"nombre","sentimiento":"positivo|negativo|neutro","menciones":N}],
-  "distribucion": {"positivo":N,"neutro":N,"negativo":N}
-}
-
-Comentarios:
-${comentarios.map((c,i)=>`${i+1}. ${c}`).join('\n')}`;
-
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data=await res.json();
-    const text=data.content?.map(b=>b.text||'').join('')||'';
-    let parsed;
-    try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
-    catch(e){
-      el.innerHTML='<div class="empty-state">Error al parsear respuesta de IA. Intenta de nuevo.</div>';
-      return;
-    }
-
-    const dist=parsed.distribucion||{};
-    const tot=(dist.positivo||0)+(dist.neutro||0)+(dist.negativo||0)||1;
-    const pPct=Math.round((dist.positivo||0)/tot*100);
-    const nPct=Math.round((dist.neutro||0)/tot*100);
-    const dPct=100-pPct-nPct;
-
-    el.innerHTML=`
-      <div style="margin-bottom:14px">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Sentimiento general</div>
-        <div style="font-size:13px;line-height:1.6;color:var(--text)">${parsed.resumen||''}</div>
-      </div>
-      <div class="sentiment-bar" style="height:24px;border-radius:6px;margin-bottom:6px">
-        <div class="sent-pos" style="width:${pPct}%">${pPct>8?pPct+'% positivo':''}</div>
-        <div class="sent-neu" style="width:${nPct}%">${nPct>8?nPct+'% neutro':''}</div>
-        <div class="sent-neg" style="width:${dPct}%">${dPct>8?dPct+'% negativo':''}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px">
-        <div>
-          <div style="font-size:11px;font-weight:700;color:var(--success-tx);margin-bottom:8px">👍 Lo que destacan</div>
-          ${(parsed.positivos||[]).map(p=>`<div class="comment-item comment-pos" style="margin-bottom:6px">${p}</div>`).join('')}
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:var(--danger-tx);margin-bottom:8px">🔧 Oportunidades de mejora</div>
-          ${(parsed.mejoras||[]).map(m=>`<div class="comment-item comment-neg" style="margin-bottom:6px">${m}</div>`).join('')}
-        </div>
-      </div>
-      ${parsed.temas?.length?`
-      <div style="margin-top:16px">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px">Temas más mencionados</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${parsed.temas.map(t=>{
-            const cls=t.sentimiento==='positivo'?'pill-ok':t.sentimiento==='negativo'?'pill-danger':'pill-warn';
-            return`<span class="pill ${cls}">${t.tema} (${t.menciones})</span>`;
-          }).join('')}
-        </div>
-      </div>`:''}`;
-  }catch(e){
-    el.innerHTML='<div class="empty-state">Error de conexión con la IA. Verifica tu conexión.</div>';
-  }
-}
 
 // ══════════════════════════════════════════════════════════
 //  TAB 04 — PAGOS
