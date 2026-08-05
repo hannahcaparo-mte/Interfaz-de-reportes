@@ -302,10 +302,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         Finanzas<span class="nav-badge">5</span>
       </a>
       <a class="nav-item" href="cetlog_instructores.html">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/></svg>
-      Instructores<span class="nav-badge">5</span>
-    </a>
-    <a class="nav-item" href="cetlog_estrategico.html">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/></svg>
+        Instructores<span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="cetlog_estrategico.html">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-6 3 4 2-3 5 5H1zm13-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
         Estratégico<span class="nav-badge">6</span>
       </a>
@@ -356,16 +356,31 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <div id="campanas-content" style="display:none">
 
         <!-- Selector de campaña -->
-        <!-- Selector campaña -->
-        <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-          <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
-          <select id="campSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px"></select>
+        <!-- Título y leyenda -->
+        <div style="margin-bottom:18px">
+          <div style="text-align:center;font-size:18px;font-weight:700;color:var(--navy);letter-spacing:-.3px;margin-bottom:14px">Campañas activas</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:16px">
+            <div style="display:flex;align-items:center;width:min(480px,100%);gap:0">
+              <div style="flex:2;height:10px;background:#10B981;border-radius:5px 0 0 5px"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #F68A0A;flex-shrink:0;z-index:2;box-shadow:0 0 0 2px #F68A0A40;margin:0 -2px"></div>
+              <div style="flex:3;height:10px;background:#F68A0A"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #EF4444;flex-shrink:0;z-index:2;box-shadow:0 0 0 2px #EF444440;margin:0 -2px"></div>
+              <div style="flex:2;height:10px;background:#EF4444;border-radius:0 5px 5px 0"></div>
+            </div>
+            <div style="display:flex;width:min(480px,100%);justify-content:space-between;font-size:10px;font-weight:600">
+              <span style="color:#10B981">Sin iniciar</span>
+              <span style="color:#F68A0A">En campaña</span>
+              <span style="color:#EF4444">Finalizada</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap">
+            <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
+            <select id="campSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px"></select>
+          </div>
         </div>
 
         <!-- Header campaña -->
         <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none;padding:20px 24px">
-
-          <!-- Fila superior: título + nombre a la izquierda | tiempo a la derecha -->
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
             <div>
               <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.55;margin-bottom:6px">Campaña activa</div>
@@ -377,48 +392,29 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
               <div style="font-size:11px;opacity:.6" id="cDiasRestLbl">días</div>
             </div>
           </div>
-
-          <!-- Barra de tiempo integrada -->
           <div>
-            <!-- Contenedor unificado: fechas + barra en el mismo espacio relativo -->
             <div style="position:relative;height:52px">
-
-              <!-- Duración centrada arriba -->
               <div id="cDurLbl" style="position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;opacity:.7;white-space:nowrap">—</div>
-
-              <!-- Fecha inicio campaña — exactamente sobre el punto (20%) -->
-              <div id="cFechaIni" style="position:absolute;top:0;left:20%;transform:translateX(-50%);font-size:10px;font-weight:700;opacity:.9;white-space:nowrap;text-align:center">—</div>
-
-              <!-- Fecha fin campaña — exactamente sobre el punto (80%) -->
-              <div id="cFechaFin" style="position:absolute;top:0;left:80%;transform:translateX(-50%);font-size:10px;font-weight:700;opacity:.9;white-space:nowrap;text-align:center">—</div>
-
-              <!-- Fecha HOY — posicionada por JS -->
-              <div id="cFechaHoy" style="position:absolute;top:0;transform:translateX(-50%);font-size:10px;font-weight:700;color:#fff;white-space:nowrap;text-align:center;display:none">—</div>
-
-              <!-- Barra de colores — pegada abajo del contenedor -->
+              <div id="cFechaIni" style="position:absolute;top:0;left:20%;transform:translateX(-50%);font-size:10px;font-weight:700;opacity:.9;white-space:nowrap">—</div>
+              <div id="cFechaFin" style="position:absolute;top:0;left:80%;transform:translateX(-50%);font-size:10px;font-weight:700;opacity:.9;white-space:nowrap">—</div>
+              <div id="cFechaHoy" style="position:absolute;top:0;transform:translateX(-50%);font-size:10px;font-weight:700;color:#fff;white-space:nowrap;display:none">—</div>
               <div style="position:absolute;bottom:0;left:0;right:0;height:16px;border-radius:8px;overflow:visible;background:#ffffff15">
-                <div id="cSegVerde"   style="position:absolute;left:0;top:0;height:100%;background:#10B981;border-radius:8px 0 0 8px;transition:width .5s ease"></div>
-                <div id="cSegNaranja" style="position:absolute;top:0;height:100%;background:#F68A0A;transition:left .5s ease,width .5s ease"></div>
-                <div id="cSegRojo"    style="position:absolute;top:0;height:100%;background:#EF4444;border-radius:0 8px 8px 0;transition:left .5s ease,width .5s ease"></div>
-                <!-- Punto inicio: borde del verde con naranja, alineado con cFechaIni -->
-                <div id="cPuntoIni" style="position:absolute;top:50%;left:20%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #F68A0A;box-shadow:0 0 0 3px #F68A0A50;z-index:3"></div>
-                <!-- Punto fin: borde del naranja con rojo, alineado con cFechaFin -->
-                <div id="cPuntoFin" style="position:absolute;top:50%;left:80%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #EF4444;box-shadow:0 0 0 3px #EF444450;z-index:3"></div>
-                <!-- Línea HOY -->
-                <div id="cBarraHoy" style="position:absolute;top:-8px;bottom:-8px;width:3px;background:#fff;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,.9);z-index:4;transition:left .5s ease">
-                  <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;color:#fff;white-space:nowrap;letter-spacing:.06em;background:rgba(255,255,255,.25);padding:1px 6px;border-radius:4px">HOY</div>
+                <div id="cSegVerde"   style="position:absolute;left:0;top:0;height:100%;background:#10B981;border-radius:8px 0 0 8px"></div>
+                <div id="cSegNaranja" style="position:absolute;top:0;height:100%;background:#F68A0A"></div>
+                <div id="cSegRojo"    style="position:absolute;top:0;height:100%;background:#EF4444;border-radius:0 8px 8px 0"></div>
+                <div id="cPuntoIni" style="position:absolute;top:50%;left:20%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #F68A0A;z-index:3"></div>
+                <div id="cPuntoFin" style="position:absolute;top:50%;left:80%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #EF4444;z-index:3"></div>
+                <div id="cBarraHoy" style="position:absolute;top:-8px;bottom:-8px;width:3px;background:#fff;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,.9);z-index:4">
+                  <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;color:#fff;white-space:nowrap;background:rgba(255,255,255,.25);padding:1px 6px;border-radius:4px">HOY</div>
                 </div>
               </div>
             </div>
-
-            <!-- Labels bajo la barra -->
             <div style="display:flex;justify-content:space-between;font-size:10px;margin-top:10px;font-weight:600">
               <span style="color:#10B981;opacity:.9">Sin iniciar</span>
               <span style="color:#F68A0A;opacity:.9">En campaña</span>
               <span style="color:#EF4444;opacity:.9">Finalizada</span>
             </div>
           </div>
-
         </div>
 
         <!-- Presupuesto -->
@@ -576,7 +572,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
         <label style="font-size:12px;color:var(--muted);font-weight:600">Campaña:</label>
         <select id="perfCampSelect" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:200px" onchange="renderPerformance()"></select>
-
 
       </div>
 
@@ -836,94 +831,86 @@ function renderCampanaDetalle(nombre, rows) {
   const diasRest = ff ? Math.ceil((ff-hoy)/864e5) : null;
 
   setText('cNombre', nombre);
-
-  // Fechas extremos y duración
-  const elFIni   = document.getElementById('cFechaIni');
-  const elFFin   = document.getElementById('cFechaFin');
-  const elDurLbl = document.getElementById('cDurLbl');
-  if (elFIni)   elFIni.textContent  = fi ? fmtDate(fi) : '—';
-  if (elFFin)   elFFin.textContent  = ff ? fmtDate(ff) : '—';
-  if (elDurLbl && durDias != null) elDurLbl.textContent = durDias + ' días de campaña';
-
-  // Elementos de la barra
-  const drNumEl    = document.getElementById('cDiasRestNum');
-  const drLblEl    = document.getElementById('cDiasRestLbl');
-  const drTituloEl = document.getElementById('cDiasRestTitulo');
-  const barraHoy   = document.getElementById('cBarraHoy');
-  const segVerde   = document.getElementById('cSegVerde');
-  const segNaranja = document.getElementById('cSegNaranja');
-  const segRojo    = document.getElementById('cSegRojo');
-  const puntoIni   = document.getElementById('cPuntoIni');
-  const puntoFin   = document.getElementById('cPuntoFin');
-
-  if (fi && ff && drNumEl) {
-    const hoyMs     = new Date().setHours(0,0,0,0);
-    const fiMs      = new Date(fi).setHours(0,0,0,0);
-    const ffMs      = new Date(ff).setHours(0,0,0,0);
-    const yaInicio  = hoyMs >= fiMs;
-    const yaTermino = hoyMs > ffMs;
-
-    // La barra tiene 3 segmentos fijos visuales:
-    // Verde (20%) | Naranja (60%) | Rojo (20%)
-    // Los puntos van exactamente en los bordes: iniPct=20%, finPct=80%
-    const iniPct = 20;
-    const finPct = 80;
-
-    // HOY se posiciona proporcionalmente DENTRO del segmento correspondiente
+  const elFIni=document.getElementById('cFechaIni'),elFFin=document.getElementById('cFechaFin'),elDurLbl=document.getElementById('cDurLbl');
+  if(elFIni)elFIni.textContent=fi?fmtDate(fi):'—';
+  if(elFFin)elFFin.textContent=ff?fmtDate(ff):'—';
+  if(elDurLbl&&durDias!=null)elDurLbl.textContent=durDias+' días de campaña';
+  const drNumEl=document.getElementById('cDiasRestNum'),drLblEl=document.getElementById('cDiasRestLbl'),drTituloEl=document.getElementById('cDiasRestTitulo');
+  const barraHoy=document.getElementById('cBarraHoy'),segVerde=document.getElementById('cSegVerde'),segNaranja=document.getElementById('cSegNaranja'),segRojo=document.getElementById('cSegRojo');
+  const puntoIni=document.getElementById('cPuntoIni'),puntoFin=document.getElementById('cPuntoFin');
+  if(fi&&ff&&drNumEl){
+    const hoyMs=new Date().setHours(0,0,0,0),fiMs=new Date(fi).setHours(0,0,0,0),ffMs=new Date(ff).setHours(0,0,0,0);
+    const yaInicio=hoyMs>=fiMs,yaTermino=hoyMs>ffMs;
+    const iniPct=20,finPct=80;
     let hoyPct;
-    if (hoyMs <= fiMs) {
-      // Antes del inicio: dentro del verde (0–20%)
-      // Usamos rango: 1 mes antes del inicio → inicio
-      const margenIni = 30 * 864e5;
-      const rangeStart = fiMs - margenIni;
-      hoyPct = Math.max(0, Math.min(iniPct, ((hoyMs - rangeStart) / (fiMs - rangeStart)) * iniPct));
-    } else if (hoyMs >= ffMs) {
-      // Después del fin: dentro del rojo (80–100%)
-      const margenFin = 30 * 864e5;
-      const rangeEnd = ffMs + margenFin;
-      hoyPct = finPct + Math.max(0, Math.min(100 - finPct, ((hoyMs - ffMs) / (rangeEnd - ffMs)) * (100 - finPct)));
-    } else {
-      // Dentro de campaña: proporción dentro del naranja (20–80%)
-      const progreso = (hoyMs - fiMs) / (ffMs - fiMs);
-      hoyPct = iniPct + progreso * (finPct - iniPct);
-    }
-
-    // Segmentos de color — tamaños fijos
-    if (segVerde)   { segVerde.style.width = iniPct + '%'; }
-    if (segNaranja) { segNaranja.style.left = iniPct + '%'; segNaranja.style.width = (finPct - iniPct) + '%'; }
-    if (segRojo)    { segRojo.style.left = finPct + '%'; segRojo.style.width = (100 - finPct) + '%'; }
-    // Puntos exactamente en los bordes del naranja
-    if (puntoIni)   puntoIni.style.left = iniPct + '%';
-    if (puntoFin)   puntoFin.style.left = finPct + '%';
-    // Línea HOY en su posición real
-    if (barraHoy) barraHoy.style.left = hoyPct + '%';
-    const elFechaHoy = document.getElementById('cFechaHoy');
-    if (elFechaHoy) {
-      elFechaHoy.style.left = hoyPct + '%';
-      elFechaHoy.textContent = fmtDate(new Date());
-      const distIni = Math.abs(hoyPct - iniPct);
-      const distFin = Math.abs(hoyPct - finPct);
-      elFechaHoy.style.display = (distIni > 8 && distFin > 8) ? 'block' : 'none';
-    }
-
-    // Texto lateral según estado
-    if (yaTermino) {
-      const dias = Math.round((hoyMs - ffMs) / 864e5);
-      drNumEl.textContent = dias; drNumEl.style.color = '#FCA5A5';
-      drLblEl.textContent = 'días desde el fin';
-      if (drTituloEl) drTituloEl.textContent = 'Tiempo transcurrido';
-    } else if (yaInicio) {
-      const dias = Math.round((hoyMs - fiMs) / 864e5);
-      drNumEl.textContent = dias; drNumEl.style.color = '#FBA826';
-      drLblEl.textContent = 'días de campaña';
-      if (drTituloEl) drTituloEl.textContent = 'Tiempo transcurrido';
-    } else {
-      const dias = Math.round((fiMs - hoyMs) / 864e5);
-      drNumEl.textContent = dias; drNumEl.style.color = '#6EE7B7';
-      drLblEl.textContent = 'días para inicio';
-      if (drTituloEl) drTituloEl.textContent = 'Tiempo restante';
-    }
+    if(hoyMs<=fiMs){const r=30*864e5;hoyPct=Math.max(0,Math.min(iniPct,((hoyMs-(fiMs-r))/(fiMs-(fiMs-r)))*iniPct));}
+    else if(hoyMs>=ffMs){const r=30*864e5;hoyPct=finPct+Math.max(0,Math.min(100-finPct,((hoyMs-ffMs)/r)*(100-finPct)));}
+    else{hoyPct=iniPct+((hoyMs-fiMs)/(ffMs-fiMs))*(finPct-iniPct);}
+    if(segVerde)segVerde.style.width=iniPct+'%';
+    if(segNaranja){segNaranja.style.left=iniPct+'%';segNaranja.style.width=(finPct-iniPct)+'%';}
+    if(segRojo){segRojo.style.left=finPct+'%';segRojo.style.width=(100-finPct)+'%';}
+    if(puntoIni)puntoIni.style.left=iniPct+'%';
+    if(puntoFin)puntoFin.style.left=finPct+'%';
+    if(barraHoy)barraHoy.style.left=hoyPct+'%';
+    const elFH=document.getElementById('cFechaHoy');
+    if(elFH){elFH.style.left=hoyPct+'%';elFH.textContent=fmtDate(new Date());const d1=Math.abs(hoyPct-iniPct),d2=Math.abs(hoyPct-finPct);elFH.style.display=(d1>8&&d2>8)?'block':'none';}
+    if(yaTermino){const d=Math.round((hoyMs-ffMs)/864e5);drNumEl.textContent=d;drNumEl.style.color='#FCA5A5';drLblEl.textContent='días desde el fin';if(drTituloEl)drTituloEl.textContent='Tiempo transcurrido';}
+    else if(yaInicio){const d=Math.round((hoyMs-fiMs)/864e5);drNumEl.textContent=d;drNumEl.style.color='#FBA826';drLblEl.textContent='días de campaña';if(drTituloEl)drTituloEl.textContent='Tiempo transcurrido';}
+    else{const d=Math.round((fiMs-hoyMs)/864e5);drNumEl.textContent=d;drNumEl.style.color='#6EE7B7';drLblEl.textContent='días para inicio';if(drTituloEl)drTituloEl.textContent='Tiempo restante';}
   }
+
+  // Presupuesto (suma de todas las filas de la campaña)
+  const invertir = campRows.reduce((s,r) => s + (Number(r['Monto a invertir']) || 0), 0);
+  const gastado  = campRows.reduce((s,r) => s + (Number(r['Monto gastado'])    || 0), 0);
+  const rest = invertir - gastado;
+  const budPct = invertir ? Math.min(100, Math.round(gastado/invertir*100)) : 0;
+  setText('bInvertir', money(invertir));
+  setText('bGastado', money(gastado));
+  setText('bRest', money(Math.abs(rest)));
+  const rb = document.getElementById('bRestBox');
+  rb.querySelector('.bl').textContent = rest >= 0 ? 'Disponible' : 'Sobrepasado';
+  rb.className = 'ba ' + (rest < 0 ? 'danger' : rest < invertir * .1 ? 'warn' : 'ok');
+  const bar = document.getElementById('budBar');
+  bar.style.width = budPct + '%';
+  bar.className = 'prog-fill' + (budPct >= 100 ? ' over' : budPct >= 85 ? ' almost' : '');
+  setText('bPct', budPct + '% ejecutado');
+  setText('bRestLabel', rest >= 0 ? money(rest) + ' disponible' : money(Math.abs(rest)) + ' sobrepasado');
+
+  // KPIs leads
+  const leadsMeta  = campRows.reduce((s,r) => s + (Number(r['Leads plataforma']) || 0), 0);
+  const leadsKommo = campRows.reduce((s,r) => s + (Number(r['Leads kommo'])      || 0), 0);
+  const perdidos   = leadsMeta - leadsKommo;
+  const pctPerd    = leadsMeta ? perdidos / leadsMeta : 0;
+  const inscritos  = campRows.reduce((s,r) => s + (Number(r['Inscritos'])        || 0), 0);
+  const cierre     = leadsMeta ? inscritos / leadsMeta : null;
+
+  setText('kLeadsMeta', numF(leadsMeta));
+  setText('kLeadsKommo', numF(leadsKommo));
+  setText('kPerdidos', numF(perdidos));
+  setText('kPerdSub', pctF(pctPerd) + ' de leads META');
+  setText('kCierre', pctF(cierre));
+  setText('kCierreSub', numF(inscritos) + ' inscritos / ' + numF(leadsMeta) + ' leads');
+
+  // Barras comparativo
+  const maxL = Math.max(leadsMeta, 1);
+  [['lbMeta','lbMetaN', leadsMeta,  '#1D245C'],
+   ['lbKommo','lbKommoN', leadsKommo,'var(--orange)'],
+   ['lbPerd','lbPerdN',  perdidos,  'var(--danger)']
+  ].forEach(([bid, nid, val, color]) => {
+    const p = Math.round(val/maxL*100);
+    const barEl = document.getElementById(bid);
+    const numEl = document.getElementById(nid);
+    if (barEl) { barEl.style.width = p + '%'; barEl.style.background = color; }
+    if (numEl) numEl.textContent = numF(val);
+  });
+
+  // Costos
+  const cpl  = leadsMeta  ? gastado / leadsMeta  : null;
+  const cplk = leadsKommo ? gastado / leadsKommo : null;
+  const cpa  = inscritos  ? gastado / inscritos  : null;
+  setText('cCPL', money(cpl));
+  setText('cCPLK', money(cplk));
+  setText('cCPA', money(cpa));
 
   // Inscritos por programa (barra dual)
   const metaTot = campRows.reduce((s,r) => s + (Number(r['Meta inscritos']) || 0), 0);
