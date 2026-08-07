@@ -650,7 +650,7 @@ function renderResumen(){
     const punt=si.total?Math.round(si.aTiempo/si.total*100):null;
     const asist=si.esperados?Math.round(si.presentes/si.esperados*100):null;
     return{...r,_nps:npsScore,_punt:punt,_asist:asist,_sesiones:si.total};
-  }).sort((a,b)=>b._nps-a._nps||a['Nombre'].localeCompare(b['Nombre']));
+  }).sort((a,b)=>b._nps-a._nps||(a['Nombre']||'').localeCompare(b['Nombre']||''));
 
   const grid=document.getElementById('instGrid');
   grid.innerHTML='';
