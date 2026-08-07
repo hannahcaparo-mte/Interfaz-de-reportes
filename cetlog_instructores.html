@@ -502,6 +502,8 @@ async function refreshAll(){
   setStatus('Actualizando…');
   const results=await Promise.all(TABS_DB.map(t=>fetchTab(t)));
   TABS_DB.forEach((t,i)=>{DB[t]=results[i];});
+  console.log('[INST] instructores:',DB['instructores']?.length,'sesiones:',DB['sesiones']?.length,'nps:',DB['nps']?.length);
+  console.log('[INST] primera fila instructores:',JSON.stringify(DB['instructores']?.[0]));
   renderAll();
   const total=results.reduce((s,r)=>s+r.length,0);
   setStatus(total===0?'Conectado — hojas vacías':'Actualizado '+new Date().toLocaleTimeString('es-PE'),'ok');
