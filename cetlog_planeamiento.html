@@ -390,6 +390,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 //  CONFIG
 // ══════════════════════════════════════════════════════════
 const SHEET_ID = '1eQLnsW3JxzgqmIA52MWUd423EfufHmNPWXnm9S14vYs';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQy15GJ7gVaP26x-GSqQKoH1IKZZFwy-Z_UF1m1ayCo8xBxyeimt--krVHf8MCw-0qgw/exec';
 
 // ══ LAZY LOADING ══════════════════════════════════════════
 const TAB_SHEETS = {"timeline": ["linea_tiempo"], "marketing": ["avance", "checklist"], "comercial": ["avance", "checklist"], "operaciones": ["avance", "checklist"], "ejecucion": ["ejecucion"]};
@@ -410,13 +411,18 @@ const TAB_IDS = ['timeline','marketing','comercial','operaciones','ejecucion'];
 
 // ── Fetch ──────────────────────────────────────────────────
 function csvUrl(tab){ return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tab); }
-async function fetchTab(tab){
-  try{
-    const res=await fetch(csvUrl(tab)); if(!res.ok)return[];
-    const text=await res.text(); if(!text||text.trim().length===0)return[];
-    const {data}=Papa.parse(text,{header:true,dynamicTyping:false,skipEmptyLines:true});
-    return Array.isArray(data)?data:[];
-  }catch(e){return[];}
+async function fetchTab(sheetName) {
+  try {
+    const url = SCRIPT_URL + '?sheet=' + encodeURIComponent(sheetName);
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (!Array.isArray(json)) return [];
+    return json;
+  } catch(e) {
+    console.error('fetchTab error:', sheetName, e);
+    return [];
+  }
 }
 async function loadTab(tabId) {
   const sheets = TAB_SHEETS[tabId] || [];

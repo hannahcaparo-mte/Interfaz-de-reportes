@@ -307,6 +307,20 @@
     document.getElementById('panel-' + id).classList.add('active');
     document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
   }
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycQjp5HZG2PvQ-ib9pJJfUv-YNMHbybEAy1m1Ld2jXGCzxs7ShS01yhiY7vJWCH8lVaA/exec';
+async function fetchTab(sheetName) {
+  try {
+    const url = SCRIPT_URL + '?sheet=' + encodeURIComponent(sheetName);
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (!Array.isArray(json)) return [];
+    return json;
+  } catch(e) {
+    console.error('fetchTab error:', sheetName, e);
+    return [];
+  }
+}
 </script>
 </body>
 </html>

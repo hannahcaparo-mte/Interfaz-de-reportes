@@ -420,6 +420,7 @@ tr:hover td{background:var(--bg)}
 //  CONFIG
 // ══════════════════════════════════════════════════════════
 const SHEET_ID = '1ERH7jVpNy7mFux_Sltp8ry9y6lSXk708Ulte9c-droI';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymVyTlpKP5gvw5tCiVNJdcsF0RX20SHrSpuAxgbzP4ECwwKdW41tL3-pp8wWVP5OQj/exec';
 
 // ══ LAZY LOADING ══════════════════════════════════════════
 const TAB_SHEETS = {"resumen": ["caja_chica", "ingresos", "cxp", "cxc"], "caja": ["caja_chica"], "ingresos": ["ingresos"], "cxp": ["cxp"], "cxc": ["cxc"]};
@@ -431,13 +432,18 @@ let DB = {};
 
 // ── Fetch ──────────────────────────────────────────────────
 function csvUrl(tab){ return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tab); }
-async function fetchTab(tab){
-  try{
-    const res=await fetch(csvUrl(tab)); if(!res.ok)return[];
-    const text=await res.text(); if(!text||text.trim().length<5)return[];
-    const{data}=Papa.parse(text,{header:true,dynamicTyping:false,skipEmptyLines:true});
-    return Array.isArray(data)?data:[];
-  }catch(e){return[];}
+async function fetchTab(sheetName) {
+  try {
+    const url = SCRIPT_URL + '?sheet=' + encodeURIComponent(sheetName);
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (!Array.isArray(json)) return [];
+    return json;
+  } catch(e) {
+    console.error('fetchTab error:', sheetName, e);
+    return [];
+  }
 }
 async function loadTab(tabId) {
   const sheets = TAB_SHEETS[tabId] || [];

@@ -670,6 +670,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 //  CONFIGURACIÓN
 // ══════════════════════════════════════════════════════════
 const SHEET_ID = '1pszZzjm_dW88t56E3eVO-lK_C8Was3MuhvkD4HrUtYI';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7dt3kpwyjHH1Seax0RzRorVyf520Zr_hTWSPwq1eIOQrUDHPcpSPTpk94FJ7xYass/exec';
 const AUTO_MS  = 60 * 1000; // auto-refresh cada 60 s
 
 const TABS = ['Campanas','Contenido','Embudo','Performance','Demos','ROAS','Historico'];
@@ -706,16 +707,18 @@ function csvUrl(tab) {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
 }
 
-async function fetchTab(tab) {
+async function fetchTab(sheetName) {
   try {
-    const res = await fetch(csvUrl(tab));
+    const url = SCRIPT_URL + '?sheet=' + encodeURIComponent(sheetName);
+    const res = await fetch(url);
     if (!res.ok) return [];
-    const text = await res.text();
-    if (!text || text.trim().length === 0) return [];
-    if (text.includes('signin')) return [];
-    const { data } = Papa.parse(text, { header: true, dynamicTyping: false, skipEmptyLines: true });
-    return Array.isArray(data) ? data : [];
-  } catch(e) { return []; }
+    const json = await res.json();
+    if (!Array.isArray(json)) return [];
+    return json;
+  } catch(e) {
+    console.error('fetchTab error:', sheetName, e);
+    return [];
+  }
 }
 
 async function loadTab(tabId) {
@@ -1467,16 +1470,19 @@ function llamShowSub(id){
 }
 
 function calcularSemanas(y, m){
-  // Semanas por bloques de 7 días del mes: 1-7, 8-14, 15-21, 22-28, 29-fin
-  const ultimo = new Date(y, m, 0).getDate(); // último día del mes
+  // Semanas lunes-domingo respetando límites del mes
+  // S1 puede ser parcial (ej: sáb-dom si el mes empieza en sábado)
+  const ultimo = new Date(y, m, 0).getDate();
   const semanas = [];
   let dia = 1;
   while(dia <= ultimo){
     const ini = new Date(y, m-1, dia);
-    const finDia = Math.min(dia + 6, ultimo);
+    const diaSem = ini.getDay(); // 0=dom,1=lun,...,6=sab
+    const diasHastaDom = diaSem === 0 ? 0 : 7 - diaSem;
+    const finDia = Math.min(dia + diasHastaDom, ultimo);
     const fin = new Date(y, m-1, finDia);
     semanas.push({ini, fin});
-    dia += 7;
+    dia = finDia + 1;
   }
   return semanas;
 }

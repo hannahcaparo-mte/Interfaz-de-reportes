@@ -470,6 +470,7 @@ tr:hover td{background:var(--bg)}.td-bold{font-weight:600}.td-muted{color:var(--
 //  CONFIG
 // ══════════════════════════════════════════════════════════
 const SHEET_ID = '1ikP_ZncMGyFqO4fKvEUGX1uRFbFUwHFaaV8BVBlZkdw';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxd86kBIUq_vY9XpaO8xijyUYlYgvQuArtXNxbdzM0WA8-uQHWSbi3Z531RsDKIT6U1Xg/exec';
 
 // ══ LAZY LOADING ══════════════════════════════════════════
 const TAB_SHEETS = {"resumen": ["instructores", "sesiones", "nps"], "sesiones": ["sesiones"], "nps": ["nps"], "pagos": ["pagos"], "feedback": ["observaciones"]};
@@ -481,21 +482,17 @@ let DB = {};
 
 // ── Fetch ──────────────────────────────────────────────────
 function csvUrl(tab){ return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tab); }
-async function fetchTab(tab){
-  try{
-    const res=await fetch(csvUrl(tab));
-    if(!res.ok){console.warn('[INST] Error hoja '+tab+':',res.status);return[];}
-    const text=await res.text();
-    if(!text||text.trim().length<5){console.warn('[INST] Hoja vacía:',tab);return[];}
-    if(text.includes('signin')||text.includes('accounts.google')){
-      console.warn('[INST] Hoja no pública - compartir Sheet como lector público:',tab);return[];
-    }
-    const{data}=Papa.parse(text,{header:true,dynamicTyping:false,skipEmptyLines:true});
-    console.log('[INST]',tab,':',data.length,'filas');
-    return Array.isArray(data)?data:[];
-  }catch(e){
-    console.warn('[INST] Error fetch '+tab+':',e.message);
-    return[];
+async function fetchTab(sheetName) {
+  try {
+    const url = SCRIPT_URL + '?sheet=' + encodeURIComponent(sheetName);
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (!Array.isArray(json)) return [];
+    return json;
+  } catch(e) {
+    console.error('fetchTab error:', sheetName, e);
+    return [];
   }
 }
 async function loadTab(tabId) {
