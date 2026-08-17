@@ -811,7 +811,10 @@ const fmtDate = d => d ? d.toLocaleDateString('es-PE',{day:'2-digit',month:'shor
 function renderAll() {
   renderCampanas();
   renderPerformance();
-  renderLlamadas();
+  // Llamadas y Fuente solo se renderizan si su tab está activo
+  // para evitar problemas con selectores no visibles
+  if (currentTab === 'llamadas') renderLlamadas();
+  if (currentTab === 'fuente') renderFuente();
 }
 
 
@@ -1974,7 +1977,15 @@ function renderFuente(){
   const elContent = document.getElementById('fuenteContent');
   const elSubtabs = document.getElementById('fuenteSubtabs');
   if(!elContent||!elSubtabs) return;
-  if(!rows.length){ elContent.innerHTML='<div class="empty-state">Sin datos en la hoja <b>fuente_leads</b></div>'; return; }
+  if(!rows.length){
+    elContent.innerHTML='<div class="empty-state">Sin datos en la hoja <b>fuente_leads</b></div>';
+    elSubtabs.innerHTML='';
+    if(selMes) selMes.innerHTML='';
+    return;
+  }
+  // Resetear selector siempre para reflejar datos frescos
+  if(selMes) selMes.innerHTML='';
+  fuenteCurrentSub = null;
   const fechas=rows.map(r=>parseFechaLlam(r['Fecha'])).filter(Boolean);
   const mesesUnicos=[...new Set(fechas.map(d=>d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')))].sort();
   if(selMes){
