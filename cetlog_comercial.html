@@ -673,7 +673,7 @@ const SHEET_ID = '1pszZzjm_dW88t56E3eVO-lK_C8Was3MuhvkD4HrUtYI';
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7dt3kpwyjHH1Seax0RzRorVyf520Zr_hTWSPwq1eIOQrUDHPcpSPTpk94FJ7xYass/exec';
 const AUTO_MS  = 60 * 1000; // auto-refresh cada 60 s
 
-const TABS = ['Campanas','Contenido','Embudo','Performance','Demos','ROAS','Historico'];
+const TABS = ['Campanas','Performance'];
 
 // ══ LAZY LOADING ══════════════════════════════════════════
 const TAB_SHEETS = {
@@ -711,8 +711,9 @@ async function fetchTab(sheetName) {
   try {
     const url = SCRIPT_URL + '?sheet=' + encodeURIComponent(sheetName);
     const res = await fetch(url);
-    if (!res.ok) return [];
+    if (!res.ok) { console.error('fetchTab HTTP error:', sheetName, res.status); return []; }
     const json = await res.json();
+    console.log('[fetchTab]', sheetName, '→', Array.isArray(json) ? json.length+' filas' : json);
     if (!Array.isArray(json)) return [];
     return json;
   } catch(e) {
