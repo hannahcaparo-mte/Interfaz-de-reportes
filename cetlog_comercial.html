@@ -1639,7 +1639,7 @@ function renderLlamadasSub(subId, semanas, rowsMes, mesNombre){
             </div>
             <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
               ${comerciales.map(com=>{
-                const rr=rowsMes.filter(r=>r['Comercial']===com);
+                const rr=rowsSem.filter(r=>r['Comercial']===com);
                 const diasCom=[...new Set(rr.map(r=>r['Fecha']))];
                 const metaCom=diasCom.filter(f=>{
                   const rd=rr.filter(r=>r['Fecha']===f);
@@ -1838,7 +1838,7 @@ function renderResumenMes(rowsMes, mesNombre){
             </div>
             <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
               ${comerciales.map(com=>{
-                const rr=rowsMes.filter(r=>r['Comercial']===com);
+                const rr=rowsSem.filter(r=>r['Comercial']===com);
                 const diasCom=[...new Set(rr.map(r=>r['Fecha']))];
                 const metaCom=diasCom.filter(f=>{
                   const rd=rr.filter(r=>r['Fecha']===f);
