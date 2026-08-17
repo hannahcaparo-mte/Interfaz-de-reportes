@@ -1616,26 +1616,44 @@ function renderLlamadasSub(subId, semanas, rowsMes, mesNombre){
     <!-- Tarjeta dividida: días con meta | programas semana -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
       <!-- Izquierda: días con meta -->
-      <div style="background:#ffffff10;border-radius:10px;padding:12px 14px">
-        <div style="font-size:9px;font-weight:600;opacity:.5;text-transform:uppercase;margin-bottom:8px">Días con meta cumplida</div>
-        <div style="display:flex;align-items:flex-start;gap:14px">
-          <div style="flex-shrink:0">
-            <div style="display:flex;align-items:baseline;gap:4px">
-              <span style="font-size:36px;font-weight:700;line-height:1;color:${diasMetaCump.length===diasConDatos.length?'#6EE7B7':diasMetaCump.length>0?'#FCD34D':'#FCA5A5'}">${diasMetaCump.length}</span>
-              <span style="font-size:13px;opacity:.6">/ ${diasConDatos.length}</span>
+      <div style="background:#ffffff10;border-radius:10px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:600;opacity:.5;text-transform:uppercase;margin-bottom:10px">Días con meta cumplida</div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="flex-shrink:0;min-width:110px">
+            <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:4px">
+              <span style="font-size:36px;font-weight:700;line-height:1;color:${diasMetaCump.length===diasMes.length?'#6EE7B7':diasMetaCump.length>0?'#FCD34D':'#FCA5A5'}">${diasMetaCump.length}</span>
+              <span style="font-size:13px;opacity:.6">/ ${diasMes.length} días</span>
             </div>
-            <div style="font-size:9px;opacity:.4;margin-top:2px">días</div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
+              ${comerciales.map(com=>{
+                const rr=rowsMes.filter(r=>r['Comercial']===com);
+                const diasCom=[...new Set(rr.map(r=>r['Fecha']))];
+                const metaCom=diasCom.filter(f=>{
+                  const rd=rr.filter(r=>r['Fecha']===f);
+                  const t=calcTotales(rd);
+                  return t.llam>=t.meta&&t.meta>0;
+                }).length;
+                const ok=metaCom===diasCom.length&&diasCom.length>0;
+                const parcial=metaCom>0&&metaCom<diasCom.length;
+                return '<div style="display:flex;align-items:center;gap:6px">'
+                  +'<span style="font-size:11px;font-weight:600;color:#fff;opacity:.85;min-width:70px">'+com+'</span>'
+                  +'<span style="font-size:11px;font-weight:700;color:'+(ok?'#6EE7B7':parcial?'#FCD34D':'#FCA5A5')+'">'+metaCom+'/'+diasCom.length+'</span>'
+                +'</div>';
+              }).join('')}
+            </div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:5px;flex:1">
-            ${diasConDatos.map(f=>{
+          <!-- Separador -->
+          <div style="width:1px;background:#ffffff20;align-self:stretch;flex-shrink:0"></div>
+          <!-- Derecha: grid de días -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:5px;flex:1">
+            ${diasMes.map(f=>{
               const d=parseFechaLlam(f);
               const rr=rowsMes.filter(r=>r['Fecha']===f);
               const t=calcTotales(rr);
               const ok=t.llam>=t.meta&&t.meta>0;
-              return '<div style="display:flex;align-items:center;gap:6px">'
-                +'<span style="padding:2px 8px;border-radius:5px;background:'+(ok?'#10B98130':'#EF444420')+';border:1px solid '+(ok?'#10B981':'#EF4444')+'50;font-size:10px;font-weight:700;color:'+(ok?'#6EE7B7':'#FCA5A5')+'">'+(d?DIAS_ES[d.getDay()]+' '+d.getDate():'')+'</span>'
-                +'<span style="font-size:10px;opacity:.55">'+t.llam+' llamadas</span>'
-                +(ok?'<span style="font-size:9px;color:#6EE7B7"> ✓</span>':'<span style="font-size:9px;color:#FCA5A5"> ✗</span>')
+              return '<div style="padding:5px 4px;border-radius:7px;background:'+(ok?'#10B98125':'#EF444420')+';border:1px solid '+(ok?'#10B981':'#EF4444')+'50;text-align:center">'
+                +'<div style="font-size:8px;opacity:.65;color:#fff">'+(d?DIAS_ES[d.getDay()]:'')+'</div>'
+                +'<div style="font-size:13px;font-weight:700;color:'+(ok?'#6EE7B7':'#FCA5A5')+';line-height:1.2">'+(d?d.getDate():'')+'</div>'
               +'</div>';
             }).join('')}
           </div>
