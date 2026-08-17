@@ -2084,13 +2084,15 @@ function renderFuenteSub(subId, semanas, rowsMes, mesNombre){
       if(!prog){ html+='<div></div>'; return; }
       const rp=rowsSem.filter(r=>r['Programa']===prog);
       const totProg=rp.reduce((s,r)=>s+pF(r['Leads']),0);
+      if(totProg===0){ html+='<div></div>'; return; }
       const pctProg=totSemLeads?Math.round(totProg/totSemLeads*100):0;
       const col=PROG_COLORS[(i+pi)%PROG_COLORS.length];
       const fuentes=[...new Set(rp.map(r=>r['Fuente']).filter(Boolean))].sort();
-      // Añadir fila "en blanco" (sin fuente)
+      // Añadir fila "Sin fuente" solo si tiene leads
       const sinFuente=rp.filter(r=>!r['Fuente']||r['Fuente'].trim()==='');
+      const sfLeads2=sinFuente.reduce((s,r)=>s+pF(r['Leads']),0);
       const fuentesAll=[...fuentes];
-      if(sinFuente.length) fuentesAll.push('(Sin fuente)');
+      if(sfLeads2>0) fuentesAll.push('(Sin fuente)');
 
       html += '<div class="card" style="padding:14px">'
         // Header programa
