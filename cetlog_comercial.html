@@ -2063,63 +2063,232 @@ function renderFuenteSub(subId, semanas, rowsMes, mesNombre){
   const iniMs=normMs(semana.ini),finMs=normMs(semana.fin);
   const rowsSem=rowsMes.filter(r=>{ const fd=fechaMs(r['Fecha']); return fd&&fd>=iniMs&&fd<=finMs; });
   if(!rowsSem.length){ el.innerHTML='<div class="card"><div class="empty-state" style="padding:24px">Sin registros esta semana</div></div>'; return; }
+
   const progs=[...new Set(rowsSem.map(r=>r['Programa']).filter(Boolean))].sort();
   const PROG_COLORS=['#0891B2','#F68A0A','#1D245C','#10B981','#7C3AED','#F59E0B','#EF4444'];
-  const totSem={leads:rowsSem.reduce((s,r)=>s+pF(r['Leads']),0),cont:rowsSem.reduce((s,r)=>s+pF(r['Contestaron']),0),conv:rowsSem.reduce((s,r)=>s+pF(r['Con_Conversacion']),0),frios:rowsSem.reduce((s,r)=>s+pF(r['Frios']),0),tib:rowsSem.reduce((s,r)=>s+pF(r['Tibios']),0),cal:rowsSem.reduce((s,r)=>s+pF(r['Calientes']),0)};
-  el.innerHTML=`
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px">
-    <div class="kpi k-navy"><div class="kl">Total leads</div><div class="kv">${totSem.leads}</div></div>
-    <div class="kpi"><div class="kl">📞 Contestaron</div><div class="kv">${totSem.leads?Math.round(totSem.cont/totSem.leads*100):0}%</div><div class="ks">${totSem.cont}</div></div>
-    <div class="kpi"><div class="kl">💬 Conversación</div><div class="kv">${totSem.cont?Math.round(totSem.conv/totSem.cont*100):0}%</div><div class="ks">${totSem.conv}</div></div>
-    <div class="kpi" style="border-color:var(--teal)"><div class="kl">❄️ Fríos</div><div class="kv" style="color:var(--teal-tx)">${totSem.frios}</div><div class="ks">${totSem.leads?Math.round(totSem.frios/totSem.leads*100):0}%</div></div>
-    <div class="kpi k-warning"><div class="kl">🌤 Tibios</div><div class="kv">${totSem.tib}</div><div class="ks">${totSem.leads?Math.round(totSem.tib/totSem.leads*100):0}%</div></div>
-    <div class="kpi k-danger"><div class="kl">🔥 Calientes</div><div class="kv">${totSem.cal}</div><div class="ks">${totSem.leads?Math.round(totSem.cal/totSem.leads*100):0}%</div></div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:14px">
-    ${progs.map((prog,pi)=>{
+  const totSemLeads=rowsSem.reduce((s,r)=>s+pF(r['Leads']),0);
+
+  // Agrupar programas en pares (2 por fila)
+  let html = '<div style="display:flex;flex-direction:column;gap:12px">';
+  for(let i=0;i<progs.length;i+=2){
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+    [progs[i], progs[i+1]].forEach((prog,pi)=>{
+      if(!prog){ html+='<div></div>'; return; }
       const rp=rowsSem.filter(r=>r['Programa']===prog);
-      const tl=rp.reduce((s,r)=>s+pF(r['Leads']),0);
-      return '<div class="card" style="padding:16px">'
-        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
-          +'<div style="width:10px;height:10px;border-radius:50%;background:'+PROG_COLORS[pi%PROG_COLORS.length]+'"></div>'
-          +'<span style="font-size:15px;font-weight:700;color:var(--navy);flex:1">'+prog+'</span>'
-          +'<span style="font-size:12px;color:var(--muted)">'+tl+' leads · '+(totSem.leads?Math.round(tl/totSem.leads*100):0)+'% del total</span>'
+      const totProg=rp.reduce((s,r)=>s+pF(r['Leads']),0);
+      const pctProg=totSemLeads?Math.round(totProg/totSemLeads*100):0;
+      const col=PROG_COLORS[(i+pi)%PROG_COLORS.length];
+      const fuentes=[...new Set(rp.map(r=>r['Fuente']).filter(Boolean))].sort();
+      // Añadir fila "en blanco" (sin fuente)
+      const sinFuente=rp.filter(r=>!r['Fuente']||r['Fuente'].trim()==='');
+      const fuentesAll=[...fuentes];
+      if(sinFuente.length) fuentesAll.push('(Sin fuente)');
+
+      html += '<div class="card" style="padding:14px">'
+        // Header programa
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
+          +'<div style="width:9px;height:9px;border-radius:50%;background:'+col+';flex-shrink:0"></div>'
+          +'<span style="font-size:14px;font-weight:700;color:var(--navy);flex:1">'+prog+'</span>'
+          +'<div style="text-align:right;flex-shrink:0">'
+            +'<span style="font-size:16px;font-weight:700;color:var(--navy)">'+totProg+'</span>'
+            +'<span style="font-size:10px;font-weight:600;color:var(--muted);margin-left:4px">leads</span>'
+            +'<span style="font-size:10px;font-weight:600;background:var(--navy);color:#fff;padding:1px 7px;border-radius:4px;margin-left:6px">'+pctProg+'%</span>'
+          +'</div>'
         +'</div>'
-        +fuenteTabla(rp,prog,tl,totSem.leads,PROG_COLORS,pi)
+        // Tabla de fuentes
+        +'<div class="tbl-wrap"><table style="font-size:11px">'
+          +'<thead><tr style="border-bottom:2px solid var(--border)">'
+            +'<th style="padding:5px 6px;font-size:9px">Fuente</th>'
+            +'<th class="td-right" style="padding:5px 6px;font-size:9px">Leads</th>'
+            +'<th class="td-right" style="padding:5px 6px;font-size:9px">📞 Cont.</th>'
+            +'<th class="td-right" style="padding:5px 6px;font-size:9px">💬 Conv.</th>'
+            +'<th class="td-right" style="padding:5px 6px;font-size:9px">❄️</th>'
+            +'<th class="td-right" style="padding:5px 6px;font-size:9px">🌤</th>'
+            +'<th class="td-right" style="padding:5px 6px;font-size:9px">🔥</th>'
+          +'</tr></thead>'
+          +'<tbody>'
+          +fuentesAll.map(fuente=>{
+            const rr = fuente==='(Sin fuente)'
+              ? rp.filter(r=>!r['Fuente']||r['Fuente'].trim()==='')
+              : rp.filter(r=>r['Fuente']===fuente);
+            const tl=rr.reduce((s,r)=>s+pF(r['Leads']),0);
+            const tc=rr.reduce((s,r)=>s+pF(r['Contestaron']),0);
+            const tv=rr.reduce((s,r)=>s+pF(r['Con_Conversacion']),0);
+            const tf=rr.reduce((s,r)=>s+pF(r['Frios']),0);
+            const tt=rr.reduce((s,r)=>s+pF(r['Tibios']),0);
+            const tca=rr.reduce((s,r)=>s+pF(r['Calientes']),0);
+            const pL=totProg?Math.round(tl/totProg*100):0;
+            const pC=tl?Math.round(tc/tl*100):0;
+            const pV=tc?Math.round(tv/tc*100):0;
+            const pF2=tc?Math.round(tf/tc*100):0;
+            const pT=tc?Math.round(tt/tc*100):0;
+            const pCa=tc?Math.round(tca/tc*100):0;
+            return '<tr style="border-bottom:1px solid var(--border)">'
+              +'<td style="padding:5px 6px;font-weight:600;color:var(--text)">'+(fuente==='(Sin fuente)'?'<span style="color:var(--muted);font-style:italic">Sin fuente</span>':fuente)+'</td>'
+              +'<td class="td-right" style="padding:5px 6px">'
+                +'<span style="font-weight:700;color:var(--navy)">'+tl+'</span>'
+                +'<span style="font-size:9px;color:var(--muted);margin-left:3px">'+pL+'%</span>'
+              +'</td>'
+              +'<td class="td-right" style="padding:5px 6px">'
+                +'<span style="font-weight:600">'+tc+'</span>'
+                +'<span style="font-size:9px;color:var(--muted);margin-left:3px">'+pC+'%</span>'
+              +'</td>'
+              +'<td class="td-right" style="padding:5px 6px">'
+                +'<span style="font-weight:600">'+tv+'</span>'
+                +'<span style="font-size:9px;color:var(--muted);margin-left:3px">'+pV+'%</span>'
+              +'</td>'
+              +'<td class="td-right" style="padding:5px 6px;color:var(--teal-tx);font-weight:600">'+tf+'<span style="font-size:9px;font-weight:400;margin-left:2px">'+pF2+'%</span></td>'
+              +'<td class="td-right" style="padding:5px 6px;color:var(--warning-tx);font-weight:600">'+tt+'<span style="font-size:9px;font-weight:400;margin-left:2px">'+pT+'%</span></td>'
+              +'<td class="td-right" style="padding:5px 6px;color:var(--danger-tx);font-weight:600">'+tca+'<span style="font-size:9px;font-weight:400;margin-left:2px">'+pCa+'%</span></td>'
+            +'</tr>';
+          }).join('')
+          +'</tbody></table></div>'
       +'</div>';
-    }).join('')}
-  </div>`;
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
 }
+
 
 function renderFuenteResumen(rowsMes, mesNombre){
   if(!rowsMes.length)return'<div class="empty-state">Sin datos</div>';
-  const progs=[...new Set(rowsMes.map(r=>r['Programa']).filter(Boolean))].sort();
+
   const PROG_COLORS=['#0891B2','#F68A0A','#1D245C','#10B981','#7C3AED','#F59E0B','#EF4444'];
-  const tot={leads:rowsMes.reduce((s,r)=>s+pF(r['Leads']),0),cont:rowsMes.reduce((s,r)=>s+pF(r['Contestaron']),0),conv:rowsMes.reduce((s,r)=>s+pF(r['Con_Conversacion']),0),frios:rowsMes.reduce((s,r)=>s+pF(r['Frios']),0),tib:rowsMes.reduce((s,r)=>s+pF(r['Tibios']),0),cal:rowsMes.reduce((s,r)=>s+pF(r['Calientes']),0)};
-  return `
+  const totMes=rowsMes.reduce((s,r)=>s+pF(r['Leads']),0);
+
+  // Extraer todas las fuentes únicas del mes
+  const fuentes=[...new Set(rowsMes.map(r=>r['Fuente']).filter(Boolean))].sort();
+  const progs=[...new Set(rowsMes.map(r=>r['Programa']).filter(Boolean))].sort();
+
+  // Para cada fuente: métricas agregadas + desglose por programa
+  const fuenteStats = fuentes.map(fuente=>{
+    const rr=rowsMes.filter(r=>r['Fuente']===fuente);
+    const tl=rr.reduce((s,r)=>s+pF(r['Leads']),0);
+    const tc=rr.reduce((s,r)=>s+pF(r['Contestaron']),0);
+    const tv=rr.reduce((s,r)=>s+pF(r['Con_Conversacion']),0);
+    const tf=rr.reduce((s,r)=>s+pF(r['Frios']),0);
+    const tt=rr.reduce((s,r)=>s+pF(r['Tibios']),0);
+    const tca=rr.reduce((s,r)=>s+pF(r['Calientes']),0);
+    const porProg=progs.map(p=>({
+      prog:p,
+      leads:rr.filter(r=>r['Programa']===p).reduce((s,r)=>s+pF(r['Leads']),0)
+    })).filter(x=>x.leads>0);
+    return{fuente,tl,tc,tv,tf,tt,tca,porProg};
+  }).sort((a,b)=>b.tl-a.tl);
+
+  // Resumen sin fuente
+  const sinFuente=rowsMes.filter(r=>!r['Fuente']||r['Fuente'].trim()==='');
+  const sfLeads=sinFuente.reduce((s,r)=>s+pF(r['Leads']),0);
+
+  let html = `
+  <!-- Hero -->
   <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,#252D7A 100%);color:#fff;border:none;padding:20px 24px;margin-bottom:14px">
-    <div style="font-size:10px;font-weight:600;opacity:.55;text-transform:uppercase;margin-bottom:6px">Fuente de leads · ${mesNombre}</div>
-    <div style="font-size:22px;font-weight:700;margin-bottom:14px">${tot.leads} leads totales</div>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
-      ${[{l:'Contestaron',v:tot.cont,p:tot.leads?Math.round(tot.cont/tot.leads*100):0,bg:'#ffffff12',c:'#fff'},{l:'Conversación',v:tot.conv,p:tot.cont?Math.round(tot.conv/tot.cont*100):0,bg:'#ffffff12',c:'#fff'},{l:'❄️ Fríos',v:tot.frios,p:tot.leads?Math.round(tot.frios/tot.leads*100):0,bg:'#0891B220',c:'#67E8F9'},{l:'🌤 Tibios',v:tot.tib,p:tot.leads?Math.round(tot.tib/tot.leads*100):0,bg:'#F59E0B20',c:'#FCD34D'},{l:'🔥 Calientes',v:tot.cal,p:tot.leads?Math.round(tot.cal/tot.leads*100):0,bg:'#EF444420',c:'#FCA5A5'}]
-        .map(k=>'<div style="background:'+k.bg+';border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:'+k.c+';line-height:1">'+k.v+'</div><div style="font-size:9px;opacity:.6;font-weight:600;text-transform:uppercase;margin:3px 0">'+k.l+'</div><div style="font-size:9px;opacity:.5">'+k.p+'%</div></div>').join('')}
+    <div style="font-size:10px;font-weight:600;opacity:.55;text-transform:uppercase;margin-bottom:4px">Fuente de leads · ${mesNombre}</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:14px">${totMes} leads totales · ${fuentes.length} fuentes</div>
+    <!-- Barra proporcional por fuente -->
+    <div style="height:16px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:8px">
+      ${fuenteStats.map((f,i)=>{
+        const w=totMes?Math.round(f.tl/totMes*100):0;
+        return w?'<div style="width:'+w+'%;height:100%;background:'+PROG_COLORS[i%PROG_COLORS.length]+'" title="'+f.fuente+': '+f.tl+' ('+w+'%)"></div>':'';
+      }).join('')}
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${fuenteStats.map((f,i)=>'<span style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;opacity:.85">'
+        +'<span style="width:8px;height:8px;border-radius:50%;background:'+PROG_COLORS[i%PROG_COLORS.length]+';display:inline-block"></span>'
+        +f.fuente+' '+f.tl+' ('+(totMes?Math.round(f.tl/totMes*100):0)+'%)'
+      +'</span>').join('')}
     </div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:14px">
-    ${progs.map((prog,pi)=>{
-      const rp=rowsMes.filter(r=>r['Programa']===prog);
-      const tl=rp.reduce((s,r)=>s+pF(r['Leads']),0);
-      return '<div class="card" style="padding:16px">'
-        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
-          +'<div style="width:10px;height:10px;border-radius:50%;background:'+PROG_COLORS[pi%PROG_COLORS.length]+'"></div>'
-          +'<span style="font-size:15px;font-weight:700;color:var(--navy);flex:1">'+prog+'</span>'
-          +'<span style="font-size:12px;color:var(--muted)">'+tl+' leads · '+(tot.leads?Math.round(tl/tot.leads*100):0)+'% del mes</span>'
-        +'</div>'
-        +fuenteTabla(rp,prog,tl,tot.leads,PROG_COLORS,pi)
-      +'</div>';
-    }).join('')}
+
+  <!-- Tabla resumen por fuente -->
+  <div class="card" style="padding:16px;margin-bottom:14px">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Análisis por fuente</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th>Fuente</th>
+        <th class="td-right">Leads</th><th class="td-right">% total</th>
+        <th class="td-right">📞 Contestaron</th><th class="td-right">% cont.</th>
+        <th class="td-right">💬 Conversación</th><th class="td-right">% conv.</th>
+        <th class="td-right">❄️</th><th class="td-right">🌤</th><th class="td-right">🔥</th>
+        <th>Programas</th>
+      </tr></thead>
+      <tbody>
+        ${fuenteStats.map((f,i)=>{
+          const pT=totMes?Math.round(f.tl/totMes*100):0;
+          const pC=f.tl?Math.round(f.tc/f.tl*100):0;
+          const pV=f.tc?Math.round(f.tv/f.tc*100):0;
+          const pFr=f.tc?Math.round(f.tf/f.tc*100):0;
+          const pTi=f.tc?Math.round(f.tt/f.tc*100):0;
+          const pCa=f.tc?Math.round(f.tca/f.tc*100):0;
+          return '<tr>'
+            +'<td><div style="display:flex;align-items:center;gap:6px">'
+              +'<span style="width:8px;height:8px;border-radius:50%;background:'+PROG_COLORS[i%PROG_COLORS.length]+';flex-shrink:0"></span>'
+              +'<span class="td-bold">'+f.fuente+'</span>'
+            +'</div></td>'
+            +'<td class="td-right td-bold" style="color:var(--navy)">'+f.tl+'</td>'
+            +'<td class="td-right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">'
+              +'<div style="width:36px;height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pT+'%;background:'+PROG_COLORS[i%PROG_COLORS.length]+'"></div></div>'
+              +'<span style="font-size:11px;font-weight:600">'+pT+'%</span>'
+            +'</div></td>'
+            +'<td class="td-right">'+f.tc+'</td>'
+            +'<td class="td-right"><span class="pill '+(pC>=50?'pill-ok':pC>=25?'pill-warn':'pill-danger')+'" style="font-size:9px">'+pC+'%</span></td>'
+            +'<td class="td-right">'+f.tv+'</td>'
+            +'<td class="td-right"><span class="pill '+(pV>=50?'pill-ok':pV>=25?'pill-warn':'pill-danger')+'" style="font-size:9px">'+pV+'%</span></td>'
+            +'<td class="td-right" style="color:var(--teal-tx);font-weight:600">'+f.tf+'<span style="font-size:9px;font-weight:400;margin-left:2px">'+pFr+'%</span></td>'
+            +'<td class="td-right" style="color:var(--warning-tx);font-weight:600">'+f.tt+'<span style="font-size:9px;font-weight:400;margin-left:2px">'+pTi+'%</span></td>'
+            +'<td class="td-right" style="color:var(--danger-tx);font-weight:600">'+f.tca+'<span style="font-size:9px;font-weight:400;margin-left:2px">'+pCa+'%</span></td>'
+            +'<td><div style="display:flex;gap:3px;flex-wrap:wrap">'
+              +f.porProg.map((x,j)=>'<span style="font-size:9px;font-weight:600;background:var(--navy);color:#fff;padding:1px 6px;border-radius:4px">'+x.prog+' '+x.leads+'</span>').join('')
+            +'</div></td>'
+          +'</tr>';
+        }).join('')}
+        ${sfLeads>0?'<tr style="opacity:.6"><td><span style="font-style:italic;color:var(--muted)">Sin fuente</span></td><td class="td-right">'+sfLeads+'</td><td class="td-right">'+(totMes?Math.round(sfLeads/totMes*100):0)+'%</td><td colspan="8" class="td-muted" style="font-size:10px">Sin clasificar</td></tr>':''}
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- Comparativa por programa (qué fuentes funcionan mejor en cada uno) -->
+  <div class="card" style="padding:16px">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">¿Qué fuentes funcionan mejor por programa?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+      ${progs.map((prog,pi)=>{
+        const rp=rowsMes.filter(r=>r['Programa']===prog);
+        const totP=rp.reduce((s,r)=>s+pF(r['Leads']),0);
+        const fTop=[...new Set(rp.map(r=>r['Fuente']).filter(Boolean))].map(f=>{
+          const rr=rp.filter(r=>r['Fuente']===f);
+          const tl=rr.reduce((s,r)=>s+pF(r['Leads']),0);
+          const tc=rr.reduce((s,r)=>s+pF(r['Contestaron']),0);
+          const tca=rr.reduce((s,r)=>s+pF(r['Calientes']),0);
+          return{f,tl,tc,tca,pCont:tl?Math.round(tc/tl*100):0,pCal:tl?Math.round(tca/tl*100):0};
+        }).sort((a,b)=>b.tl-a.tl);
+        return '<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px">'
+          +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">'
+            +'<div style="width:8px;height:8px;border-radius:50%;background:'+PROG_COLORS[pi%PROG_COLORS.length]+'"></div>'
+            +'<span style="font-size:12px;font-weight:700;color:var(--navy)">'+prog+'</span>'
+            +'<span style="font-size:10px;color:var(--muted);margin-left:auto">'+totP+' leads</span>'
+          +'</div>'
+          +fTop.map(x=>{
+            const w=totP?Math.round(x.tl/totP*100):0;
+            return '<div style="margin-bottom:7px">'
+              +'<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px">'
+                +'<span style="font-weight:600">'+x.f+'</span>'
+                +'<span style="color:var(--muted)">'+x.tl+' leads · 📞'+x.pCont+'% · 🔥'+x.pCal+'%</span>'
+              +'</div>'
+              +'<div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden">'
+                +'<div style="height:100%;width:'+w+'%;background:'+PROG_COLORS[pi%PROG_COLORS.length]+';border-radius:4px"></div>'
+              +'</div>'
+            +'</div>';
+          }).join('')
+        +'</div>';
+      }).join('')}
+    </div>
   </div>`;
+
+  return html;
 }
+
 
 window.addEventListener('DOMContentLoaded', () => {
   refreshAll();
