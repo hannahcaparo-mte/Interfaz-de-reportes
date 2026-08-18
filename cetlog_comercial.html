@@ -382,19 +382,30 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 }
 
 @media(max-width:768px){
-  /* Tablas de fuente de leads: fuente más pequeña y celdas compactas */
-  #tab-fuente table{ font-size:10px; min-width:360px; }
-  #tab-fuente th, #tab-fuente td{ padding:4px 5px !important; }
-  #tab-fuente th{ font-size:8px; }
-  /* Ocultar columna % prog en móvil (info redundante) */
-  #tab-fuente th:nth-child(3),
-  #tab-fuente td:nth-child(3){ display:none; }
-  /* Comprimir nombre de fuente */
-  #tab-fuente td:first-child{ max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* Card hero de campañas: columna en móvil */
+  #campHeroCard{
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    gap:14px !important;
+  }
+  #campHeroCard > div:last-child{
+    width:100%;
+    justify-content:space-between !important;
+    gap:12px !important;
+  }
+  /* Separadores verticales → ocultar en móvil */
+  #campHeroCard [style*="width:1px"]{ display:none !important; }
+}
 
-  /* Tablas de llamadas también más compactas */
-  #tab-llamadas table{ font-size:10px; }
-  #tab-llamadas th, #tab-llamadas td{ padding:4px 5px !important; }
+@media(max-width:768px){
+  /* Fuente de leads: scroll horizontal limpio, fuente ligeramente menor */
+  #tab-fuente .tbl-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  #tab-fuente table{ font-size:11px; min-width:520px; }
+  #tab-fuente th, #tab-fuente td{ padding:5px 6px !important; }
+
+  /* Llamadas: igual */
+  #tab-llamadas table{ font-size:11px; }
+  #tab-llamadas th, #tab-llamadas td{ padding:5px 6px !important; }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -495,7 +506,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         </div>
 
         <!-- Header campaña -->
-        <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+        <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);color:#fff;border:none;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap" id="campHeroCard">
           <div>
             <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;opacity:.6;margin-bottom:8px">Campaña activa</div>
             <div style="font-size:26px;font-weight:700;letter-spacing:-.5px" id="cNombre">—</div>
