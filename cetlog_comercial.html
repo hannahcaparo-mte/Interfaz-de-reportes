@@ -1573,11 +1573,20 @@ function renderLlamadas(){
   subIds.push('resumen');
   if(!llamCurrentSub || !subIds.includes(llamCurrentSub)) llamCurrentSub = 'sem1';
 
-  subtabs.innerHTML = semanas.map((s,i) => {
-    const label = `<span class="tn">S${i+1}</span> ${fmtD(s.ini)}–${fmtD(s.fin)}`;
-    return `<div class="rtab${llamCurrentSub==='sem'+(i+1)?' active':''}" onclick="llamShowSub('sem${i+1}')"><span class="tab-dot"></span>${label}</div>`;
-  }).join('') +
-  `<div class="rtab${llamCurrentSub==='resumen'?' active':''}" onclick="llamShowSub('resumen')"><span class="tab-dot"></span><span class="tn">∑</span> Resumen ${mesNombre}</div>`;
+  // Construir subtabs sin comillas anidadas
+  (function(){
+    var h='', dq='"';
+    for(var i=0;i<semanas.length;i++){
+      var s=semanas[i], n=i+1;
+      var act=llamCurrentSub===('sem'+n)?' active':'';
+      h+='<div class='+dq+'rtab'+act+dq+' data-sid='+dq+'sem'+n+dq+' onclick='+dq+'llamShowSub(this.getAttribute('+String.fromCharCode(39)+'data-sid'+String.fromCharCode(39)+'))'+dq+'>';
+      h+='<span class='+dq+'tab-dot'+dq+'></span><span class='+dq+'tn'+dq+'>S'+n+'</span> '+fmtD(s.ini)+'–'+fmtD(s.fin)+'</div>';
+    }
+    var actR=llamCurrentSub==='resumen'?' active':'';
+    h+='<div class='+dq+'rtab'+actR+dq+' data-sid='+dq+'resumen'+dq+' onclick='+dq+'llamShowSub(this.getAttribute('+String.fromCharCode(39)+'data-sid'+String.fromCharCode(39)+'))'+dq+'>';
+    h+='<span class='+dq+'tab-dot'+dq+'></span><span class='+dq+'tn'+dq+'>∑</span> Resumen '+mesNombre+'</div>';
+    subtabs.innerHTML=h;
+  })();
 
   renderLlamadasSub(llamCurrentSub, semanas, rowsMes, mesNombre);
 }
@@ -1597,9 +1606,9 @@ function llamShowSub(id){
   const semanas = calcularSemanas(mesY, mesM);
   // Actualizar botones
   const subtabs = document.getElementById('llamSubtabs');
-  if(subtabs) subtabs.querySelectorAll('.rtab').forEach((b,i) => {
-    const isResumen = b.textContent.includes('Resumen');
-    b.classList.toggle('active', isResumen ? id==='resumen' : id==='sem'+(i+1));
+  if(subtabs) subtabs.querySelectorAll('.rtab').forEach(b => {
+    const sid = b.getAttribute('data-sid');
+    b.classList.toggle('active', sid === id);
   });
   renderLlamadasSub(id, semanas, rowsMes, mesNombre);
 }
