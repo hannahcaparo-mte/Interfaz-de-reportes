@@ -1592,6 +1592,7 @@ function renderLlamadas(){
 }
 
 function llamShowSub(id){
+  console.log('[llamShowSub] id recibido:', id, typeof id);
   llamCurrentSub = id;
   // Re-render sin recargar datos
   const rows = DB['llamadas'] || [];
@@ -1980,7 +1981,7 @@ function renderResumenMes(rowsMes, mesNombre){
             </div>
             <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
               ${comerciales.map(com=>{
-                const rr=rowsSem.filter(r=>r['Comercial']===com);
+                const rr=rowsMes.filter(r=>r['Comercial']===com);
                 const diasCom=[...new Set(rr.map(r=>r['Fecha']))];
                 const metaCom=diasCom.filter(f=>{
                   const rd=rr.filter(r=>r['Fecha']===f);
