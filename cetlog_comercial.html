@@ -2085,17 +2085,23 @@ let fuenteCurrentSub = null;
 
 function buildFuenteSubtabs(semanas, currentSub, mesNombre){
   var h = '';
+  var dq = '"';
   for(var i=0;i<semanas.length;i++){
     var s=semanas[i];
-    var act = currentSub===('fsem'+(i+1)) ? ' active' : '';
-    h += '<div class="rtab'+act+'" data-fsub="fsem'+(i+1)+'" onclick="fuenteShowSub(this.dataset.fsub)">'
-      +'<span class="tab-dot"></span><span class="tn">S'+(i+1)+'</span> '+fmtD(s.ini)+' – '+fmtD(s.fin)+'</div>';
+    var n=i+1;
+    var act = currentSub===('fsem'+n) ? ' active' : '';
+    var sid = 'fsem'+n;
+    h += '<div class=' +dq+ 'rtab'+act +dq+ ' data-sid=' +dq+ sid +dq+ ' onclick=' +dq+ 'fuenteShowSub(this.getAttribute(' + "'" + 'data-sid' + "'" + '))' +dq+ '>';
+    h += '<span class=' +dq+ 'tab-dot' +dq+ '></span>';
+    h += '<span class=' +dq+ 'tn' +dq+ '>S'+n+'</span> '+fmtD(s.ini)+' – '+fmtD(s.fin)+'</div>';
   }
   var actR = currentSub==='fresumen' ? ' active' : '';
-  h += '<div class="rtab'+actR+'" data-fsub="fresumen" onclick="fuenteShowSub(this.dataset.fsub)">'
-    +'<span class="tab-dot"></span><span class="tn">∑</span> Resumen '+mesNombre+'</div>';
+  h += '<div class=' +dq+ 'rtab'+actR +dq+ ' data-sid=' +dq+ 'fresumen' +dq+ ' onclick=' +dq+ 'fuenteShowSub(this.getAttribute(' + "'" + 'data-sid' + "'" + '))' +dq+ '>';
+  h += '<span class=' +dq+ 'tab-dot' +dq+ '></span>';
+  h += '<span class=' +dq+ 'tn' +dq+ '>∑</span> Resumen '+mesNombre+'</div>';
   return h;
 }
+
 function renderFuente(){
   const rows = (DB['fuente_leads'] || []).filter(r => {
     const d = parseFechaLlam(r['Fecha']);
