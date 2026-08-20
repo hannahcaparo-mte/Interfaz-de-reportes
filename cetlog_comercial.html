@@ -1580,7 +1580,7 @@ function renderLlamadas(){
       var s=semanas[i], n=i+1;
       var act=llamCurrentSub===('sem'+n)?' active':'';
       h+='<div class='+dq+'rtab'+act+dq+' data-sid='+dq+'sem'+n+dq+' onclick='+dq+'llamShowSub(this.getAttribute('+String.fromCharCode(39)+'data-sid'+String.fromCharCode(39)+'))'+dq+'>';
-      h+='<span class='+dq+'tab-dot'+dq+'></span><span class='+dq+'tn'+dq+'>S'+n+'</span> '+fmtD(s.ini)+'–'+fmtD(s.fin)+'</div>';
+      h+='<span class='+dq+'tab-dot'+dq+'></span>'+labelSemana(n,s)+'</div>';
     }
     var actR=llamCurrentSub==='resumen'?' active':'';
     h+='<div class='+dq+'rtab'+actR+dq+' data-sid='+dq+'resumen'+dq+' onclick='+dq+'llamShowSub(this.getAttribute('+String.fromCharCode(39)+'data-sid'+String.fromCharCode(39)+'))'+dq+'>';
@@ -1782,7 +1782,7 @@ function renderLlamadasSub(subId, semanas, rowsMes, mesNombre){
             </div>
             <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
               ${comerciales.map(com=>{
-                const rr=rowsSem.filter(r=>r['Comercial']===com);
+                const rr=rowsSem.filter(r=>r['Comercial']===com && parseNum(r['Total_Llamadas'])>0);
                 const diasCom=[...new Set(rr.map(r=>r['Fecha']))];
                 const metaCom=diasCom.filter(f=>{
                   const rd=rr.filter(r=>r['Fecha']===f);
@@ -1981,7 +1981,7 @@ function renderResumenMes(rowsMes, mesNombre){
             </div>
             <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
               ${comerciales.map(com=>{
-                const rr=rowsMes.filter(r=>r['Comercial']===com);
+                const rr=rowsMes.filter(r=>r['Comercial']===com && parseNum(r['Total_Llamadas'])>0);
                 const diasCom=[...new Set(rr.map(r=>r['Fecha']))];
                 const metaCom=diasCom.filter(f=>{
                   const rd=rr.filter(r=>r['Fecha']===f);
@@ -2093,6 +2093,15 @@ function fmtD(d){ return d?d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear():
 // ══════════════════════════════════════════════════════════
 let fuenteCurrentSub = null;
 
+function ordinalES(n){
+  var sufijos = {1:'era',2:'da',3:'era',4:'ta',5:'ta',6:'ta',7:'ma',8:'va',9:'na',10:'ma'};
+  var suf = sufijos[n] || 'ma';
+  return '<sup style="font-size:8px;vertical-align:super">'+suf+'</sup>';
+}
+function labelSemana(n, s){
+  return n + ordinalES(n) + ' Semana: ' + s.ini.getDate().toString().padStart(2,'0') + '-' + s.fin.getDate().toString().padStart(2,'0');
+}
+
 function buildFuenteSubtabs(semanas, currentSub, mesNombre){
   var h = '';
   var dq = '"';
@@ -2102,8 +2111,7 @@ function buildFuenteSubtabs(semanas, currentSub, mesNombre){
     var act = currentSub===('fsem'+n) ? ' active' : '';
     var sid = 'fsem'+n;
     h += '<div class=' +dq+ 'rtab'+act +dq+ ' data-sid=' +dq+ sid +dq+ ' onclick=' +dq+ 'fuenteShowSub(this.getAttribute(' + "'" + 'data-sid' + "'" + '))' +dq+ '>';
-    h += '<span class=' +dq+ 'tab-dot' +dq+ '></span>';
-    h += '<span class=' +dq+ 'tn' +dq+ '>S'+n+'</span> '+fmtD(s.ini)+' – '+fmtD(s.fin)+'</div>';
+    h += '<span class=' +dq+ 'tab-dot' +dq+ '></span>'+labelSemana(n,s)+'</div>';
   }
   var actR = currentSub==='fresumen' ? ' active' : '';
   h += '<div class=' +dq+ 'rtab'+actR +dq+ ' data-sid=' +dq+ 'fresumen' +dq+ ' onclick=' +dq+ 'fuenteShowSub(this.getAttribute(' + "'" + 'data-sid' + "'" + '))' +dq+ '>';
@@ -2241,7 +2249,8 @@ function renderFuenteSub(subId, semanas, rowsMes, mesNombre){
       if(!prog){ html+='<div></div>'; return; }
       const rp=rowsSem.filter(r=>r['Programa']===prog);
       const totProg=rp.reduce((s,r)=>s+pF(r['Leads']),0);
-      if(totProg===0){ html+='<div></div>'; return; }
+      const fuentesCheck=[...new Set(rp.map(r=>r['Fuente']).filter(Boolean))];
+      if(totProg===0 || fuentesCheck.length===0){ html+='<div></div>'; return; }
       const pctProg=totSemLeads?Math.round(totProg/totSemLeads*100):0;
       const col=PROG_COLORS[(i+pi)%PROG_COLORS.length];
       const fuentes=[...new Set(rp.map(r=>r['Fuente']).filter(Boolean))].sort();
@@ -2327,7 +2336,7 @@ function renderFuenteResumen(rowsMes, mesNombre){
 
   // Extraer todas las fuentes únicas del mes
   const fuentes=[...new Set(rowsMes.map(r=>r['Fuente']).filter(Boolean))].sort();
-  const progs=[...new Set(rowsMes.map(r=>r['Programa']).filter(Boolean))].sort();
+  const progs=[...new Set(rowsMes.map(r=>r['Programa']).filter(Boolean))].sort().filter(p=>rowsMes.some(r=>r['Programa']===p&&r['Fuente']&&r['Fuente'].trim()!==''));
 
   // Para cada fuente: métricas agregadas + desglose por programa
   const fuenteStats = fuentes.map(fuente=>{
