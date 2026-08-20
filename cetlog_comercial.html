@@ -2241,16 +2241,28 @@ function renderFuenteSub(subId, semanas, rowsMes, mesNombre){
   const PROG_COLORS=['#0891B2','#F68A0A','#1D245C','#10B981','#7C3AED','#F59E0B','#EF4444'];
   const totSemLeads=rowsSem.reduce((s,r)=>s+pF(r['Leads']),0);
 
+  // Filtrar programas que tienen al menos una fuente
+  const progsConFuente = progs.filter(prog => {
+    const rp = rowsSem.filter(r=>r['Programa']===prog);
+    const fuentesCheck = [...new Set(rp.map(r=>r['Fuente']).filter(Boolean))];
+    return fuentesCheck.length > 0;
+  });
+
+  if(!progsConFuente.length){
+    el.innerHTML = '<div class="card"><div class="empty-state" style="padding:24px">Sin datos de fuentes esta semana</div></div>';
+    return;
+  }
+
   // Agrupar programas en pares (2 por fila)
   let html = '<div style="display:flex;flex-direction:column;gap:12px">';
-  for(let i=0;i<progs.length;i+=2){
-    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
-    [progs[i], progs[i+1]].forEach((prog,pi)=>{
-      if(!prog){ html+='<div></div>'; return; }
+  for(let i=0;i<progsConFuente.length;i+=2){
+    html += '<div style="display:grid;grid-template-columns:'+(progsConFuente[i+1]?'1fr 1fr':'1fr')+';gap:12px">';
+    [progsConFuente[i], progsConFuente[i+1]].forEach((prog,pi)=>{
+      if(!prog){ return; }
       const rp=rowsSem.filter(r=>r['Programa']===prog);
       const totProg=rp.reduce((s,r)=>s+pF(r['Leads']),0);
       const fuentesCheck=[...new Set(rp.map(r=>r['Fuente']).filter(Boolean))];
-      if(totProg===0 || fuentesCheck.length===0){ html+='<div></div>'; return; }
+      if(totProg===0 || fuentesCheck.length===0){ return; }
       const pctProg=totSemLeads?Math.round(totProg/totSemLeads*100):0;
       const col=PROG_COLORS[(i+pi)%PROG_COLORS.length];
       const fuentes=[...new Set(rp.map(r=>r['Fuente']).filter(Boolean))].sort();
